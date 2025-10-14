@@ -2,17 +2,17 @@
 pragma solidity ^0.8.13;
 
 import {Script} from "forge-std/Script.sol";
-import {Counter} from "../src/Counter.sol";
+import {ERC20} from "../src/ERC20/ERC20.sol";
 
 contract CounterScript is Script {
-    Counter public counter;
+    ERC20 public erc20;
 
     function setUp() public {}
 
     function run() public {
         vm.startBroadcast();
 
-        counter = new Counter();
+        erc20 = new ERC20();
 
         vm.stopBroadcast();
     }
