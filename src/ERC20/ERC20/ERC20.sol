@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.30;
 
-import { LibERC20 } from "./libraries/LibERC20.sol";
 
 contract ERC20 {
 
@@ -15,33 +14,55 @@ contract ERC20 {
     
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
-    
+
+    // Struct storage position defined by keccak256 hash 
+    // of diamond storage identifier
+    bytes32 constant STORAGE_POSITION = keccak256("compose.erc20");
+
+    // Storage defined using the ERC-8042 standard
+    // @custom:storage-location erc8042:compose.erc20
+    struct ERC20Storage {
+        string name;
+        string symbol;
+        uint8 decimals;
+        uint256 totalSupply;
+        mapping(address owner => uint256 balance) balanceOf;
+        mapping(address owner => mapping(address spender => uint256 allowance)) allowances;   
+    }
+
+    function getStorage() internal pure returns (ERC20Storage storage s) {
+        bytes32 position = STORAGE_POSITION;
+        assembly {
+            s.slot := position
+        }
+    }
+        
     function name() external view returns (string memory) {
-        return LibERC20.getStorage().name;
+        return getStorage().name;
     }
 
     function symbol() external view returns (string memory) {
-        return LibERC20.getStorage().symbol;
+        return getStorage().symbol;
     }
 
     function decimals() external view returns (uint8) {
-        return LibERC20.getStorage().decimals;
+        return getStorage().decimals;
     }
 
     function totalSupply() external view returns (uint256) {
-        return LibERC20.getStorage().totalSupply;
+        return getStorage().totalSupply;
     }
 
     function balanceOf(address _account) external view returns (uint256) {
-        return LibERC20.getStorage().balanceOf[_account];
+        return getStorage().balanceOf[_account];
     }
 
     function allowance(address _owner, address _spender) external view returns (uint256) {
-        return LibERC20.getStorage().allowances[_owner][_spender];
+        return getStorage().allowances[_owner][_spender];
     }
 
     function approve(address _spender, uint256 _value) external {
-        LibERC20.ERC20Storage storage s = LibERC20.getStorage();
+        ERC20Storage storage s = getStorage();
         if (_spender == address(0)) {
             revert ERC20InvalidSpender(address(0));
         }
@@ -50,7 +71,7 @@ contract ERC20 {
     }
 
     function transfer(address _to, uint256 _value) external {
-        LibERC20.ERC20Storage storage s = LibERC20.getStorage();
+        ERC20Storage storage s = getStorage();
         if (_to == address(0)) {
             revert ERC20InvalidReceiver(address(0));
         }
@@ -66,7 +87,7 @@ contract ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) external {
-        LibERC20.ERC20Storage storage s = LibERC20.getStorage();
+        ERC20Storage storage s = getStorage();
         if (_from == address(0)) {
             revert ERC20InvalidSender(address(0));
         }
@@ -90,7 +111,7 @@ contract ERC20 {
     }    
     
     function burn(uint256 _value) external {
-        LibERC20.ERC20Storage storage s = LibERC20.getStorage();
+        ERC20Storage storage s = getStorage();
         uint256 balance = s.balanceOf[msg.sender];
         if (balance < _value) {
             revert ERC20InsufficientBalance(msg.sender, balance, _value);
@@ -102,7 +123,7 @@ contract ERC20 {
     }
 
     function burnFrom(address _account, uint256 _value) external {
-        LibERC20.ERC20Storage storage s = LibERC20.getStorage();
+        ERC20Storage storage s = getStorage();
         uint256 currentAllowance = s.allowances[_account][msg.sender];
         if (currentAllowance < _value) {
             revert ERC20InsufficientAllowance(msg.sender, currentAllowance, _value);
