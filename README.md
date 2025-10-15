@@ -20,35 +20,38 @@ If this feature ban breaks your mind, just realize that this smart contract libr
    
    No contract may inherit any other contract or interface. For example `MyContract is OtherContract` or `MyContract is IMyInterface` etc. is not allowed.
 
-### 1. No constructor functions
+### 2. No constructor functions
 
    No contracts other than a diamond contract (proxy contract), may have a constructor function. For example: `constructor() {owner = msg.sender; }` etc.
 
-### 1. No modifiers
+### 3. No modifiers
 
    No contract may use modifiers. For example: `modifier onlyOwner() { require(msg.sender == owner, "Caller is not the owner"); _; }` etc.
 
-### 1. No public or private or internal variables
+### 4. No public or private or internal variables
 
    No contract or library may have variables declared private or public or internal. For example: `uint256 public counter;`. These visibility labels are not needed because the library uses ERC-8042 Diamond Storage through out.
 
-### 1. No private functions
+### 4. No private functions
 
    No contract or library may have a function declared private. For example: `function approve(address _spender, uint256 _value) private { ...`. This means all functions in contracts must be delcared `internal` or `external`.
 
-### 1. No external functions in Solidity libraries
+### 5. No external functions in Solidity libraries
 
    No Solidity library may have any external functions. For example: `function name() external view returns (string memory)`. All functions in Solidity libraries must be delcared `internal`.
 
-### 1. No `using for` in Solidity libraries
+### 5. No `using for` in Solidity libraries
 
    No Solidity library may use the `using` directive. For example: `using LibSomething for uint`.
 
-### 1. No `selfdestruct`.
+### 6. No `selfdestruct`.
 
    No contract or libary may use `selfdestruct`.
 
 Other Solidity features will likely be added to this ban list.
+
+Note that the feature ban applies to the smart contracts and libraries within Compose. It does not apply to the users that use the library. Users can do what they want to do and it is our job to help them.
+
 
 
 
