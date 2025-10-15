@@ -32,19 +32,19 @@ If this feature ban breaks your mind, just realize that this smart contract libr
 
    No contract or library may have variables declared private or public or internal. For example: `uint256 public counter;`. These visibility labels are not needed because the library uses ERC-8042 Diamond Storage through out.
 
-### 4. No private functions
+### 5. No private functions
 
    No contract or library may have a function declared private. For example: `function approve(address _spender, uint256 _value) private { ...`. This means all functions in contracts must be delcared `internal` or `external`.
 
-### 5. No external functions in Solidity libraries
+### 6. No external functions in Solidity libraries
 
    No Solidity library may have any external functions. For example: `function name() external view returns (string memory)`. All functions in Solidity libraries must be delcared `internal`.
 
-### 5. No `using for` in Solidity libraries
+### 7. No `using for` in Solidity libraries
 
    No Solidity library may use the `using` directive. For example: `using LibSomething for uint`.
 
-### 6. No `selfdestruct`.
+### 8. No `selfdestruct`.
 
    No contract or libary may use `selfdestruct`.
 
