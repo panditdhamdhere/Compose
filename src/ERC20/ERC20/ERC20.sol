@@ -36,6 +36,7 @@ contract ERC20 {
             s.slot := position
         }
     }
+
         
     function name() external view returns (string memory) {
         return getStorage().name;
