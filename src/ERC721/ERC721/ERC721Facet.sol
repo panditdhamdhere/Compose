@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
 
@@ -12,7 +12,7 @@ interface IERC721Receiver {
 /// @notice A complete, dependency-free ERC-721 implementation using the project's storage pattern.
 /// @dev This contract provides metadata, ownership, approvals, safe transfers (with local IERC721Receiver check),
 /// minting, burning, and helpers. It intentionally avoids external imports.
-contract ERC721 {
+contract ERC721Facet {
 
     // ERC-6093: Custom errors for ERC-721
     error ERC721InvalidOwner(address _owner);
@@ -168,6 +168,8 @@ contract ERC721 {
                     // non-IERC721Receiver implementer
                     revert ERC721InvalidReceiver(_to);
                 } else {
+                    // Return the revert reason
+                    // "memory-safe" means we used memory safely so Solidity does not disable optimizations
                     assembly ("memory-safe") {
                         revert(add(reason, 0x20), mload(reason))
                     }
@@ -212,41 +214,13 @@ contract ERC721 {
                     // non-IERC721Receiver implementer
                     revert ERC721InvalidReceiver(_to);
                 } else {
+                    // Return the revert reason
+                    // "memory-safe" means we used memory safely so Solidity does not disable optimizations                    
                     assembly ("memory-safe") {
                         revert(add(reason, 0x20), mload(reason))
                     }
                 }
             }
         }
-    }
-
-    function _mint(address _to, uint256 _tokenId) internal {
-        ERC721Storage storage s = getStorage();
-        if (_to == address(0)) {
-            revert ERC721InvalidReceiver(address(0));
-        }
-        if (s.ownerOf[_tokenId] != address(0)) {
-            revert ERC721NonexistentToken(_tokenId);
-        }
-        s.ownerOf[_tokenId] = _to;
-        unchecked {
-            s.balanceOf[_to]++;
-        }
-        emit Transfer(address(0), _to, _tokenId);
-    }
-
-    function _burn(uint256 _tokenId) internal {
-        ERC721Storage storage s = getStorage();
-        address owner = s.ownerOf[_tokenId];
-        if (owner == address(0)) {
-            revert ERC721NonexistentToken(_tokenId);
-        }
-        delete s.ownerOf[_tokenId];
-        delete s.approved[_tokenId];
-        unchecked {
-            s.balanceOf[owner]--;
-        }
-        emit Transfer(owner, address(0), _tokenId);
-    }
-    
+    }   
 }

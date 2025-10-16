@@ -2,7 +2,7 @@
 pragma solidity >=0.8.30;
 
 
-contract ERC20 {
+contract ERC20Facet {
 
     // ERC-6093: Custom errors for ERC-20
     error ERC20InsufficientBalance(address _sender, uint256 _balance, uint256 _needed);
