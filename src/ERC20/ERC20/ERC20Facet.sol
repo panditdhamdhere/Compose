@@ -1,14 +1,8 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-/**
- * @title ERC20
- * @notice A full ERC-20 token implementation using ERC-8042 diamond storage.
- * @dev This implementation appears minimal but fully complies with the ERC-20 standard. 
- * It avoids Solidity inheritance, constructors, and modifiers as per Compose conventions,
- * and uses ERC-6093 custom errors for efficient error handling.
- */
-contract ERC20 {
+
+contract ERC20Facet {
 
     /// @notice Thrown when an account has insufficient balance for a transfer or burn.
     /// @param _sender Address attempting the transfer.

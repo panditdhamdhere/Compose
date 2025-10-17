@@ -30,7 +30,7 @@ If this feature ban breaks your mind, just realize that this smart contract libr
 
 4. ### No public or private or internal variables
 
-   No contract or library may have variables declared private or public or internal. For example: `uint256 public counter;`. These visibility labels are not needed because the library uses ERC-8042 Diamond Storage through out.
+   No contract or library may have variables declared private or public or internal. For example: `uint256 public counter;`. These visibility labels are not needed because the library uses ERC-8042 Diamond Storage throughout.
 
 5. ### No private functions
 
