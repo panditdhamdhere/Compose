@@ -1,3 +1,9 @@
+
+**NOTE:** *Compose is at a very early stage and is currently only available to contributors for building the library. It is NOT production ready.* 
+
+*The Solidity feature ban, and the design of the library described below only apply to the library itself. It does not apply to the *users* of the library -- the people who will use this library to make their diamonds. It is our job to help users do what they want to do.*
+
+
 # Compose
 
 Forget everything you know about designing and organizing smart contracts -- because Compose is different.
@@ -30,11 +36,11 @@ If this feature ban breaks your mind, just realize that this smart contract libr
 
 4. ### No public or private or internal variables
 
-   No contract or library may have variables declared private or public or internal. For example: `uint256 public counter;`. These visibility labels are not needed because the library uses ERC-8042 Diamond Storage throughout.
+   No contract or library may have storage variables declared private or public or internal. For example: `uint256 public counter;`. These visibility labels are not needed because the library uses ERC-8042 Diamond Storage throughout. This restriction does not apply to constants or immutable variables, which may be declared `internal`.
 
-5. ### No private functions
+5. ### No private or public functions
 
-   No contract or library may have a function declared private. For example: `function approve(address _spender, uint256 _value) private { ...`. This means all functions in contracts must be delcared `internal` or `external`.
+   No contract or library may have a function declared private or public. For example: `function approve(address _spender, uint256 _value) private { ...`. This means all functions in contracts must be delcared `internal` or `external`.
 
 6. ### No external functions in Solidity libraries
 
@@ -50,7 +56,40 @@ If this feature ban breaks your mind, just realize that this smart contract libr
 
 Other Solidity features will likely be added to this ban list.
 
-Note that the feature ban applies to the smart contracts and libraries within Compose. It does not apply to the users that use Compose. Users can do what they want to do and it is our job to help them.
+**Note** that the feature ban applies to the smart contracts and libraries within Compose. It does not apply to the users that use Compose. Users can do what they want to do and it is our job to help them.
+
+## Purpose of Compose
+
+The purpose of Compose is to help people create smart contract systems. We want to help them do that quickly, securely, confidently, with understanding, and with the functionality they want. Nothing is more important than this purpose.
+
+## Vision
+
+Compose is an effort to apply software engineering principles specifically to a smart contract library. Smart contracts are not like other software, so let's not treat them like other software. We need to re-evaulate knowledge of programming and software engineering specifically as it applies to smart contracts. Let's really look at what smart contracts are and design and write our library for specifically what we are dealing with. 
+
+What we are dealing with:
+
+1. **Smart contracts are immutable.** Once deployed, the source code for a smart contract doesn't change.
+2. **Smart contracts are forever.** Once deployed, smart contracts can run or exist forever.
+3. **Smart contracts are shared.** Once deployed, smart contracts can be seen and accessed by anyone.
+4. **Smart contracts run on a distributed network.**  Once deployed, smart contracts are running within the capabilities and constraints of the Ethereum Virtual Machine (EVM) and the blockchain network it was deployed on.
+5. **Smart contracts must be secure.** Once deployed, there can be very serious consequences if their is a bug or security vulnerability in a smart contract.
+6. **Smart contracts are written in a specific language** In our case our library is written in the Solidity programming language.
+
+If we gather all knowledge about programming and software engineering that has ever existed and will exist, including what you know and what you will soon learn or know, and we evaluate that knowledge as it can best apply specifically to a smart contract library, to create the best smart contract library possible, what do we end up with? Hopefully we end up with what Compose becomes.
+
+## Design
+
+The design and implementation of Compose is based on the following design principles, given in order of importance and emphasis by the project.
+
+1. ### Understanding
+   This is the top design and guiding principle of this project. We help our users *understand* the things they want to know so they can confidently achieve what they are trying to do. This is why we must have very good documentation, and why we write easy to read and understand code. Understanding leads to solutions, creates confidence, kills bugs and gets things done. Understanding is everything. So let's nuture it and create it everywhere.
+
+2. ### The code is written to be read
+
+   
+
+
+
 
 
 
