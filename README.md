@@ -52,7 +52,7 @@ If this feature ban breaks your mind, just realize that this smart contract libr
 
 8. ### No `selfdestruct`.
 
-   No contract or libary may use `selfdestruct`.
+   No contract or library may use `selfdestruct`.
 
 Other Solidity features will likely be added to this ban list.
 
@@ -64,7 +64,7 @@ The purpose of Compose is to help people create smart contract systems. We want 
 
 ## Vision
 
-Compose is an effort to apply software engineering principles specifically to a smart contract library. Smart contracts are not like other software, so let's not treat them like other software. We need to re-evaulate knowledge of programming and software engineering specifically as it applies to smart contracts. Let's really look at what smart contracts are and design and write our library for specifically what we are dealing with. 
+Compose is an effort to apply software engineering principles specifically to a smart contract library. Smart contracts are not like other software, so let's not treat them like other software. We need to re-evaluate knowledge of programming and software engineering specifically as it applies to smart contracts. Let's really look at what smart contracts are and design and write our library for specifically what we are dealing with. 
 
 What we are dealing with:
 
@@ -82,7 +82,7 @@ If we gather all knowledge about programming and software engineering that has e
 The design and implementation of Compose is based on the following design principles, given in order of importance and emphasis by the project.
 
 1. ### Understanding
-   This is the top design and guiding principle of this project. We help our users *understand* the things they want to know so they can confidently achieve what they are trying to do. This is why we must have very good documentation, and why we write easy to read and understand code. Understanding leads to solutions, creates confidence, kills bugs and gets things done. Understanding is everything. So let's nuture it and create it everywhere.
+   This is the top design and guiding principle of this project. We help our users *understand* the things they want to know so they can confidently achieve what they are trying to do. This is why we must have very good documentation, and why we write easy to read and understand code. Understanding leads to solutions, creates confidence, kills bugs and gets things done. Understanding is everything. So let's nurture it and create it everywhere.
 
 2. ### The code is written to be read
 
