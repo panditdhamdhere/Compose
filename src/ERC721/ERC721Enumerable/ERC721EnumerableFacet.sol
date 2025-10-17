@@ -12,7 +12,7 @@ interface IERC721Receiver {
 /// @notice A complete, dependency-free ERC-721 implementation using the project's storage pattern.
 /// @dev This contract provides metadata, ownership, approvals, safe transfers (with local IERC721Receiver check),
 /// minting, burning, and helpers. It intentionally avoids external imports.
-contract ERC721Facet {
+contract ERC721EnumerableFacet {
 
     // ERC-6093: Custom errors for ERC-721
     error ERC721InvalidOwner(address _owner);
@@ -23,6 +23,7 @@ contract ERC721Facet {
     error ERC721InsufficientApproval(address _operator, uint256 _tokenId);
     error ERC721InvalidApprover(address _approver);
     error ERC721InvalidOperator(address _operator);
+    error ERC721OutOfBoundsIndex(address _owner, uint256 _index);
 
     event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
     event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
@@ -30,21 +31,26 @@ contract ERC721Facet {
 
     // Struct storage position defined by keccak256 hash 
     // of diamond storage identifier
-    bytes32 constant STORAGE_POSITION = keccak256("compose.erc721");
+    bytes32 constant STORAGE_POSITION = keccak256("compose.erc721.enumerable");
 
     // Storage defined using the ERC-8042 standard
-    // @custom:storage-location erc8042:compose.erc721
-    struct ERC721Storage {
+    // @custom:storage-location erc8042:compose.erc721.enumerable
+    struct ERC721EnumerableStorage {
         string name;
         string symbol;
         mapping(uint256 tokenId => string tokenURI) tokenURIOf;
+        
         mapping(uint256 tokenId => address owner) ownerOf;
-        mapping(address owner => uint256 balance) balanceOf;
+        mapping(address owner => uint256[] ownedTokens) ownedTokensOf;
+        mapping(uint256 tokenId => uint256 ownedTokensIndex) ownedTokensIndexOf;
+        uint256[] allTokens;
+        mapping(uint256 tokenId => uint256 allTokensIndex) allTokensIndexOf;
+
         mapping(uint256 tokenId => address approved) approved;
         mapping(address owner => mapping(address operator => bool approved)) isApprovedForAll;   
     }
 
-    function getStorage() internal pure returns (ERC721Storage storage s) {
+    function getStorage() internal pure returns (ERC721EnumerableStorage storage s) {
         bytes32 position = STORAGE_POSITION;
         assembly {
             s.slot := position
@@ -57,13 +63,17 @@ contract ERC721Facet {
 
     function symbol() external view returns (string memory) {
         return getStorage().symbol;
-    }   
+    }
+
+    function totalSupply() external view returns (uint256) {
+        return getStorage().allTokens.length;
+    }    
 
     function balanceOf(address _owner) external view returns (uint256) {
         if (_owner == address(0)) {
             revert ERC721InvalidOwner(_owner);
         }
-        return getStorage().balanceOf[_owner];
+        return getStorage().ownedTokensOf[_owner].length;
     }
 
     function ownerOf(uint256 _tokenId) public view returns (address) {
@@ -72,6 +82,15 @@ contract ERC721Facet {
             revert ERC721NonexistentToken(_tokenId);
         } 
         return owner;
+    }
+
+    // IERC721Enumerable
+    function tokenOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256) {
+        ERC721EnumerableStorage storage s = getStorage();
+        if (_index >= s.ownedTokensOf[_owner].length) {
+            revert ERC721OutOfBoundsIndex(_owner, _index);
+        }
+        return s.ownedTokensOf[_owner][_index];
     }
 
     function getApproved(uint256 _tokenId) external view returns (address) {
@@ -87,7 +106,7 @@ contract ERC721Facet {
     }
 
     function approve(address _approved, uint256 _tokenId) external {
-        ERC721Storage storage s = getStorage();
+        ERC721EnumerableStorage storage s = getStorage();
         address owner = s.ownerOf[_tokenId];
         if (owner == address(0)) {
             revert ERC721NonexistentToken(_tokenId);
@@ -107,8 +126,8 @@ contract ERC721Facet {
         emit ApprovalForAll(msg.sender, _operator, _approved);
     }
 
-    function internalTransferFrom(address _from, address _to, uint256 _tokenId) internal {  
-        ERC721Storage storage s = getStorage();
+    function internalTransferFrom(address _from, address _to, uint256 _tokenId) internal {
+        ERC721EnumerableStorage storage s = getStorage();
          if (_to == address(0)) {
             revert ERC721InvalidReceiver(address(0));
         }
@@ -125,13 +144,21 @@ contract ERC721Facet {
             }
         }
         delete s.approved[_tokenId];
-        unchecked {
-            s.balanceOf[_from]--;
-            s.balanceOf[_to]++;
+        // removing token from _from's ownedTokens
+        uint256 tokenIndex = s.ownedTokensIndexOf[_tokenId];
+        uint256 lastTokenIndex = s.ownedTokensOf[_from].length - 1;
+        if(tokenIndex != lastTokenIndex) {
+            uint256 lastTokenId = s.ownedTokensOf[_from][lastTokenIndex];
+            s.ownedTokensOf[_from][tokenIndex] = lastTokenId; // Move the last token to the slot of the to-delete token
+            s.ownedTokensIndexOf[lastTokenId] = tokenIndex; // Update the moved token's index
         }
+        s.ownedTokensOf[_from].pop(); 
+        // adding token to _to's ownedTokens
+        s.ownedTokensIndexOf[_tokenId] = s.ownedTokensOf[_to].length;
+        s.ownedTokensOf[_to].push(_tokenId);
         s.ownerOf[_tokenId] = _to;        
         emit Transfer(_from, _to, _tokenId);
-    }
+    }  
  
     function transferFrom(address _from, address _to, uint256 _tokenId) external {
         internalTransferFrom(_from, _to, _tokenId);
@@ -151,7 +178,7 @@ contract ERC721Facet {
                     // non-IERC721Receiver implementer
                     revert ERC721InvalidReceiver(_to);
                 } else {
-                    // Return the revert reason
+                    // Return the original revert reason
                     // "memory-safe" means we used memory safely so Solidity does not disable optimizations
                     assembly ("memory-safe") {
                         revert(add(reason, 0x20), mload(reason))
@@ -163,6 +190,7 @@ contract ERC721Facet {
 
     function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes calldata _data) external {
         internalTransferFrom(_from, _to, _tokenId);
+
         // If _to is a contract, check for IERC721Receiver implementation
         if (_to.code.length > 0) {
             try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data) returns (bytes4 retval) {
@@ -174,7 +202,7 @@ contract ERC721Facet {
                     // non-IERC721Receiver implementer
                     revert ERC721InvalidReceiver(_to);
                 } else {
-                    // Return the revert reason
+                    // Return the original revert reason
                     // "memory-safe" means we used memory safely so Solidity does not disable optimizations                    
                     assembly ("memory-safe") {
                         revert(add(reason, 0x20), mload(reason))
@@ -182,5 +210,7 @@ contract ERC721Facet {
                 }
             }
         }
-    }   
+    }
+
+
 }

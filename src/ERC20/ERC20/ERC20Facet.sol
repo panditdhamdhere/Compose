@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
 
@@ -36,7 +36,6 @@ contract ERC20Facet {
             s.slot := position
         }
     }
-
         
     function name() external view returns (string memory) {
         return getStorage().name;
@@ -139,6 +138,5 @@ contract ERC20Facet {
         }        
         emit Transfer(msg.sender, address(0), _value);
     }
-
 
 }

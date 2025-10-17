@@ -10,7 +10,6 @@ library LibERC721 {
     error ERC721InvalidReceiver(address _receiver);
     error ERC721InsufficientApproval(address _operator, uint256 _tokenId);
 
-
     event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
     
     // Struct storage position defined by keccak256 hash 
