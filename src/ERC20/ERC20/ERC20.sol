@@ -3,9 +3,10 @@ pragma solidity >=0.8.30;
 
 /**
  * @title ERC20
- * @notice A minimal ERC-20 token implementation using ERC-8042 diamond storage.
- * @dev This contract avoids Solidity inheritance, constructors, and modifiers as per Compose conventions.
- * It includes ERC-6093 custom errors for efficient error handling.
+ * @notice A full ERC-20 token implementation using ERC-8042 diamond storage.
+ * @dev This implementation appears minimal but fully complies with the ERC-20 standard. 
+ * It avoids Solidity inheritance, constructors, and modifiers as per Compose conventions,
+ * and uses ERC-6093 custom errors for efficient error handling.
  */
 contract ERC20 {
 
