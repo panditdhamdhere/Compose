@@ -16,7 +16,7 @@ We are breaking existing software development rules in order to write good softw
 
 None of the following features in the Solidity programming language are allowed to be used in this smart contract library. Anyone submitting a pull request that uses any of these features will be fined **$100 USDC**.
 
-Endless discussion about what and why Solidity features should or shouldn't be allowed in this library is *encouraged*.
+[Endless discussion](https://discord.gg/DCBD2UKbxc) about what and why Solidity features should or shouldn't be allowed in this library is *encouraged*.
 
 It isn't that any of these features are bad, that isn't the point. It is that we are writing the best software we can, and part of that is using a limited feature set. This is the "less is more" idea or keep it simple stupid (KISS).
 
@@ -40,11 +40,11 @@ If this feature ban breaks your mind, just realize that this smart contract libr
 
 5. ### No private or public functions
 
-   No contract or library may have a function declared private or public. For example: `function approve(address _spender, uint256 _value) private { ...`. This means all functions in contracts must be delcared `internal` or `external`.
+   No contract or library may have a function declared private or public. For example: `function approve(address _spender, uint256 _value) private { ...`. This means all functions in contracts must be declared `internal` or `external`.
 
 6. ### No external functions in Solidity libraries
 
-   No Solidity library may have any external functions. For example: `function name() external view returns (string memory)`. All functions in Solidity libraries must be delcared `internal`.
+   No Solidity library may have any external functions. For example: `function name() external view returns (string memory)`. All functions in Solidity libraries must be declared `internal`.
 
 7. ### No `using for` in Solidity libraries
 
@@ -82,9 +82,16 @@ If we gather all knowledge about programming and software engineering that has e
 The design and implementation of Compose is based on the following design principles, given in order of importance and emphasis by the project.
 
 1. ### Understanding
-   This is the top design and guiding principle of this project. We help our users *understand* the things they want to know so they can confidently achieve what they are trying to do. This is why we must have very good documentation, and why we write easy to read and understand code. Understanding leads to solutions, creates confidence, kills bugs and gets things done. Understanding is everything. So let's nurture it and create it everywhere.
+   This is the top design and guiding principle of this project. We help our users *understand* the things they want to know so they can *confidently* achieve what they are trying to do. This is why we must have very good documentation, and why we write easy to read and understand code. Understanding leads to solutions, creates confidence, kills bugs and gets things done. Understanding is everything. So let's nurture it and create it everywhere.
 
 2. ### The code is written to be read
+   The code in this library is written to be read and understood by others easily. We want our users to understand our library and be confident with it. We help them do that with code that is easy to read and understand.
+
+   We hope thousands of smart contract systems use our smart contracts. We say in advance to thousands of people in the future, over tens or hundreds of years, who are reading the verified source code of smart contract systems that use our library, **your welcome** for making it easy to read and understand.
+
+
+3. ### Repeat yourself
+   Yes, repeat yourself. Not "don't repeat yourself". No, REPEAT YOURSELF. 
 
    
 
