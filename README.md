@@ -18,7 +18,7 @@ None of the following features in the Solidity programming language are allowed 
 
 [Endless discussion](https://discord.gg/DCBD2UKbxc) about what and why Solidity features should or shouldn't be allowed in this library is *encouraged*.
 
-It isn't that any of these features are bad, that isn't the point. It is that we are writing the best software we can, and part of that is using a limited feature set. This is the "less is more" idea or keep it simple stupid (KISS).
+ It isn't that any of these features are bad, that isn't the point. It is that we are writing the best software we can, and part of that is using a limited feature set. This is the "less is more" idea or keep it simple, stupid (KISS).
 
 If this feature ban breaks your mind, just realize that this smart contract library is different than what you have encountered before -- it has different importances, different design principles and it has different ways of doing things. Open your mind and be willing to look at smart contracts a different way. Let the design section rewrite your brain.
 
@@ -73,7 +73,7 @@ What we are dealing with:
 3. **Smart contracts are shared.** Once deployed, smart contracts can be seen and accessed by anyone.
 4. **Smart contracts run on a distributed network.**  Once deployed, smart contracts are running within the capabilities and constraints of the Ethereum Virtual Machine (EVM) and the blockchain network it is deployed on.
 5. **Smart contracts must be secure.** Once deployed, there can be very serious consequences if there is a bug or security vulnerability in a smart contract.
-6. **Smart contracts are written in a specific language** In our case Compose is written in the Solidity programming language.
+6. **Smart contracts are written in a specific language** In our case, Compose is written in the Solidity programming language.
 
 If we gather all knowledge about programming and software engineering that has ever existed and will exist, including what you know and what you will soon learn or know, and we evaluate that knowledge as it can best apply specifically to a smart contract library, to create the best smart contract library possible, what do we end up with? Hopefully we end up with what Compose becomes.
 
