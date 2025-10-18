@@ -89,6 +89,10 @@ The design and implementation of Compose is based on the following design princi
 
    We hope thousands of smart contract systems use our smart contracts. We say in advance to thousands of people in the future, over tens or hundreds of years, who are reading the verified source code of deployed smart contract systems that use our library, **your welcome**, for making it easy to read and understand.
 
+1. ### Compose makes diamonds
+
+   Compose is specifically designed to help users develop and deploy [diamond contracts](https://eips.ethereum.org/EIPS/eip-2535). A major part of this project is creating an onchain diamond factory that makes it easy to use and reuse the facets in this library as well as other facets users want to use.
+
 1. ### Repeat yourself
    The DRY principle — *Don’t Repeat Yourself* — is a well-known rule in software development. We **intentionally** break that rule.
 
@@ -99,7 +103,7 @@ The design and implementation of Compose is based on the following design princi
    **Guideline:** Repeat yourself when it makes your code easier to read and understand. Use DRY sparingly and only to make code more readable by removing a lot of unnecessary duplication.
    
 
-4. Compose is an onchain smart contract library.
+
 
    
 
