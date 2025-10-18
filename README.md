@@ -146,6 +146,8 @@ The design and implementation of Compose is based on the following design princi
    
    You can also make new issues to suggest new functionality or work.
 
+   If you have contribution or development questions then please contact me or create an issue. The discord for Compose is here: https://discord.gg/DCBD2UKbxc
+
    This is the beginning and we are still working out how this will all work. I am glad you are interested in this project and I want to make something great with you.
 
    -Nick
