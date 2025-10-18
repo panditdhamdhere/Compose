@@ -24,7 +24,7 @@ If this feature ban breaks your mind, just realize that this smart contract libr
 
 1. ### Inheritance is **banned**.
    
-   No contract may inherit any other contract or interface. For example `MyContract is OtherContract` or `MyContract is IMyInterface` etc. is not allowed. [Onchain composition is favored over inheritance]("#favor-onchain-composition-over-inheritance").
+   No contract may inherit any other contract or interface. For example `MyContract is OtherContract` or `MyContract is IMyInterface` etc. is not allowed. [Onchain composition is favored over inheritance](#favor-onchain-composition-over-inheritance).
 
 2. ### No constructor functions
 
