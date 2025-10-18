@@ -79,7 +79,7 @@ If we gather all knowledge about programming and software engineering that has e
 
 ## Design
 
-The design and implementation of Compose is based on the following design principles, given in order of importance and emphasis by the project.
+The design and implementation of Compose is based on the following design principles.
 
 1. ### Understanding
    This is the top design and guiding principle of this project. We help our users *understand* the things they want to know so they can *confidently* achieve what they are trying to do. This is why we must have very good documentation, and why we write easy to read and understand code. Understanding leads to solutions, creates confidence, kills bugs and gets things done. Understanding is everything. So we nurture it and create it.
@@ -89,17 +89,6 @@ The design and implementation of Compose is based on the following design princi
 
    We hope thousands of smart contract systems use our smart contracts. We say in advance to thousands of people in the future, over tens or hundreds of years, who are reading the verified source code of deployed smart contract systems that use our library, **YOU'RE WELCOME**, for making it easy to read and understand.
 
-1. ### Compose makes diamonds  
-
-   A diamond contract is a smart contract that gets its functionality from other contracts called facets. You can add, replace, or remove functionality from these facets, which lets the diamond contract change or grow without deploying a completely new contract. This design makes it easier to build smart contracts that are modular (made of separate parts) and composable (able to work together in flexible ways). A diamond contract can be deployed and then incrementally developed by adding/replacing/removing functionality over time. [ERC-2535 Diamonds](https://eips.ethereum.org/EIPS/eip-2535) is the standard that defines how diamond contracts work.
-   
-   Compose is specifically designed to help users develop and deploy [diamond contracts](https://eips.ethereum.org/EIPS/eip-2535). A major part of this project is creating an onchain diamond factory that makes it easy to deploy diamonds that use facets provided by this library and elsewhere.
-
-   Much of Compose consists of facets and Solidity libraries that are used by users to create diamond contracts.
-
-1. Onchain Composability 
-
-
 1. ### Repeat yourself
    The DRY principle — *Don’t Repeat Yourself* — is a well-known rule in software development. We **intentionally** break that rule.
 
@@ -108,6 +97,27 @@ The design and implementation of Compose is based on the following design princi
    That said, DRY still has its place. When a large block of code performs a complete, self-contained action and is used identically in multiple locations, moving it into an internal function can improve readability. For example, Compose's ERC-721 implementation uses an `internalTransferFrom` function to eliminate duplication while keeping the code easy to read and understand.
 
    **Guideline:** Repeat yourself when it makes your code easier to read and understand. Use DRY sparingly and only to make code more readable by removing a lot of unnecessary duplication.
+
+1. ### Compose makes diamonds  
+
+   A diamond contract is a smart contract that gets its functionality from other contracts called facets. You can add, replace, or remove functionality from these facets, which lets the diamond contract change or grow without deploying a completely new contract. This design makes it easier to build smart contracts that are modular (made of separate parts) and composable (able to work together in flexible ways). A diamond contract can be deployed and then incrementally developed by adding/replacing/removing functionality over time. Diamond contracts can be upgradeable or immutable. [ERC-2535 Diamonds](https://eips.ethereum.org/EIPS/eip-2535) is the standard that defines how diamond contracts work.
+   
+   Compose is specifically designed to help users develop and deploy [diamond contracts](https://eips.ethereum.org/EIPS/eip-2535). A major part of this project is creating an onchain diamond factory that makes it easy to deploy diamonds that use facets provided by this library and elsewhere.
+
+   Much of Compose consists of facets and Solidity libraries that are used by users to create diamond contracts.
+
+1. #### Onchain Composability
+
+   We design facets for maximum onchain reusability and composability.
+
+   We plan to deploy the facets written in this library to many blockchains. There's no reason to take our Solidity source code, as is, and deploy it yourself to a blockchain if it is already deployed there. Just use the facets that are already deployed. We will maintain lists of blockchain addresses for facets that are deployed.
+
+   For example if you want a diamond contract with standard ERC721 NFT functionality, then deploy a diamond contract using this library and add the ERC721 functionality from the existing, already deployed ERC721 facet. You do not need to deploy an ERC721 facet from this library if it has already been deployed to the blockchain you are using.
+
+   Users also have the option of taking our facet source code and modifying it for their needs and deploying what they wish.
+
+
+
    
 
 
