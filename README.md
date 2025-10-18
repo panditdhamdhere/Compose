@@ -89,17 +89,15 @@ The design and implementation of Compose is based on the following design princi
 
    We hope thousands of smart contract systems use our smart contracts. We say in advance to thousands of people in the future, over tens or hundreds of years, who are reading the verified source code of deployed smart contract systems that use our library, **YOU'RE WELCOME**, for making it easy to read and understand.
 
-1. ### Compose makes diamonds
+1. ### Compose makes diamonds  
 
-   A diamond contract is a smart contract that utilizes for its functionality other smart contracts called facets. Functionality of facets can be added, replaced or removed from a diamond contract. This enables people to build modular, composable smart contract systems, also known as diamond contracts, that can be incrementally developed and deployed. [ERC-2535 Diamonds](https://eips.ethereum.org/EIPS/eip-2535) is the standard for diamond contracts.
+   A diamond contract is a smart contract that gets its functionality from other contracts called facets. You can add, replace, or remove functionality from these facets, which lets the diamond contract change or grow without deploying a completely new contract. This design makes it easier to build smart contracts that are modular (made of separate parts) and composable (able to work together in flexible ways). A diamond contract can be deployed and then incrementally developed by adding/replacing/removing functionality over time. [ERC-2535 Diamonds](https://eips.ethereum.org/EIPS/eip-2535) is the standard that defines how diamond contracts work.
    
    Compose is specifically designed to help users develop and deploy [diamond contracts](https://eips.ethereum.org/EIPS/eip-2535). A major part of this project is creating an onchain diamond factory that makes it easy to deploy diamonds that use facets provided by this library and elsewhere.
 
    Much of Compose consists of facets and Solidity libraries that are used by users to create diamond contracts.
 
-1. Onchain Composability
-
-   
+1. Onchain Composability 
 
 
 1. ### Repeat yourself
