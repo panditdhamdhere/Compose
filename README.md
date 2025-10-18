@@ -146,7 +146,7 @@ The design and implementation of Compose is based on the following design princi
 
    This is the beginning and we are still working out how this will all work. I am glad you are interested in this project and I want to make something great with you.
 
-   Nick
+   -Nick
 
 
 
