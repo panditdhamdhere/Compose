@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-/// @title LibERC20 — Minimal ERC-20 Library for Diamond Storage Implementation
+/// @title LibERC20 — ERC-20 Library
 /// @notice Provides internal functions and storage layout for ERC-20 token logic.
 /// @dev Uses ERC-8042 for storage location standardization and ERC-6093 for error conventions.
 library LibERC20 {
@@ -35,7 +35,7 @@ library LibERC20 {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
     
-    /// @notice Storage slot identifier, defined using keccak256 hash of the library namespace.
+    /// @notice Storage slot identifier, defined using keccak256 hash of the library diamond storage identifier.
     bytes32 constant STORAGE_POSITION = keccak256("compose.erc20");
 
     /// @notice ERC-20 storage layout using the ERC-8042 standard.
