@@ -1,7 +1,7 @@
 
 **NOTE:** *Compose is at a very early stage and is currently only available to contributors for building the library. It is NOT production ready.* 
 
-*The Solidity feature ban, and the design of the library described below only apply to the library itself. It does not apply to the *users* of the library -- the people who will use this library to make their diamonds. It is our job to help users do what they want to do.*
+*The Solidity feature ban only applies to the library itself. It does not apply to the *users* of the library -- the people who will use this library to make their diamonds. It is our job to help users do what they want to do.*
 
 
 # Compose
@@ -72,8 +72,8 @@ What we are dealing with:
 2. **Smart contracts are forever.** Once deployed, smart contracts can run or exist forever.
 3. **Smart contracts are shared.** Once deployed, smart contracts can be seen and accessed by anyone.
 4. **Smart contracts run on a distributed network.**  Once deployed, smart contracts are running within the capabilities and constraints of the Ethereum Virtual Machine (EVM) and the blockchain network it is deployed on.
-5. **Smart contracts must be secure.** Once deployed, there can be very serious consequences if their is a bug or security vulnerability in a smart contract.
-6. **Smart contracts are written in a specific language** In our case our Compose is written in the Solidity programming language.
+5. **Smart contracts must be secure.** Once deployed, there can be very serious consequences if there is a bug or security vulnerability in a smart contract.
+6. **Smart contracts are written in a specific language** In our case Compose is written in the Solidity programming language.
 
 If we gather all knowledge about programming and software engineering that has ever existed and will exist, including what you know and what you will soon learn or know, and we evaluate that knowledge as it can best apply specifically to a smart contract library, to create the best smart contract library possible, what do we end up with? Hopefully we end up with what Compose becomes.
 
@@ -116,9 +116,30 @@ The design and implementation of Compose is based on the following design princi
 
    Users also have the option of taking our facet source code and modifying it for their needs and deploying what they wish.
 
+1. ### Favor onchain composition over inheritance
 
+   > Favoring onchain composition over inheritance means designing blockchain-based systems by building them    from smaller, independent components that are combined, rather than inheriting functionality from a large, parent class. This approach creates more flexible, loosely coupled, and maintainable smart contracts, as components can be easily swapped or reused without the rigid dependencies that inheritance introduces. It is a software design principle that emphasizes a "has-a" relationship (composition) over an "is-a" relationship (inheritance).  
 
+   One of the reasons that inheritance is banned in the library is because onchain composition is favored over inheritance. This is a newer idea that wasn't very possible before diamond contracts. Instead of inheriting a contract to give it additional functionality, just make a new contract (facet), deploy it, and add its functions to your diamond.
+
+   #### Example 
+
+   Let's say you are making an onchain game that has its own NFTs with standard NFT (ERC721) functionality plus, additional custom NFT functionality. Here are steps you could take:
    
+   1. Develop a new facet with the custom NFT functionality that you want. You can use the `LibERC721` Solidity library provided by Compose to access NFT storage. If needed you also create your own diamond storage for your custom functionality in your facet.
+
+   2. Deploy your new facet with custom NFT functionality.
+ 
+   3. Using Compose, setup the deployment of your diamond contract so that it adds the standard NFT functions from the existing, already deployed ERC721 facet (which was deployed by Compose), and also adds the functions from your custom NFT facet.
+
+   4. Deploy your diamond!
+
+   If you need to modify the functionality of standard ERC721 functions, then in that case you cannot use onchain composition. You can make your own custom ERC721 facet by copying the `ERC721Facet.sol` file in Compose and making the necessary changes, or you can inherit the ERC721Facet contract from that file.
+   
+   
+    
+
+
 
 
 
