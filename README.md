@@ -82,16 +82,24 @@ If we gather all knowledge about programming and software engineering that has e
 The design and implementation of Compose is based on the following design principles, given in order of importance and emphasis by the project.
 
 1. ### Understanding
-   This is the top design and guiding principle of this project. We help our users *understand* the things they want to know so they can *confidently* achieve what they are trying to do. This is why we must have very good documentation, and why we write easy to read and understand code. Understanding leads to solutions, creates confidence, kills bugs and gets things done. Understanding is everything. So let's nurture it and create it everywhere.
+   This is the top design and guiding principle of this project. We help our users *understand* the things they want to know so they can *confidently* achieve what they are trying to do. This is why we must have very good documentation, and why we write easy to read and understand code. Understanding leads to solutions, creates confidence, kills bugs and gets things done. Understanding is everything. So let's nurture it and create it.
 
-2. ### The code is written to be read
+1. ### The code is written to be read
    The code in this library is written to be read and understood by others easily. We want our users to understand our library and be confident with it. We help them do that with code that is easy to read and understand.
 
-   We hope thousands of smart contract systems use our smart contracts. We say in advance to thousands of people in the future, over tens or hundreds of years, who are reading the verified source code of smart contract systems that use our library, **your welcome** for making it easy to read and understand.
+   We hope thousands of smart contract systems use our smart contracts. We say in advance to thousands of people in the future, over tens or hundreds of years, who are reading the verified source code of deployed smart contract systems that use our library, **your welcome**, for making it easy to read and understand.
 
+1. ### Repeat yourself
+   The DRY principle — *Don’t Repeat Yourself* — is a well-known rule in software development. We intentionally break that rule.
 
-3. ### Repeat yourself
-   Yes, repeat yourself. Not "don't repeat yourself". No, REPEAT YOURSELF. 
+   In traditional software, DRY reduces duplication and makes it easier to update multiple parts of a program by changing one section of code. But deployed smart contracts *don’t change*. DRY can actually reduce clarity. Every internal function adds another layer of indirection that developers must trace through, and those functions sometimes introduce extra logic for different cases. Repetition can make smart contracts easier to read and reason about.
+
+   That said, DRY still has its place. When a large block of code performs a complete, self-contained action and is used identically in multiple locations, moving it into an internal function can improve readability. For example, Compose's ERC-721 implementation uses an `internalTransferFrom` function to eliminate duplication while keeping the code easy to read and understand.
+
+   *Guideline:* Repeat yourself when it makes your code easier to read and understand. Use DRY only when it makes the code easier to read and understand.
+   
+
+4. Compose is an onchain smart contract library.
 
    
 
