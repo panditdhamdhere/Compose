@@ -31,22 +31,34 @@ library LibERC20 {
         assembly {
             s.slot := position
         }
-    }
+    }   
 
-    function transfer(address _to, uint256 _value) internal {
+    function mint(address _account, uint256 _value) internal {
         ERC20Storage storage s = getStorage();
-        if (_to == address(0)) {
+        if (_account == address(0)) {
             revert ERC20InvalidReceiver(address(0));
         }
-        uint256 fromBalance = s.balanceOf[msg.sender];
-        if (fromBalance < _value) {
-            revert ERC20InsufficientBalance(msg.sender, fromBalance, _value);
+        unchecked {
+            s.totalSupply += _value;
+            s.balanceOf[_account] += _value;
+        }
+        emit Transfer(address(0), _account, _value);
+    }
+
+    function burn(address _account, uint256 _value) internal {
+        ERC20Storage storage s = getStorage();
+        if (_account == address(0)) {
+            revert ERC20InvalidSender(address(0));
+        }
+        uint256 accountBalance = s.balanceOf[_account];
+        if (accountBalance < _value) {
+            revert ERC20InsufficientBalance(_account, accountBalance, _value);
         }
         unchecked {
-            s.balanceOf[msg.sender] = fromBalance - _value;
-            s.balanceOf[_to] += _value;
+            s.balanceOf[_account] = accountBalance - _value;
+            s.totalSupply -= _value;
         }
-        emit Transfer(msg.sender, _to, _value);
+        emit Transfer(_account, address(0), _value);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) internal {
@@ -71,5 +83,7 @@ library LibERC20 {
             s.balanceOf[_to] += _value;
         }
         emit Transfer(_from, _to, _value);
-    }    
+    }
+
+    
 }
