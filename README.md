@@ -71,9 +71,9 @@ What we are dealing with:
 1. **Smart contracts are immutable.** Once deployed, the source code for a smart contract doesn't change.
 2. **Smart contracts are forever.** Once deployed, smart contracts can run or exist forever.
 3. **Smart contracts are shared.** Once deployed, smart contracts can be seen and accessed by anyone.
-4. **Smart contracts run on a distributed network.**  Once deployed, smart contracts are running within the capabilities and constraints of the Ethereum Virtual Machine (EVM) and the blockchain network it was deployed on.
+4. **Smart contracts run on a distributed network.**  Once deployed, smart contracts are running within the capabilities and constraints of the Ethereum Virtual Machine (EVM) and the blockchain network it is deployed on.
 5. **Smart contracts must be secure.** Once deployed, there can be very serious consequences if their is a bug or security vulnerability in a smart contract.
-6. **Smart contracts are written in a specific language** In our case our library is written in the Solidity programming language.
+6. **Smart contracts are written in a specific language** In our case our Compose is written in the Solidity programming language.
 
 If we gather all knowledge about programming and software engineering that has ever existed and will exist, including what you know and what you will soon learn or know, and we evaluate that knowledge as it can best apply specifically to a smart contract library, to create the best smart contract library possible, what do we end up with? Hopefully we end up with what Compose becomes.
 
@@ -82,20 +82,25 @@ If we gather all knowledge about programming and software engineering that has e
 The design and implementation of Compose is based on the following design principles, given in order of importance and emphasis by the project.
 
 1. ### Understanding
-   This is the top design and guiding principle of this project. We help our users *understand* the things they want to know so they can *confidently* achieve what they are trying to do. This is why we must have very good documentation, and why we write easy to read and understand code. Understanding leads to solutions, creates confidence, kills bugs and gets things done. Understanding is everything. So let's nurture it and create it.
+   This is the top design and guiding principle of this project. We help our users *understand* the things they want to know so they can *confidently* achieve what they are trying to do. This is why we must have very good documentation, and why we write easy to read and understand code. Understanding leads to solutions, creates confidence, kills bugs and gets things done. Understanding is everything. So we nurture it and create it.
 
 1. ### The code is written to be read
    The code in this library is written to be read and understood by others easily. We want our users to understand our library and be confident with it. We help them do that with code that is easy to read and understand.
 
-   We hope thousands of smart contract systems use our smart contracts. We say in advance to thousands of people in the future, over tens or hundreds of years, who are reading the verified source code of deployed smart contract systems that use our library, **your welcome**, for making it easy to read and understand.
+   We hope thousands of smart contract systems use our smart contracts. We say in advance to thousands of people in the future, over tens or hundreds of years, who are reading the verified source code of deployed smart contract systems that use our library, **YOU'RE WELCOME**, for making it easy to read and understand.
 
 1. ### Compose makes diamonds
 
-   A diamond contract is a smart contract that utilizes for its functionality other smart contracts called facets. Functionality of facets can be added, replaced or removed from a diamond contract. This enables people to build modular, composable smart contract systems -- diamonds -- that can be incrementally developed and deployed. [EIP-2535 Diamonds](https://eips.ethereum.org/EIPS/eip-2535) is the standard for diamond contracts.
+   A diamond contract is a smart contract that utilizes for its functionality other smart contracts called facets. Functionality of facets can be added, replaced or removed from a diamond contract. This enables people to build modular, composable smart contract systems -- diamonds -- that can be incrementally developed and deployed. [ERC-2535 Diamonds](https://eips.ethereum.org/EIPS/eip-2535) is the standard for diamond contracts.
    
    Compose is specifically designed to help users develop and deploy [diamond contracts](https://eips.ethereum.org/EIPS/eip-2535). A major part of this project is creating an onchain diamond factory that makes it easy to deploy diamonds that use facets provided by this library and elsewhere.
 
    Much of Compose consists of facets and Solidity libraries that are used by users to create diamond contracts.
+
+1. Onchain Composability
+
+   
+
 
 1. ### Repeat yourself
    The DRY principle — *Don’t Repeat Yourself* — is a well-known rule in software development. We **intentionally** break that rule.
