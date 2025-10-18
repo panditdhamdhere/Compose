@@ -91,7 +91,7 @@ The design and implementation of Compose is based on the following design princi
 
 1. ### Compose makes diamonds
 
-   A diamond contract is a smart contract that utilizes for its functionality other smart contracts called facets. Functionality of facets can be added, replaced or removed from a diamond contract. This enables people to build modular, composable smart contract systems that can be incrementally developed and deployed. [ERC-2535 Diamonds](https://eips.ethereum.org/EIPS/eip-2535) is the standard for diamond contracts.
+   A diamond contract is a smart contract that utilizes for its functionality other smart contracts called facets. Functionality of facets can be added, replaced or removed from a diamond contract. This enables people to build modular, composable smart contract systems, diamonds, that can be incrementally developed and deployed. [ERC-2535 Diamonds](https://eips.ethereum.org/EIPS/eip-2535) is the standard for diamond contracts.
    
    Compose is specifically designed to help users develop and deploy [diamond contracts](https://eips.ethereum.org/EIPS/eip-2535). A major part of this project is creating an onchain diamond factory that makes it easy to deploy diamonds that use facets provided by this library and elsewhere.
 
