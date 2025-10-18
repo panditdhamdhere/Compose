@@ -10,6 +10,7 @@ library LibERC20 {
     error ERC20InsufficientAllowance(address _spender, uint256 _allowance, uint256 _needed);
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
+    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
             
     // Struct storage position defined by keccak256 hash 
     // of diamond storage identifier
@@ -23,7 +24,8 @@ library LibERC20 {
         uint8 decimals;
         uint256 totalSupply;
         mapping(address owner => uint256 balance) balanceOf;
-        mapping(address owner => mapping(address spender => uint256 allowance)) allowances;   
+        mapping(address owner => mapping(address spender => uint256 allowance)) allowances;
+        mapping(address owner => uint256) nonces;
     }
 
     function getStorage() internal pure returns (ERC20Storage storage s) {
@@ -83,6 +85,28 @@ library LibERC20 {
             s.balanceOf[_to] += _value;
         }
         emit Transfer(_from, _to, _value);
+    }
+
+    function transfer(address _to, uint256 _value) internal {
+        ERC20Storage storage s = getStorage();
+        if (_to == address(0)) {
+            revert ERC20InvalidReceiver(address(0));
+        }
+        uint256 fromBalance = s.balanceOf[msg.sender];
+        if (fromBalance < _value) {
+            revert ERC20InsufficientBalance(msg.sender, fromBalance, _value);
+        }
+        unchecked {
+            s.balanceOf[msg.sender] = fromBalance - _value;
+            s.balanceOf[_to] += _value;
+        }
+        emit Transfer(msg.sender, _to, _value);
+    }
+
+    function approve(address _spender, uint256 _value) internal {
+        ERC20Storage storage s = getStorage();
+        s.allowances[msg.sender][_spender] = _value;
+        emit Approval(msg.sender, _spender, _value);
     }
 
     
