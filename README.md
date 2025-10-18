@@ -124,7 +124,7 @@ The design and implementation of Compose is based on the following design princi
 
    #### Example 
 
-   Let's say you are making an onchain game that has its own NFTs with standard NFT (ERC721) functionality plus, additional custom NFT functionality. Here are steps you could take:
+   Let's say you are making an onchain game that has its own NFTs with standard NFT (ERC721) functionality, plus additional custom NFT functionality. Here are steps you could take:
    
    1. Develop a new facet with the custom NFT functionality that you want. You can use the `LibERC721` Solidity library provided by Compose to access NFT storage. If needed you also create your own diamond storage for your custom functionality in your facet.
 
@@ -134,7 +134,7 @@ The design and implementation of Compose is based on the following design princi
 
    4. Deploy your diamond!
 
-   If you need to modify the functionality of standard ERC721 functions, then in that case you cannot use onchain composition. You can make your own custom ERC721 facet by copying the `ERC721Facet.sol` file in Compose and making the necessary changes, or you can inherit the ERC721Facet contract from that file.
+   If you need to modify the functionality of standard ERC721 functions, then in that case you cannot use onchain composition. You can make your own custom ERC721 facet by copying the `ERC721Facet.sol` file in Compose and make the necessary changes, or you can inherit the ERC721Facet.
    
    ## Contributors
 
