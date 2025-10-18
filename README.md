@@ -136,7 +136,7 @@ The design and implementation of Compose is based on the following design princi
 
    If you need to modify the functionality of standard ERC721 functions, then in that case you cannot use onchain composition. You can make your own custom ERC721 facet by copying the `ERC721Facet.sol` file in Compose and making the necessary changes, or you can inherit the ERC721Facet contract from that file.
    
-   ## Compose
+   ## Contributors
 
    I am actively seeking contributors to Compose. If you want to work on this project then choose the [issues](https://github.com/Perfect-Abstractions/Compose/issues) you want to work on and leave comments describing what you want to do and how you want to do it. I'll answer you and assign you to issues and you can start.
    
