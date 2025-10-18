@@ -139,6 +139,8 @@ The design and implementation of Compose is based on the following design princi
    ## Contributors
 
    New contributors are welcome. Choose the [issues](https://github.com/Perfect-Abstractions/Compose/issues) you want to work on and leave comments describing what you want to do and how you want to do it. I'll answer you and assign you to issues and you can start.
+
+   Look at the [ERC20 and ERC721 implementations](./src/) to see examples of how things are written in this library.
    
    Once you are assigned to an issue you can fork the repository, implement what you are working on, then submit a pull request and I will review it and merge it and/or give you feedback on the work.
    
