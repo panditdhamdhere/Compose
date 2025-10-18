@@ -90,13 +90,13 @@ The design and implementation of Compose is based on the following design princi
    We hope thousands of smart contract systems use our smart contracts. We say in advance to thousands of people in the future, over tens or hundreds of years, who are reading the verified source code of deployed smart contract systems that use our library, **your welcome**, for making it easy to read and understand.
 
 1. ### Repeat yourself
-   The DRY principle — *Don’t Repeat Yourself* — is a well-known rule in software development. We intentionally break that rule.
+   The DRY principle — *Don’t Repeat Yourself* — is a well-known rule in software development. We **intentionally** break that rule.
 
-   In traditional software, DRY reduces duplication and makes it easier to update multiple parts of a program by changing one section of code. But deployed smart contracts *don’t change*. DRY can actually reduce clarity. Every internal function adds another layer of indirection that developers must trace through, and those functions sometimes introduce extra logic for different cases. Repetition can make smart contracts easier to read and reason about.
+   In traditional software, DRY reduces duplication and makes it easier to update multiple parts of a program by changing one section of code. But deployed smart contracts *don’t change*. DRY can actually reduce clarity. Every internal function adds another indirection that developers must trace through, and those functions sometimes introduce extra logic for different cases. Repetition can make smart contracts easier to read and reason about.
 
    That said, DRY still has its place. When a large block of code performs a complete, self-contained action and is used identically in multiple locations, moving it into an internal function can improve readability. For example, Compose's ERC-721 implementation uses an `internalTransferFrom` function to eliminate duplication while keeping the code easy to read and understand.
 
-   *Guideline:* Repeat yourself when it makes your code easier to read and understand. Use DRY only when it makes the code easier to read and understand.
+   **Guideline:** Repeat yourself when it makes your code easier to read and understand. Use DRY sparingly and only to make code more readable by removing a lot of unnecessary duplication.
    
 
 4. Compose is an onchain smart contract library.
