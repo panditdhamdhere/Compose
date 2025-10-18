@@ -91,7 +91,11 @@ The design and implementation of Compose is based on the following design princi
 
 1. ### Compose makes diamonds
 
-   Compose is specifically designed to help users develop and deploy [diamond contracts](https://eips.ethereum.org/EIPS/eip-2535). A major part of this project is creating an onchain diamond factory that makes it easy to use and reuse the facets in this library as well as other facets users want to use.
+   A diamond contract is a smart contract that utilizes for its functionality other smart contracts called facets. Functionality of facets can be added, replaced or removed from a diamond contract. This enables people to build modular, composable smart contract systems -- diamonds -- that can be incrementally developed and deployed. [EIP-2535 Diamonds](https://eips.ethereum.org/EIPS/eip-2535) is the standard for diamond contracts.
+   
+   Compose is specifically designed to help users develop and deploy [diamond contracts](https://eips.ethereum.org/EIPS/eip-2535). A major part of this project is creating an onchain diamond factory that makes it easy to deploy diamonds that use facets provided by this library and elsewhere.
+
+   Much of Compose consists of facets and Solidity libraries that are used by users to create diamond contracts.
 
 1. ### Repeat yourself
    The DRY principle — *Don’t Repeat Yourself* — is a well-known rule in software development. We **intentionally** break that rule.
