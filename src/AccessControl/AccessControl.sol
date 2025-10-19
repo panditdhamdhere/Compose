@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-contract ERC165Facet {
+contract AccessControlFacet {
 
     /// @notice Emitted when the admin role for a role is changed.
     /// @param role The role that was changed.
