@@ -122,7 +122,7 @@ library LibERC20 {
         }
         uint256 fromBalance = s.balanceOf[_from];
         if (fromBalance < _value) {
-            revert ERC20InsufficientBalance(msg.sender, fromBalance, _value);
+            revert ERC20InsufficientBalance(_from, fromBalance, _value);
         }
         unchecked {
             s.allowances[_from][msg.sender] = currentAllowance - _value;
