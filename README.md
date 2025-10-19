@@ -106,7 +106,7 @@ The design and implementation of Compose is based on the following design princi
 
    Much of Compose consists of facets and Solidity libraries that are used by users to create diamond contracts.
 
-1. ### Onchain Composability
+1. ### Onchain composability
 
    We design facets for maximum onchain reusability and composability.
 
