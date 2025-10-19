@@ -59,6 +59,18 @@ contract ERC165Facet {
         return getStorage()._roles[role].hasRole[account];
     }
 
+
+    /// @notice Asserts that an account has a role.
+    /// @param role The role to assert.
+    /// @param account The account to assert the role for.
+    /// @dev Emits a {AccessControlInvalidRole} error if the account does not have the role.
+    function assertOnlyRole(bytes32 role, address account) external view {
+        bool hasRole = getStorage()._roles[role].hasRole[account];
+        if (!hasRole) {
+            revert AccessControlInvalidRole(role, account);
+        }
+    }
+
     /// @notice Returns the admin role for a role.
     /// @param role The role to get the admin for.
     /// @return The admin role for the role.
