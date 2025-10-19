@@ -137,24 +137,6 @@ contract ERC20Facet {
         return getStorage().allowances[_owner][_spender];
     }
 
-    // Initialization Functions
-
-    /**
-     * @notice Initializes the ERC20 token with name, symbol, and decimals.
-     * @dev This function should be called once during diamond deployment.
-     * @param _name The name of the token.
-     * @param _symbol The symbol of the token.
-     * @param _decimals The number of decimals for the token.
-     */
-    function initializeERC20(string memory _name, string memory _symbol, uint8 _decimals) external {
-        ERC20Storage storage s = getStorage();
-        // Only allow initialization if name is empty (not already initialized)
-        if (bytes(s.name).length == 0) {
-            s.name = _name;
-            s.symbol = _symbol;
-            s.decimals = _decimals;
-        }
-    }
 
     
     /**
