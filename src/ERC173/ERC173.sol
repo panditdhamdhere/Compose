@@ -10,7 +10,7 @@ contract ERC173Facet {
     );
 
     /// @notice Thrown when attempting to transfer ownership while not being the owner.
-    error ERC173NotOwner();
+    error OwnableUnauthorizedAccount();
 
     bytes32 constant STORAGE_POSITION = keccak256("compose.erc173");
 
@@ -40,7 +40,7 @@ contract ERC173Facet {
     /// @param _newOwner The address of the new owner of the contract
     function transferOwnership(address _newOwner) external {
         ERC173Storage storage s = getStorage();
-        if (msg.sender != s.owner) revert ERC173NotOwner();
+        if (msg.sender != s.owner) revert OwnableUnauthorizedAccount();
         emit OwnershipTransferred(s.owner, _newOwner);
         s.owner = _newOwner;
     }

@@ -10,7 +10,7 @@ library LibERC173 {
     );
 
     /// @notice Thrown when attempting to transfer ownership of a renounced contract.
-    error ERC173AlreadyRenounced();
+    error OwnableAlreadyRenounced();
 
     bytes32 constant STORAGE_POSITION = keccak256("compose.erc173");
 
@@ -40,7 +40,7 @@ library LibERC173 {
     /// @param _newOwner The address of the new owner of the contract
     function transferOwnership(address _newOwner) internal {
         ERC173Storage storage s = getStorage();
-        if (s.owner == address(0)) revert ERC173AlreadyRenounced();
+        if (s.owner == address(0)) revert OwnableAlreadyRenounced();
         emit OwnershipTransferred(s.owner, _newOwner);
         s.owner = _newOwner;
     }
