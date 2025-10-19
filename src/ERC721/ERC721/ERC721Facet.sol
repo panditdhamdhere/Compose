@@ -250,7 +250,7 @@ contract ERC721Facet {
             revert ERC721NonexistentToken(_tokenId);
         }
 
-        return string(abi.encodePacked(s.baseURI, toString(_tokenId), ".json"));
+        return bytes(s.baseURI).length > 0 ? string.concat(s.baseURI, toString(_tokenId)) : "";
     }
 
     /// @notice Provide the metadata URI for a given token ID.
