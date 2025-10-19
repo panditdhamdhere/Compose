@@ -58,7 +58,7 @@ contract ERC721Facet {
     struct ERC721Storage {
         string name;
         string symbol;
-        mapping(uint256 tokenId => string tokenURI) tokenURIOf;
+        string baseURI;
         mapping(uint256 tokenId => address owner) ownerOf;
         mapping(address owner => uint256 balance) balanceOf;
         mapping(uint256 tokenId => address approved) approved;
@@ -239,4 +239,81 @@ contract ERC721Facet {
             }
         }
     }   
+
+    /// @notice Provide the metadata URI for a given token ID.
+    /// @param _tokenId tokenID of the NFT to query the metadata from
+    /// @return the URI providing the detailled metadata of the specified tokenID
+    function tokenURI(uint256 _tokenId) external view returns (string memory) {
+        ERC721Storage storage s = getStorage();
+        address owner = s.ownerOf[_tokenId];
+        if (owner == address(0)) {
+            revert ERC721NonexistentToken(_tokenId);
+        }
+
+        if(bytes(s.baseURI).length == 0) {
+            return "";
+        }
+
+        return string.concat(s.baseURI, toString(_tokenId));
+    }
+
+    /// From openzeppelin/contracts/utils/Strings.sol
+    /// @dev Converts a `uint256` to its ASCII `string` decimal representation.
+    function toString(uint256 value) internal pure returns (string memory) {
+        bytes16 _SYMBOLS = "0123456789abcdef";
+        unchecked {
+            uint256 length = log10(value) + 1;
+            string memory buffer = new string(length);
+            uint256 ptr;
+            assembly ("memory-safe"){
+                ptr := add(buffer, add(32, length))
+            }
+            while (true) {
+                ptr--;
+                assembly ("memory-safe") {
+                    mstore8(ptr, byte(mod(value, 10), _SYMBOLS))
+                }
+                value /= 10;
+                if (value == 0) break;
+            }
+            return buffer;
+        }
+    }
+
+    /// From oppenzeppelin/contracts/utils/Math.sol
+    /// @dev Return the log in base 10 of a positive value rounded towards zero.
+    /// Returns 0 if given 0.
+    function log10(uint256 value) internal pure returns (uint256) {
+        uint256 result = 0;
+        unchecked {
+            if (value >= 10 ** 64) {
+                value /= 10 ** 64;
+                result += 64;
+            }
+            if (value >= 10 ** 32) {
+                value /= 10 ** 32;
+                result += 32;
+            }
+            if (value >= 10 ** 16) {
+                value /= 10 ** 16;
+                result += 16;
+            }
+            if (value >= 10 ** 8) {
+                value /= 10 ** 8;
+                result += 8;
+            }
+            if (value >= 10 ** 4) {
+                value /= 10 ** 4;
+                result += 4;
+            }
+            if (value >= 10 ** 2) {
+                value /= 10 ** 2;
+                result += 2;
+            }
+            if (value >= 10 ** 1) {
+                result += 1;
+            }
+        }
+        return result;
+    }
 }
