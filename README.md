@@ -18,13 +18,13 @@ None of the following features in the Solidity programming language are allowed 
 
 [Endless discussion](https://discord.gg/DCBD2UKbxc) about what and why Solidity features should or shouldn't be allowed in this library is *encouraged*.
 
- It isn't that any of these features are bad, that isn't the point. It is that we are writing the best software we can, and part of that is using a limited feature set. This is the "less is more" idea or keep it simple, stupid (KISS).
+It isn't that any of these features are bad, that isn't the point. It is that we are writing the best software we can, and part of that is using a limited feature set. This is the "less is more" idea or keep it simple stupid (KISS).
 
 If this feature ban breaks your mind, just realize that this smart contract library is different than what you have encountered before -- it has different importances, different design principles and it has different ways of doing things. Open your mind and be willing to look at smart contracts a different way. Let the design section rewrite your brain.
 
 1. ### Inheritance is **banned**.
    
-   No contract may inherit any other contract or interface. For example `MyContract is OtherContract` or `MyContract is IMyInterface` etc. is not allowed.
+   No contract may inherit any other contract or interface. For example `MyContract is OtherContract` or `MyContract is IMyInterface` etc. is not allowed. [Onchain composition is favored over inheritance](#favor-onchain-composition-over-inheritance).
 
 2. ### No constructor functions
 
@@ -73,7 +73,7 @@ What we are dealing with:
 3. **Smart contracts are shared.** Once deployed, smart contracts can be seen and accessed by anyone.
 4. **Smart contracts run on a distributed network.**  Once deployed, smart contracts are running within the capabilities and constraints of the Ethereum Virtual Machine (EVM) and the blockchain network it is deployed on.
 5. **Smart contracts must be secure.** Once deployed, there can be very serious consequences if there is a bug or security vulnerability in a smart contract.
-6. **Smart contracts are written in a specific language** In our case, Compose is written in the Solidity programming language.
+6. **Smart contracts are written in a specific language** In our case Compose is written in the Solidity programming language.
 
 If we gather all knowledge about programming and software engineering that has ever existed and will exist, including what you know and what you will soon learn or know, and we evaluate that knowledge as it can best apply specifically to a smart contract library, to create the best smart contract library possible, what do we end up with? Hopefully we end up with what Compose becomes.
 
@@ -124,7 +124,7 @@ The design and implementation of Compose is based on the following design princi
 
    #### Example 
 
-   Let's say you are making an onchain game that has its own NFTs with standard NFT (ERC721) functionality plus, additional custom NFT functionality. Here are steps you could take:
+   Let's say you are making an onchain game that has its own NFTs with standard NFT (ERC721) functionality, plus additional custom NFT functionality. Here are steps you could take:
    
    1. Develop a new facet with the custom NFT functionality that you want. You can use the `LibERC721` Solidity library provided by Compose to access NFT storage. If needed you also create your own diamond storage for your custom functionality in your facet.
 
@@ -134,15 +134,19 @@ The design and implementation of Compose is based on the following design princi
 
    4. Deploy your diamond!
 
-   If you need to modify the functionality of standard ERC721 functions, then in that case you cannot use onchain composition. You can make your own custom ERC721 facet by copying the `ERC721Facet.sol` file in Compose and making the necessary changes, or you can inherit the ERC721Facet contract from that file.
+   If you need to modify the functionality of standard ERC721 functions, then in that case you cannot use onchain composition. You can make your own custom ERC721 facet by copying the `ERC721Facet.sol` file in Compose and make the necessary changes, or you can inherit the `ERC721Facet`.
    
    ## Contributors
 
    New contributors are welcome. Choose the [issues](https://github.com/Perfect-Abstractions/Compose/issues) you want to work on and leave comments describing what you want to do and how you want to do it. I'll answer you and assign you to issues and you can start.
+
+   Look at the [ERC20 and ERC721 implementations](./src/) to see examples of how things are written in this library.
    
    Once you are assigned to an issue you can fork the repository, implement what you are working on, then submit a pull request and I will review it and merge it and/or give you feedback on the work.
    
    You can also make new issues to suggest new functionality or work.
+
+   If you have contribution or development questions then please contact me or create an issue. The discord for Compose is here: https://discord.gg/DCBD2UKbxc
 
    This is the beginning and we are still working out how this will all work. I am glad you are interested in this project and I want to make something great with you.
 
