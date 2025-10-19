@@ -45,6 +45,7 @@ library LibERC721 {
     struct ERC721Storage {
         string name;
         string symbol;
+        string baseURI;
         mapping(uint256 tokenId => address owner) ownerOf;
         mapping(address owner => uint256 balance) balanceOf;
         mapping(uint256 tokenId => address approved) approved;

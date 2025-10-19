@@ -240,7 +240,7 @@ contract ERC721Facet {
         }
     }   
 
-        /// @notice Provide the metadata URI for a given token ID.
+    /// @notice Provide the metadata URI for a given token ID.
     /// @param _tokenId tokenID of the NFT to query the metadata from
     /// @return the URI providing the detailled metadata of the specified tokenID
     function tokenURI(uint256 _tokenId) external view returns (string memory) {
@@ -260,10 +260,8 @@ contract ERC721Facet {
         s.baseURI = _newBaseURI;
     }
 
-    /**
-     * From openzeppelin/contracts/utils/Strings.sol
-     * @dev Converts a `uint256` to its ASCII `string` decimal representation.
-     */
+    /// From openzeppelin/contracts/utils/Strings.sol
+    /// @dev Converts a `uint256` to its ASCII `string` decimal representation.
     function toString(uint256 value) internal pure returns (string memory) {
         bytes16 _SYMBOLS = "0123456789abcdef";
         unchecked {
@@ -287,11 +285,9 @@ contract ERC721Facet {
         }
     }
 
-    /**
-     * From oppenzeppelin/contracts/utils/Math.sol
-     * @dev Return the log in base 10 of a positive value rounded towards zero.
-     * Returns 0 if given 0.
-     */
+    /// From oppenzeppelin/contracts/utils/Math.sol
+    /// @dev Return the log in base 10 of a positive value rounded towards zero.
+    /// Returns 0 if given 0.
     function log10(uint256 value) internal pure returns (uint256) {
         uint256 result = 0;
         unchecked {
