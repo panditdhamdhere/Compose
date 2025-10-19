@@ -143,7 +143,7 @@ The design and implementation of Compose is based on the following design princi
    When implementing new functionality, here are some things you need to consider and do to ensure interoperability and to meet existing expectations of functionality:
 
    1. Are there any [ERC standards](https://eips.ethereum.org/erc) that cover the functionality? If so, should probably follow that.
-   2. Has an existing established library such as [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable), [solady](https://github.com/Vectorized/solady) and [solidstate-solidity](https://github.com/solidstate-network/solidstate-solidity) already implemented that functionality in their library? Make sure your version functions the same -- emits the same events, issues the same error messages, reverts when it reverts, etc. Generally we want to match existing widespread adopted functionality. We don't want to surprise our users, unless it is a good surprise.
+   2. Has an existing established library such as [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable) already implemented that functionality in their library? Make sure your version functions the same -- emits the same events, issues the same error messages, reverts when it reverts, etc. Generally we want to match existing widespread adopted functionality. We don't want to surprise our users, unless it is a good surprise.
    3. Are there existing widespread systems, (for example OpenSea, other NFT exchanges, and DAO and voting systems), which expect contracts to function a certain way? Match it.
 
    
