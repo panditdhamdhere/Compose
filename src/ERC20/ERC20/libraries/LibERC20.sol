@@ -34,6 +34,12 @@ library LibERC20 {
     /// @param _value The amount of tokens transferred.
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
+    /// @notice Emitted when an approval is made for a spender by an owner.
+    /// @param _owner The address granting the allowance.
+    /// @param _spender The address receiving the allowance.
+    /// @param _value The amount approved.
+    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+
     
     /// @notice Storage slot identifier, defined using keccak256 hash of the library diamond storage identifier.
     bytes32 constant STORAGE_POSITION = keccak256("compose.erc20");
@@ -47,6 +53,7 @@ library LibERC20 {
         uint256 totalSupply;
         mapping(address owner => uint256 balance) balanceOf;
         mapping(address owner => mapping(address spender => uint256 allowance)) allowances;
+        mapping(address owner => uint256) nonces;
     }
 
     
@@ -61,7 +68,7 @@ library LibERC20 {
     }
 
     /// @notice Mints new tokens to a specified address.
-    /// @dev Increases both total supply and the recipient’s balance.
+    /// @dev Increases both total supply and the recipient's balance.
     /// @param _account The address receiving the newly minted tokens.
     /// @param _value The number of tokens to mint.
     function mint(address _account, uint256 _value) internal {
@@ -77,7 +84,7 @@ library LibERC20 {
     }
 
     /// @notice Burns tokens from a specified address.
-    /// @dev Decreases both total supply and the sender’s balance.
+    /// @dev Decreases both total supply and the sender's balance.
     /// @param _account The address whose tokens will be burned.
     /// @param _value The number of tokens to burn.
     function burn(address _account, uint256 _value) internal {
@@ -97,7 +104,7 @@ library LibERC20 {
     }
 
     /// @notice Transfers tokens from one address to another using an allowance.
-    /// @dev Deducts the spender’s allowance and updates balances.
+    /// @dev Deducts the spender's allowance and updates balances.
     /// @param _from The address to send tokens from.
     /// @param _to The address to send tokens to.
     /// @param _value The number of tokens to transfer.
@@ -123,5 +130,35 @@ library LibERC20 {
             s.balanceOf[_to] += _value;
         }
         emit Transfer(_from, _to, _value);
+    }
+
+    /// @notice Transfers tokens from the caller to another address.
+    /// @dev Updates balances directly without allowance mechanism.
+    /// @param _to The address to send tokens to.
+    /// @param _value The number of tokens to transfer.
+    function transfer(address _to, uint256 _value) internal {
+        ERC20Storage storage s = getStorage();
+        if (_to == address(0)) {
+            revert ERC20InvalidReceiver(address(0));
+        }
+        uint256 fromBalance = s.balanceOf[msg.sender];
+        if (fromBalance < _value) {
+            revert ERC20InsufficientBalance(msg.sender, fromBalance, _value);
+        }
+        unchecked {
+            s.balanceOf[msg.sender] = fromBalance - _value;
+            s.balanceOf[_to] += _value;
+        }
+        emit Transfer(msg.sender, _to, _value);
+    }
+
+    /// @notice Approves a spender to transfer tokens on behalf of the caller.
+    /// @dev Sets the allowance for the spender.
+    /// @param _spender The address to approve for spending.
+    /// @param _value The amount of tokens to approve.
+    function approve(address _spender, uint256 _value) internal {
+        ERC20Storage storage s = getStorage();
+        s.allowances[msg.sender][_spender] = _value;
+        emit Approval(msg.sender, _spender, _value);
     }
 }

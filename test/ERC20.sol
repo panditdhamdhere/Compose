@@ -2,13 +2,13 @@
 pragma solidity ^0.8.13;
 
 import {Test} from "forge-std/Test.sol";
-import {ERC20} from "../src/ERC20/ERC20/ERC20.sol";
+import {ERC20Facet} from "../src/ERC20/ERC20/ERC20Facet.sol";
 
 contract CounterTest is Test {
-    ERC20 public erc20;
+    ERC20Facet public erc20;
 
     function setUp() public {
-        erc20 = new ERC20();
+        erc20 = new ERC20Facet();
         //erc20.setNumber(0);
     }
 

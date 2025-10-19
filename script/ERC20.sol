@@ -2,17 +2,17 @@
 pragma solidity ^0.8.13;
 
 import {Script} from "forge-std/Script.sol";
-import {ERC20} from "../src/ERC20/ERC20/ERC20.sol";
+import {ERC20Facet} from "../src/ERC20/ERC20/ERC20Facet.sol";
 
 contract CounterScript is Script {
-    ERC20 public erc20;
+    ERC20Facet public erc20;
 
     function setUp() public {}
 
     function run() public {
         vm.startBroadcast();
 
-        erc20 = new ERC20();
+        erc20 = new ERC20Facet();
 
         vm.stopBroadcast();
     }
