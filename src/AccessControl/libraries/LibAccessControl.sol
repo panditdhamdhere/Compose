@@ -24,7 +24,7 @@ library LibERC165 {
     /// @notice Thrown when the account does not have a specific role.
     /// @param role The role that the account does not have.
     /// @param account The account that does not have the role.
-    error AccessControlInvalidRole(bytes32 role, address account);
+    error AccessControlUnauthorizedAccount(address account, bytes32 role);
 
     /// @notice Storage slot identifier.
     bytes32 constant STORAGE_POSITION = keccak256("compose.erc165");
@@ -55,11 +55,11 @@ library LibERC165 {
     /// @notice function to assert that an account has a role.
     /// @param role The role to assert.
     /// @param account The account to assert the role for.
-    /// @custom:error AccessControlInvalidRole If the account does not have the role.
+    /// @custom:error AccessControlUnauthorizedAccount If the account does not have the role.
     function assertOnlyRole(bytes32 role, address account) internal view {
         bool hasRole = getStorage()._roles[role].hasRole[account];
         if (!hasRole) {
-            revert AccessControlInvalidRole(role, account);
+            revert AccessControlUnauthorizedAccount(account, role);
         }
     }   
 

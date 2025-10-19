@@ -24,7 +24,7 @@ contract ERC165Facet {
     /// @notice Thrown when the account does not have a specific role.
     /// @param role The role that the account does not have.
     /// @param account The account that does not have the role.
-    error AccessControlInvalidRole(bytes32 role, address account);
+    error AccessControlUnauthorizedAccount(address account, bytes32 role);
 
     /// @notice Storage slot identifier.
     bytes32 constant STORAGE_POSITION = keccak256("compose.erc165");
@@ -63,11 +63,11 @@ contract ERC165Facet {
     /// @notice Asserts that an account has a role.
     /// @param role The role to assert.
     /// @param account The account to assert the role for.
-    /// @dev Emits a {AccessControlInvalidRole} error if the account does not have the role.
+    /// @dev Emits a {AccessControlUnauthorizedAccount} error if the account does not have the role.
     function assertOnlyRole(bytes32 role, address account) external view {
         bool hasRole = getStorage()._roles[role].hasRole[account];
         if (!hasRole) {
-            revert AccessControlInvalidRole(role, account);
+            revert AccessControlUnauthorizedAccount(account, role);
         }
     }
 
@@ -83,7 +83,7 @@ contract ERC165Facet {
     /// @param role The role to grant.
     /// @param account The account to grant the role to.
     /// @dev Emits a {RoleGranted} event.
-    /// @custom:error AccessControlInvalidRole If the caller is not the admin of the role.
+    /// @custom:error AccessControlUnauthorizedAccount If the caller is not the admin of the role.
     function grantRole(bytes32 role, address account) external {
         bytes32 adminRole = getStorage()._roles[role].adminRole;
         _assertOnlyRole(adminRole, msg.sender); // Check if the caller is the admin of the role.
@@ -99,7 +99,7 @@ contract ERC165Facet {
     /// @param role The role to set the admin for.
     /// @param adminRole The admin role to set.
     /// @dev Emits a {RoleAdminChanged} event.
-    /// @custom:error AccessControlInvalidRole If the caller is not the admin of the role.
+    /// @custom:error AccessControlUnauthorizedAccount If the caller is not the admin of the role.
     function setRoleAdmin(bytes32 role, bytes32 adminRole) external {
         bytes32 preAdminRole = getStorage()._roles[role].adminRole;
         _assertOnlyRole(preAdminRole, msg.sender); // Check if the caller is the admin of the role.
@@ -112,7 +112,7 @@ contract ERC165Facet {
     /// @param role The role to revoke.
     /// @param account The account to revoke the role from.
     /// @dev Emits a {RoleRevoked} event.
-    /// @custom:error AccessControlInvalidRole If the caller is not the admin of the role.
+    /// @custom:error AccessControlUnauthorizedAccount If the caller is not the admin of the role.
     function revokeRole(bytes32 role, address account) external {
         bytes32 preAdminRole = getStorage()._roles[role].adminRole;
         _assertOnlyRole(preAdminRole, msg.sender); // Check if the caller is the admin of the role.
@@ -129,10 +129,10 @@ contract ERC165Facet {
     /// @param role The role to renounce.
     /// @param account The account to renounce the role from.
     /// @dev Emits a {RoleRevoked} event.
-    /// @custom:error AccessControlInvalidRole If the caller is not the account to renounce the role from.
+    /// @custom:error AccessControlUnauthorizedAccount If the caller is not the account to renounce the role from.
     function renounceRole(bytes32 role, address account) external {
         if(msg.sender != account){
-            revert AccessControlInvalidRole(role, account);
+            revert AccessControlUnauthorizedAccount(account, role);
         }
 
         bool hasRole = getStorage()._roles[role].hasRole[account];
@@ -146,11 +146,11 @@ contract ERC165Facet {
     /// @notice internal assertOnlyRole function to avoid repeating it in the external functions.
     /// @param role The role to assert.
     /// @dev Emits a {RoleGranted} event.
-    /// @custom:error AccessControlInvalidRole If the caller does not have the role.
+    /// @custom:error AccessControlUnauthorizedAccount If the caller does not have the role.
     function _assertOnlyRole(bytes32 role, address account) internal view {
         bool hasRole = getStorage()._roles[role].hasRole[account];
         if (!hasRole) {
-            revert AccessControlInvalidRole(role, account);
+            revert AccessControlUnauthorizedAccount(account, role);
         }
     }
 
