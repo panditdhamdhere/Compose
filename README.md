@@ -138,7 +138,7 @@ The design and implementation of Compose is based on the following design princi
 
 1. ### Maintain compatibility with existing standards, libraries, and systems
 
-   We want things we build to interoperate and be compatible with existing tools, systems, and expectations. So when writing a smart contract, or particular functionality, find out if there are implementation details that are already established that affect how the functionality works, and make sure your implementation works the way existing implementations work. I'm not talking about how the code is written, but how it works, how it functions. We can write our code better (more clear, more readable, and better documented), but make it function the same as established smart contract functionality.
+   We want things we build to interoperate and be compatible with existing tools, systems, and expectations. So when writing a smart contract, or particular functionality, find out if there are implementation details that are already established that affect how the functionality works, and make sure your implementation works the way that will be expected. I'm not talking about how the code is written, but how it works, how it functions. We can write our code better (more clear, more readable, and better documented), but make it function the same as established smart contract functionality.
 
    When implementing new functionality, here are some things you need to consider and do to ensure interoperability and to meet existing expectations of functionality:
 
