@@ -5,8 +5,6 @@ pragma solidity >=0.8.30;
 /// @notice Provides internal functions and storage layout for ERC-20 token logic.
 /// @dev Uses ERC-8042 for storage location standardization and ERC-6093 for error conventions.
 library LibERC20 {
-
-    
     /// @notice Thrown when a sender attempts to transfer or burn more tokens than their balance.
     /// @param _sender The address attempting the transfer or burn.
     /// @param _balance The sender's current balance.
@@ -27,7 +25,6 @@ library LibERC20 {
     /// @param _needed The required amount to complete the transfer.
     error ERC20InsufficientAllowance(address _spender, uint256 _allowance, uint256 _needed);
 
-    
     /// @notice Emitted when tokens are transferred between addresses.
     /// @param _from The address tokens are transferred from.
     /// @param _to The address tokens are transferred to.
@@ -40,7 +37,6 @@ library LibERC20 {
     /// @param _value The amount approved.
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-    
     /// @notice Storage slot identifier, defined using keccak256 hash of the library diamond storage identifier.
     bytes32 constant STORAGE_POSITION = keccak256("compose.erc20");
 
@@ -56,7 +52,6 @@ library LibERC20 {
         mapping(address owner => uint256) nonces;
     }
 
-    
     /// @notice Returns a pointer to the ERC-20 storage struct.
     /// @dev Uses inline assembly to bind the storage struct to the fixed storage position.
     /// @return s The ERC-20 storage struct.

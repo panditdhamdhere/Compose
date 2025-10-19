@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-
 contract ERC20Facet {
-
-
     /// @notice Thrown when an account has insufficient balance for a transfer or burn.
     /// @param _sender Address attempting the transfer.
     /// @param _balance Current balance of the sender.
@@ -41,9 +38,10 @@ contract ERC20Facet {
     /// @param _v The recovery byte of the signature.
     /// @param _r The r value of the signature.
     /// @param _s The s value of the signature.
-    error ERC2612InvalidSignature(address _owner, address _spender, uint256 _value, uint256 _deadline, uint8 _v, bytes32 _r, bytes32 _s);
+    error ERC2612InvalidSignature(
+        address _owner, address _spender, uint256 _value, uint256 _deadline, uint8 _v, bytes32 _r, bytes32 _s
+    );
 
-    
     /// @notice Emitted when an approval is made for a spender by an owner.
     /// @param _owner The address granting the allowance.
     /// @param _spender The address receiving the allowance.
@@ -56,7 +54,6 @@ contract ERC20Facet {
     /// @param _value Amount of tokens transferred.
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
-    
     /// @dev Storage position determined by the keccak256 hash of the diamond storage identifier.
     bytes32 constant STORAGE_POSITION = keccak256("compose.erc20");
 
@@ -137,8 +134,6 @@ contract ERC20Facet {
         return getStorage().allowances[_owner][_spender];
     }
 
-
-    
     /**
      * @notice Approves a spender to transfer up to a certain amount of tokens on behalf of the caller.
      * @dev Emits an {Approval} event.

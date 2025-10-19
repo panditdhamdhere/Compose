@@ -6,7 +6,6 @@ pragma solidity >=0.8.30;
 /// @dev Implements minting, burning, and transferring of ERC-721 tokens without dependencies.
 /// Uses ERC-8042-compliant storage definition and includes ERC-6093 standard custom errors.
 library LibERC721 {
-
     /// @notice Thrown when attempting to interact with a non-existent token.
     /// @param _tokenId The ID of the token that does not exist.
     error ERC721NonexistentToken(uint256 _tokenId);

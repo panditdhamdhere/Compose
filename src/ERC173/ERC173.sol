@@ -4,10 +4,7 @@ pragma solidity >=0.8.30;
 /// @title ERC-173 Contract Ownership
 contract ERC173Facet {
     /// @dev This emits when ownership of a contract changes.
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     /// @notice Thrown when attempting to transfer ownership while not being the owner.
     error OwnableUnauthorizedAccount();

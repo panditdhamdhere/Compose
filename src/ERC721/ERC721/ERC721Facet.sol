@@ -11,14 +11,15 @@ interface IERC721Receiver {
     /// @param _tokenId The NFT identifier being transferred.
     /// @param _data Additional data with no specified format.
     /// @return The selector to confirm the token transfer.
-    function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes calldata _data) external returns (bytes4);
+    function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes calldata _data)
+        external
+        returns (bytes4);
 }
 
 /// @title ERC-721 Token (Zero-Dependency Implementation)
 /// @notice A complete, dependency-free ERC-721 implementation using the diamond storage pattern.
 /// @dev This facet provides metadata, ownership, approvals, safe transfers, minting, burning, and helpers.
 contract ERC721Facet {
-
     /// @notice Error indicating the queried owner address is invalid (zero address).
     error ERC721InvalidOwner(address _owner);
 
@@ -62,7 +63,7 @@ contract ERC721Facet {
         mapping(uint256 tokenId => address owner) ownerOf;
         mapping(address owner => uint256 balance) balanceOf;
         mapping(uint256 tokenId => address approved) approved;
-        mapping(address owner => mapping(address operator => bool approved)) isApprovedForAll;   
+        mapping(address owner => mapping(address operator => bool approved)) isApprovedForAll;
     }
 
     /// @notice Returns a pointer to the ERC-721 storage struct.
@@ -74,7 +75,7 @@ contract ERC721Facet {
             s.slot := position
         }
     }
-        
+
     /// @notice Returns the token collection name.
     /// @return The name of the token collection.
     function name() external view returns (string memory) {
@@ -85,7 +86,7 @@ contract ERC721Facet {
     /// @return The symbol of the token collection.
     function symbol() external view returns (string memory) {
         return getStorage().symbol;
-    }   
+    }
 
     /// @notice Returns the number of tokens owned by a given address.
     /// @param _owner The address to query the balance of.
@@ -104,7 +105,7 @@ contract ERC721Facet {
         address owner = getStorage().ownerOf[_tokenId];
         if (owner == address(0)) {
             revert ERC721NonexistentToken(_tokenId);
-        } 
+        }
         return owner;
     }
 
@@ -138,9 +139,9 @@ contract ERC721Facet {
         }
         if (msg.sender != owner && !s.isApprovedForAll[owner][msg.sender]) {
             revert ERC721InvalidApprover(_approved);
-        }        
+        }
         s.approved[_tokenId] = _approved;
-        emit Approval(owner, _approved, _tokenId);        
+        emit Approval(owner, _approved, _tokenId);
     }
 
     /// @notice Approves or revokes permission for an operator to manage all caller's assets.
@@ -158,9 +159,9 @@ contract ERC721Facet {
     /// @param _from The current owner of the token.
     /// @param _to The address to receive the token.
     /// @param _tokenId The token ID to transfer.
-    function internalTransferFrom(address _from, address _to, uint256 _tokenId) internal {  
+    function internalTransferFrom(address _from, address _to, uint256 _tokenId) internal {
         ERC721Storage storage s = getStorage();
-         if (_to == address(0)) {
+        if (_to == address(0)) {
             revert ERC721InvalidReceiver(address(0));
         }
         address owner = s.ownerOf[_tokenId];
@@ -169,9 +170,9 @@ contract ERC721Facet {
         }
         if (owner != _from) {
             revert ERC721IncorrectOwner(_from, _tokenId, owner);
-        }        
+        }
         if (msg.sender != _from) {
-            if(!s.isApprovedForAll[_from][msg.sender] && msg.sender != s.approved[_tokenId]) {
+            if (!s.isApprovedForAll[_from][msg.sender] && msg.sender != s.approved[_tokenId]) {
                 revert ERC721InsufficientApproval(msg.sender, _tokenId);
             }
         }
@@ -180,10 +181,10 @@ contract ERC721Facet {
             s.balanceOf[_from]--;
             s.balanceOf[_to]++;
         }
-        s.ownerOf[_tokenId] = _to;        
+        s.ownerOf[_tokenId] = _to;
         emit Transfer(_from, _to, _tokenId);
     }
- 
+
     /// @notice Transfers a token from one address to another.
     /// @param _from The current owner of the token.
     /// @param _to The address to receive the token.
@@ -231,14 +232,14 @@ contract ERC721Facet {
             } catch (bytes memory reason) {
                 if (reason.length == 0) {
                     revert ERC721InvalidReceiver(_to);
-                } else {                   
+                } else {
                     assembly ("memory-safe") {
                         revert(add(reason, 0x20), mload(reason))
                     }
                 }
             }
         }
-    }   
+    }
 
     /// @notice Provide the metadata URI for a given token ID.
     /// @param _tokenId tokenID of the NFT to query the metadata from
@@ -250,7 +251,7 @@ contract ERC721Facet {
             revert ERC721NonexistentToken(_tokenId);
         }
 
-        if(bytes(s.baseURI).length == 0) {
+        if (bytes(s.baseURI).length == 0) {
             return "";
         }
 
@@ -265,7 +266,7 @@ contract ERC721Facet {
             uint256 length = log10(value) + 1;
             string memory buffer = new string(length);
             uint256 ptr;
-            assembly ("memory-safe"){
+            assembly ("memory-safe") {
                 ptr := add(buffer, add(32, length))
             }
             while (true) {

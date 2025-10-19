@@ -11,15 +11,15 @@ interface IERC721Receiver {
     /// @param _tokenId The NFT identifier being transferred.
     /// @param _data Additional data with no specified format.
     /// @return A bytes4 value indicating acceptance of the transfer.
-    function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes calldata _data) external returns (bytes4);
+    function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes calldata _data)
+        external
+        returns (bytes4);
 }
 
 /// @title ERC-721 Enumerable Token (Zero-dependency Implementation)
 /// @notice A complete, dependency-free ERC-721 implementation with enumeration support using a custom storage layout.
 /// @dev Provides metadata, ownership, approvals, enumeration, safe transfers, minting, and burning features.
 contract ERC721EnumerableFacet {
-
-    
     /// @notice Thrown when querying or transferring from an invalid owner address.
     error ERC721InvalidOwner(address _owner);
     /// @notice Thrown when operating on a non-existent token.
@@ -39,7 +39,6 @@ contract ERC721EnumerableFacet {
     /// @notice Thrown when an index is out of bounds during enumeration.
     error ERC721OutOfBoundsIndex(address _owner, uint256 _index);
 
-    
     /// @notice Emitted when a token is transferred between addresses.
     event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
     /// @notice Emitted when a token is approved for transfer by another address.
@@ -47,7 +46,6 @@ contract ERC721EnumerableFacet {
     /// @notice Emitted when an operator is approved or revoked for all tokens of an owner.
     event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
 
-    
     bytes32 constant STORAGE_POSITION = keccak256("compose.erc721.enumerable");
 
     /// @custom:storage-location erc8042:compose.erc721.enumerable
@@ -55,13 +53,11 @@ contract ERC721EnumerableFacet {
         string name;
         string symbol;
         mapping(uint256 tokenId => string tokenURI) tokenURIOf;
-
         mapping(uint256 tokenId => address owner) ownerOf;
         mapping(address owner => uint256[] ownedTokens) ownedTokensOf;
         mapping(uint256 tokenId => uint256 ownedTokensIndex) ownedTokensIndexOf;
         uint256[] allTokens;
         mapping(uint256 tokenId => uint256 allTokensIndex) allTokensIndexOf;
-
         mapping(uint256 tokenId => address approved) approved;
         mapping(address owner => mapping(address operator => bool approved)) isApprovedForAll;
     }
@@ -75,7 +71,6 @@ contract ERC721EnumerableFacet {
         }
     }
 
-    
     /// @notice Returns the name of the token collection.
     /// @return The token collection name.
     function name() external view returns (string memory) {
@@ -94,7 +89,6 @@ contract ERC721EnumerableFacet {
         return getStorage().allTokens.length;
     }
 
-    
     /// @notice Returns the number of tokens owned by an address.
     /// @param _owner The address to query.
     /// @return The balance (number of tokens owned).
@@ -128,7 +122,6 @@ contract ERC721EnumerableFacet {
         return s.ownedTokensOf[_owner][_index];
     }
 
-    
     /// @notice Returns the approved address for a given token ID.
     /// @param _tokenId The token ID to query.
     /// @return The approved address for the token.
@@ -175,7 +168,6 @@ contract ERC721EnumerableFacet {
         emit ApprovalForAll(msg.sender, _operator, _approved);
     }
 
-   
     /// @notice Internal function to transfer ownership of a token ID.
     /// @param _from The address sending the token.
     /// @param _to The address receiving the token.
