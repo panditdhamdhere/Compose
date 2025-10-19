@@ -230,8 +230,8 @@ contract ERC721EnumerableFacet {
     function safeTransferFrom(address _from, address _to, uint256 _tokenId) external {
         internalTransferFrom(_from, _to, _tokenId);
         if (_to.code.length > 0) {
-            try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, "") returns (bytes4 retval) {
-                if (retval != IERC721Receiver.onERC721Received.selector) {
+            try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, "") returns (bytes4 returnValue) {
+                if (returnValue != IERC721Receiver.onERC721Received.selector) {
                     revert ERC721InvalidReceiver(_to);
                 }
             } catch (bytes memory reason) {
@@ -251,8 +251,8 @@ contract ERC721EnumerableFacet {
     function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes calldata _data) external {
         internalTransferFrom(_from, _to, _tokenId);
         if (_to.code.length > 0) {
-            try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data) returns (bytes4 retval) {
-                if (retval != IERC721Receiver.onERC721Received.selector) {
+            try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data) returns (bytes4 returnValue) {
+                if (returnValue != IERC721Receiver.onERC721Received.selector) {
                     revert ERC721InvalidReceiver(_to);
                 }
             } catch (bytes memory reason) {

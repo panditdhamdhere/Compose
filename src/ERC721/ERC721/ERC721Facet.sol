@@ -200,8 +200,8 @@ contract ERC721Facet {
         internalTransferFrom(_from, _to, _tokenId);
 
         if (_to.code.length > 0) {
-            try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, "") returns (bytes4 retval) {
-                if (retval != IERC721Receiver.onERC721Received.selector) {
+            try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, "") returns (bytes4 returnValue) {
+                if (returnValue != IERC721Receiver.onERC721Received.selector) {
                     revert ERC721InvalidReceiver(_to);
                 }
             } catch (bytes memory reason) {
@@ -224,8 +224,8 @@ contract ERC721Facet {
     function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes calldata _data) external {
         internalTransferFrom(_from, _to, _tokenId);
         if (_to.code.length > 0) {
-            try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data) returns (bytes4 retval) {
-                if (retval != IERC721Receiver.onERC721Received.selector) {
+            try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data) returns (bytes4 returnValue) {
+                if (returnValue != IERC721Receiver.onERC721Received.selector) {
                     revert ERC721InvalidReceiver(_to);
                 }
             } catch (bytes memory reason) {
@@ -242,7 +242,7 @@ contract ERC721Facet {
 
     /// @notice Provide the metadata URI for a given token ID.
     /// @param _tokenId tokenID of the NFT to query the metadata from
-    /// @return the URI providing the detailled metadata of the specified tokenID
+    /// @return the URI providing the detailed metadata of the specified tokenID
     function tokenURI(uint256 _tokenId) external view returns (string memory) {
         ERC721Storage storage s = getStorage();
         address owner = s.ownerOf[_tokenId];
@@ -280,7 +280,7 @@ contract ERC721Facet {
         }
     }
 
-    /// From oppenzeppelin/contracts/utils/Math.sol
+    /// From openzeppelin/contracts/utils/Math.sol
     /// @dev Return the log in base 10 of a positive value rounded towards zero.
     /// Returns 0 if given 0.
     function log10(uint256 value) internal pure returns (uint256) {
