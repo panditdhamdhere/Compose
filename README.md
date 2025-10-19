@@ -122,6 +122,16 @@ The design and implementation of Compose is based on the following design princi
 
    One of the reasons that inheritance is banned in the library is because onchain composition is favored over inheritance. This is a newer idea that wasn't very possible before diamond contracts. Instead of inheriting a contract to give it additional functionality, just make a new contract (facet), deploy it, and add its functions to your diamond.
 
+1. ### Maintain compaitilbity with existing standards, systems and libraries
+
+   We want things we build to interoperate and be compatible with existing tools, systems, and expectations. So when writing a smart contract, or particular functionality, find out if there are implementation details that are already established that affect how the functionality works, and make sure your implementation works the way existing implementations work. I'm not talking about how the code is written, but how it works, how it functions. We can write our code better (more clear, more readable, and better documented), but make it function the same as established smart contract functionality.
+
+   When implementing new functionality, here are some things you need to consider and do to ensure interoperability and to meet existing expectations of functionality:
+
+   1. Are there any ERC standards that cover the functionality? If so, should probably follow that.
+   2. Has an existing established library such as [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable), [solady](https://github.com/Vectorized/solady) and [solidstate-solidity](https://github.com/solidstate-network/solidstate-solidity) already implemented that functionality in their library? Make sure your version functions the same -- emits the same events, issues the same error messages, reverts when it reverts, etc. Generally we want to match existing widespread adopted functionality. We don't want to surprise our users, unless it is a good surprise.
+   3. Are there existing widespread systems, (for example OpenSea, other NFT exchanges, and DAO and voting systems), which expect contracts to function a certain way? Match it.
+
    #### Example 
 
    Let's say you are making an onchain game that has its own NFTs with standard NFT (ERC721) functionality, plus additional custom NFT functionality. Here are steps you could take:
