@@ -250,14 +250,11 @@ contract ERC721Facet {
             revert ERC721NonexistentToken(_tokenId);
         }
 
-        return bytes(s.baseURI).length > 0 ? string.concat(s.baseURI, toString(_tokenId)) : "";
-    }
+        if(bytes(s.baseURI).length == 0) {
+            return "";
+        }
 
-    /// @notice Provide the metadata URI for a given token ID.
-    /// @param _newBaseURI The common base URI path for all token metadatas.
-    function setBaseURI(string calldata _newBaseURI) external {
-        ERC721Storage storage s = getStorage();
-        s.baseURI = _newBaseURI;
+        return string.concat(s.baseURI, toString(_tokenId));
     }
 
     /// From openzeppelin/contracts/utils/Strings.sol
@@ -268,14 +265,12 @@ contract ERC721Facet {
             uint256 length = log10(value) + 1;
             string memory buffer = new string(length);
             uint256 ptr;
-            /// @solidity memory-safe-assembly
-            assembly {
+            assembly ("memory-safe"){
                 ptr := add(buffer, add(32, length))
             }
             while (true) {
                 ptr--;
-                /// @solidity memory-safe-assembly
-                assembly {
+                assembly ("memory-safe") {
                     mstore8(ptr, byte(mod(value, 10), _SYMBOLS))
                 }
                 value /= 10;
