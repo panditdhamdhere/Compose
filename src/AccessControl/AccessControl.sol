@@ -26,56 +26,57 @@ contract AccessControlFacet {
     /// @param account The account that does not have the role.
     error AccessControlUnauthorizedAccount(address account, bytes32 role);
 
+    /// @notice Thrown when the sender is not the account to renounce the role from.
+    /// @param sender The sender that is not the account to renounce the role from.
+    /// @param account The account to renounce the role from.
+    error AccessControlUnauthorizedSender(address sender, address account);
+
     /// @notice Storage slot identifier.
-    bytes32 constant STORAGE_POSITION = keccak256("compose.erc165");
+    bytes32 constant STORAGE_POSITION = keccak256("compose.accesscontrol");
 
     /// @notice Default admin role.
     bytes32 constant DEFAULT_ADMIN_ROLE = 0x00;
 
-    /// @notice Role data.
-    struct RoleData {
-        mapping(address account => bool) hasRole; // Mapping of accounts to roles.
-        bytes32 adminRole; // Admin role for the role.
+    /// @notice storage struct for the AccessControl.
+    struct AccessControlStorage {
+        mapping(address account => mapping(bytes32 role => bool hasRole)) _hasRole; 
+        mapping(bytes32 role => bytes32 adminRole) _adminRole; 
     }
 
-    struct LibERC165Storage {
-        mapping(bytes32 role => RoleData) _roles; // Mapping of roles to role data.
-    }
-
-        
     /// @notice Returns the storage for the AccessControl.
     /// @return s The storage for the AccessControl.
-    function getStorage() internal pure returns (LibERC165Storage storage s) {
+    function getStorage() internal pure returns (AccessControlStorage storage s) {
         bytes32 position = STORAGE_POSITION;
         assembly {
-            s.slot := position // Store the position in the storage slot.
+            s.slot := position
         }
     }
+
     /// @notice Returns if an account has a role.
     /// @param role The role to check.
     /// @param account The account to check the role for.
     /// @return True if the account has the role, false otherwise.
     function hasRole(bytes32 role, address account) external view returns(bool){
-        return getStorage()._roles[role].hasRole[account];
+        AccessControlStorage storage s = getStorage();
+        return s._hasRole[account][role];
     }
 
 
-    /// @notice Asserts that an account has a role.
-    /// @param role The role to assert.
-    /// @param account The account to assert the role for.
-    /// @dev Emits a {AccessControlUnauthorizedAccount} error if the account does not have the role.
-    function assertOnlyRole(bytes32 role, address account) external view {
-        bool hasRole = getStorage()._roles[role].hasRole[account];
-        if (!hasRole) {
-            revert AccessControlUnauthorizedAccount(account, role);
-        }
+    /// @notice Checks if an account has a required role.
+    /// @param role The role to check.
+    /// @param account The account to check the role for.
+    /// @custom:error AccessControlUnauthorizedAccount If the account does not have the role.
+    function requireRole(bytes32 role, address account) external view {
+        AccessControlStorage storage s = getStorage();
+        if (!s._hasRole[account][role]) revert AccessControlUnauthorizedAccount(account, role);
     }
 
     /// @notice Returns the admin role for a role.
     /// @param role The role to get the admin for.
     /// @return The admin role for the role.
     function getRoleAdmin(bytes32 role) external view returns(bytes32){
-        return getStorage()._roles[role].adminRole;
+        AccessControlStorage storage s = getStorage();
+        return s._adminRole[role];
     }
 
 
@@ -85,27 +86,17 @@ contract AccessControlFacet {
     /// @dev Emits a {RoleGranted} event.
     /// @custom:error AccessControlUnauthorizedAccount If the caller is not the admin of the role.
     function grantRole(bytes32 role, address account) external {
-        bytes32 adminRole = getStorage()._roles[role].adminRole;
-        _assertOnlyRole(adminRole, msg.sender); // Check if the caller is the admin of the role.
+        AccessControlStorage storage s = getStorage();
+        bytes32 adminRole = s._adminRole[role];
 
-        bool hasRole = getStorage()._roles[role].hasRole[account];
+        // Check if the caller is the admin of the role.
+        if (!s._hasRole[msg.sender][adminRole]) revert AccessControlUnauthorizedAccount(msg.sender, adminRole);
+
+        bool hasRole = s._hasRole[account][role];
         if (!hasRole) {
-            getStorage()._roles[role].hasRole[account] = true;
+            s._hasRole[account][role] = true;
             emit RoleGranted(role, account, msg.sender);
         }
-    }
-
-    /// @notice Sets the admin role for a role.
-    /// @param role The role to set the admin for.
-    /// @param adminRole The admin role to set.
-    /// @dev Emits a {RoleAdminChanged} event.
-    /// @custom:error AccessControlUnauthorizedAccount If the caller is not the admin of the role.
-    function setRoleAdmin(bytes32 role, bytes32 adminRole) external {
-        bytes32 preAdminRole = getStorage()._roles[role].adminRole;
-        _assertOnlyRole(preAdminRole, msg.sender); // Check if the caller is the admin of the role.
-
-        getStorage()._roles[role].adminRole = adminRole;
-        emit RoleAdminChanged(role, preAdminRole, adminRole);
     }
 
     /// @notice Revokes a role from an account.
@@ -114,12 +105,15 @@ contract AccessControlFacet {
     /// @dev Emits a {RoleRevoked} event.
     /// @custom:error AccessControlUnauthorizedAccount If the caller is not the admin of the role.
     function revokeRole(bytes32 role, address account) external {
-        bytes32 preAdminRole = getStorage()._roles[role].adminRole;
-        _assertOnlyRole(preAdminRole, msg.sender); // Check if the caller is the admin of the role.
+        AccessControlStorage storage s = getStorage();
+        bytes32 adminRole = s._adminRole[role];
 
-        bool hasRole = getStorage()._roles[role].hasRole[account];
+        // Check if the caller is the admin of the role.
+        if (!s._hasRole[msg.sender][adminRole]) revert AccessControlUnauthorizedAccount(msg.sender, adminRole);
+
+        bool hasRole = s._hasRole[account][role];
         if (hasRole) {
-            getStorage()._roles[role].hasRole[account] = false;
+            s._hasRole[account][role] = false;
             emit RoleRevoked(role, account, msg.sender);
         }
     }
@@ -129,28 +123,17 @@ contract AccessControlFacet {
     /// @param role The role to renounce.
     /// @param account The account to renounce the role from.
     /// @dev Emits a {RoleRevoked} event.
-    /// @custom:error AccessControlUnauthorizedAccount If the caller is not the account to renounce the role from.
+    /// @custom:error AccessControlUnauthorizedSender If the caller is not the account to renounce the role from.
     function renounceRole(bytes32 role, address account) external {
-        if(msg.sender != account){
-            revert AccessControlUnauthorizedAccount(account, role);
-        }
+        AccessControlStorage storage s = getStorage();
 
-        bool hasRole = getStorage()._roles[role].hasRole[account];
+        // Check If the caller is not the account to renounce the role from.
+        if(msg.sender != account) revert AccessControlUnauthorizedSender(msg.sender, account);
+    
+        bool hasRole = s._hasRole[account][role];
         if (hasRole) {
-            getStorage()._roles[role].hasRole[account] = false;
+            s._hasRole[account][role] = false;
             emit RoleRevoked(role, account, msg.sender);
-        }
-    }
-
-
-    /// @notice internal assertOnlyRole function to avoid repeating it in the external functions.
-    /// @param role The role to assert.
-    /// @dev Emits a {RoleGranted} event.
-    /// @custom:error AccessControlUnauthorizedAccount If the caller does not have the role.
-    function _assertOnlyRole(bytes32 role, address account) internal view {
-        bool hasRole = getStorage()._roles[role].hasRole[account];
-        if (!hasRole) {
-            revert AccessControlUnauthorizedAccount(account, role);
         }
     }
 
