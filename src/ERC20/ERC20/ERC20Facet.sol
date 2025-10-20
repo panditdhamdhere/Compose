@@ -166,8 +166,8 @@ contract ERC20Facet {
         }
         unchecked {
             s.balanceOf[msg.sender] = fromBalance - _value;
-            s.balanceOf[_to] += _value;
         }
+        s.balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
     }
 
@@ -197,8 +197,8 @@ contract ERC20Facet {
         unchecked {
             s.allowances[_from][msg.sender] = currentAllowance - _value;
             s.balanceOf[_from] = fromBalance - _value;
-            s.balanceOf[_to] += _value;
         }
+        s.balanceOf[_to] += _value;
         emit Transfer(_from, _to, _value);
     }
 
