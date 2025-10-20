@@ -139,6 +139,7 @@ contract ERC20Facet {
      * @dev Emits an {Approval} event.
      * @param _spender The address approved to spend tokens.
      * @param _value The number of tokens to approve.
+     * @return True if the approval was successful.
      */
     function approve(address _spender, uint256 _value) external returns (bool) {
         ERC20Storage storage s = getStorage();
@@ -155,6 +156,7 @@ contract ERC20Facet {
      * @dev Emits a {Transfer} event.
      * @param _to The address to receive the tokens.
      * @param _value The amount of tokens to transfer.
+     * @return True if the transfer was successful.
      */
     function transfer(address _to, uint256 _value) external returns (bool) {
         ERC20Storage storage s = getStorage();
@@ -179,6 +181,7 @@ contract ERC20Facet {
      * @param _from The address to transfer tokens from.
      * @param _to The address to transfer tokens to.
      * @param _value The amount of tokens to transfer.
+     * @return True if the transfer was successful.
      */
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool) {
         ERC20Storage storage s = getStorage();
