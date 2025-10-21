@@ -75,6 +75,25 @@ Once you are assigned to an issue:
 
 You can also make new issues to suggest new functionality or work.
 
+### Ideas & Discussions
+
+**We use GitHub Discussions for ideas, debates, and brainstorming!** 
+
+- **Issues** are for actionable items that need to be implemented or fixed
+- **Discussions** are for general communication, talking about possibilities, ideas, and exploring concepts
+
+Have an idea for a new feature? Want to discuss project direction? Curious about implementation approaches? Start a discussion in our [GitHub Discussions](https://github.com/Perfect-Abstractions/Compose/discussions) forum. 
+
+This is the perfect place to:
+- Share ideas and get community feedback
+- Debate different approaches and solutions
+- Brainstorm new functionality
+- Discuss project direction and philosophy
+- Ask "what if" questions
+- Explore possibilities before committing to implementation
+
+Once there is a clear idea of what we want to do, we will create the required issues and assign them based on priority and complexity.
+
 ## Code Standards
 
 ### Solidity Feature Ban
