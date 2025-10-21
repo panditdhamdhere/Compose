@@ -211,6 +211,7 @@ contract ERC20Facet {
         }
         unchecked {
             s.balanceOf[msg.sender] = balance - _value;
+            s.totalSupply -= _value;
         }
         emit Transfer(msg.sender, address(0), _value);
     }
@@ -234,6 +235,7 @@ contract ERC20Facet {
         unchecked {
             s.allowances[_account][msg.sender] = currentAllowance - _value;
             s.balanceOf[_account] = balance - _value;
+            s.totalSupply -= _value;
         }
         emit Transfer(msg.sender, address(0), _value);
     }
