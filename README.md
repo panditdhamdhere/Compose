@@ -12,6 +12,30 @@ We are building a high quality smart contract library by banning Solidity functi
 
 We are breaking existing software development rules in order to write good software specifically for smart contracts. This is smart contract oriented programming.
 
+## Table of Contents
+
+- [Banned Solidity Features](#banned-solidity-features)
+- [Purpose of Compose](#purpose-of-compose)
+- [Vision](#vision)
+- [Design](#design)
+  - [Understanding](#understanding)
+  - [The code is written to be read](#the-code-is-written-to-be-read)
+  - [Repeat yourself](#repeat-yourself)
+  - [Compose diamonds](#compose-diamonds)
+  - [Onchain composability](#onchain-composability)
+  - [Favor onchain composition over inheritance](#favor-onchain-composition-over-inheritance)
+  - [Maintain compatibility with existing standards, libraries, and systems](#maintain-compatibility-with-existing-standards-libraries-and-systems)
+- [Contributors](#contributors)
+- [Usage](#usage)
+  - [Build](#build)
+  - [Test](#test)
+  - [Format](#format)
+  - [Gas Snapshots](#gas-snapshots)
+  - [Anvil](#anvil)
+  - [Deploy](#deploy)
+  - [Cast](#cast)
+  - [Help](#help)
+
 ## Banned Solidity Features
 
 None of the following features in the Solidity programming language are allowed to be used in this smart contract library. Anyone submitting a pull request that uses any of these features will be fined **$100 USDC**.
