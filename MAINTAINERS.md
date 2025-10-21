@@ -9,6 +9,7 @@ Work on this as little or lot as you want to. Work on what you want to work on.
 
 # Responsibilities
 - Answer people's questions
+- Manage GitHub issues
 - Review and merge pull requests
 - Maintain documentation (including this file)
 - Maintain communication about the project
