@@ -47,30 +47,6 @@ Compose is designed specifically for smart contracts with these unique character
 - **Readable Code**: Code written to be read and understood
 - **Smart Contract Oriented**: Design principles specifically for immutable, forever-running contracts
 
-## Table of Contents
-
-- [Banned Solidity Features](#banned-solidity-features)
-- [Purpose of Compose](#purpose-of-compose)
-- [Vision](#vision)
-- [Design](#design)
-  - [Understanding](#understanding)
-  - [The code is written to be read](#the-code-is-written-to-be-read)
-  - [Repeat yourself](#repeat-yourself)
-  - [Compose diamonds](#compose-diamonds)
-  - [Onchain composability](#onchain-composability)
-  - [Favor onchain composition over inheritance](#favor-onchain-composition-over-inheritance)
-  - [Maintain compatibility with existing standards, libraries, and systems](#maintain-compatibility-with-existing-standards-libraries-and-systems)
-- [Contributors](#contributors)
-- [Usage](#usage)
-  - [Build](#build)
-  - [Test](#test)
-  - [Format](#format)
-  - [Gas Snapshots](#gas-snapshots)
-  - [Anvil](#anvil)
-  - [Deploy](#deploy)
-  - [Cast](#cast)
-  - [Help](#help)
-
 ## Banned Solidity Features
 
 Compose intentionally restricts certain Solidity features to create simpler, more readable code. Anyone submitting a pull request that uses banned features will be fined **$100 USDC**.
