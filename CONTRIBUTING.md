@@ -4,6 +4,8 @@ Thank you for your interest in contributing to Compose! This is really appreciat
 
 This guide will help you get started with contributing to our smart contract library.
 
+Please take the time to read this guide and explore the codebase to get a sense of the project and how it works.
+
 ## Table of Contents
 
 - [Project Status](#project-status)
