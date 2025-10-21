@@ -41,25 +41,25 @@ forge test
 
 Compose is designed specifically for smart contracts with these unique characteristics:
 
-- **Banned Solidity Features**: We intentionally restrict certain Solidity features to create better, more readable code
+- **Banned Solidity Features**: We intentionally restrict certain Solidity features to create simpler, more readable code
 - **Diamond Contracts**: Built for [ERC-2535 diamond standard](https://eips.ethereum.org/EIPS/eip-2535) with modular, composable facets
-- **Onchain Composition**: Favor composition over inheritance for maximum flexibility
-- **Readable Code**: Code written to be read and understood by future developers
+- **Onchain Composition**: Favor composition over inheritance
+- **Readable Code**: Code written to be read and understood
 - **Smart Contract Oriented**: Design principles specifically for immutable, forever-running contracts
 
 ## Banned Solidity Features
 
-Compose intentionally restricts certain Solidity features to create better, more readable code. Anyone submitting a pull request that uses banned features will be fined **$100 USDC**.
+Compose intentionally restricts certain Solidity features to create simpler, more readable code. Anyone submitting a pull request that uses banned features will be fined **$100 USDC**.
 
 **Key Restrictions:**
 - **No inheritance**: Use onchain composition instead
-- **No constructors**: Use internal functions instead (except in diamond contracts)
-- **No modifiers**: Use internal functions instead
-- **No visibility labels**: Use internal variables instead
+- **No constructors**: Use [diamond-based deployment](https://eip2535diamonds.substack.com/p/initializing-an-eip-2535-diamond) instead
+- **No modifiers**: Use code written within functions instead
+- **No visibility labels**: Use [diamond storage](https://eips.ethereum.org/EIPS/eip-8042) instead.
 - **No private/public functions**: Use internal/external only
-- **No external functions in libraries**: Internal only
+- **No external functions in libraries**: Use internal only
 - **No `using for` directives**: Use internal functions instead
-- **No `selfdestruct`**: Use `destroy` instead
+- **No `selfdestruct`**: Use safe contracts instead
 
 [Endless discussion](https://discord.gg/DCBD2UKbxc) about what and why Solidity features should or shouldn't be allowed is *encouraged*.
 
@@ -71,10 +71,10 @@ For complete details and examples, see [CONTRIBUTING.md](CONTRIBUTING.md#banned-
 
 Compose follows unique design principles specifically for smart contract development:
 
-- **Understanding First**: Code written to be read and understood by future developers
+- **Read First**: Code written to be read and understood by present and future developers
 - **Repeat Yourself**: Intentionally break DRY principle when it improves readability
-- **Diamond Contracts**: Built for [ERC-2535 diamond standard](https://eips.ethereum.org/EIPS/eip-2535) with modular facets
-- **Onchain Composition**: Favor composition over inheritance for maximum flexibility
+- **Diamond Contracts**: Built for [ERC-2535 diamond standard](https://eips.ethereum.org/EIPS/eip-2535)
+- **Onchain Composition**: Favor composition over inheritance
 - **Compatibility**: Maintain compatibility with existing standards and systems
 
 For detailed explanations and examples, see [CONTRIBUTING.md](CONTRIBUTING.md#design-principles).
@@ -89,7 +89,8 @@ Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 1. Choose an [issue](https://github.com/Perfect-Abstractions/Compose/issues) to work on
 2. Look at [ERC20 and ERC721 implementations](./src/) for examples
 3. Follow our [contribution guidelines](CONTRIBUTING.md)
-4. Join our [Discord](https://discord.gg/DCBD2UKbxc) for discussions
+4. Join our [discussions](https://github.com/Perfect-Abstractions/Compose/discussions)
+4. Join our [discord](https://discord.gg/DCBD2UKbxc)
 
 Browse our [issues](https://github.com/Perfect-Abstractions/Compose/issues) and [discussions](https://github.com/Perfect-Abstractions/Compose/discussions) to get familiar with the project and find ways to contribute.
 
