@@ -33,6 +33,8 @@ New contributors are welcome. Choose the [issues](https://github.com/Perfect-Abs
 
 We'll answer you and assign you to issues so you can start.
 
+**Browse our [issues](https://github.com/Perfect-Abstractions/Compose/issues) and [discussions](https://github.com/Perfect-Abstractions/Compose/discussions) to get familiar with the project and find ways to contribute.**
+
 Look at the [ERC20 and ERC721 implementations](./src/) to see examples of how things are written in this library.
 
 ## Development Setup

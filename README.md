@@ -91,9 +91,7 @@ Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 3. Follow our [contribution guidelines](CONTRIBUTING.md)
 4. Join our [Discord](https://discord.gg/DCBD2UKbxc) for discussions
 
-
-
-
+Browse our [issues](https://github.com/Perfect-Abstractions/Compose/issues) and [discussions](https://github.com/Perfect-Abstractions/Compose/discussions) to get familiar with the project and find ways to contribute.
 
 
 ## Usage
