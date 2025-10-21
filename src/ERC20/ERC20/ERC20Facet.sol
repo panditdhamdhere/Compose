@@ -237,7 +237,7 @@ contract ERC20Facet {
             s.balanceOf[_account] = balance - _value;
             s.totalSupply -= _value;
         }
-        emit Transfer(msg.sender, address(0), _value);
+        emit Transfer(_account, address(0), _value);
     }
 
     // EIP-2612 Permit Extension
