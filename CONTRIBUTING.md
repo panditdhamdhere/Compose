@@ -68,9 +68,10 @@ Once you are assigned to an issue:
 1. Fork the repository
 2. Create a new branch for your work
 3. Implement your changes
-4. Run tests to ensure everything works
-5. Submit a pull request
-6. We will review it and merge it and/or give you feedback on the work
+4. Format your code: `forge fmt`
+5. Run tests to ensure everything works
+6. Submit a pull request
+7. We will review it and merge it and/or give you feedback on the work
 
 You can also make new issues to suggest new functionality or work.
 
@@ -213,7 +214,7 @@ Before submitting a pull request:
 - Update gas snapshots: `forge snapshot`
 - Ensure your code follows the banned features list
 - Test your changes thoroughly
-- Write tests for new functionality
+- Write tests for new functionality 
 - Ensure test coverage is maintained or improved
 
 ### Running Tests
@@ -237,6 +238,9 @@ forge test --gas-report
 - Use descriptive test names
 - Follow the existing test patterns in the codebase
 - Include gas optimization tests where relevant
+- Only make a pull request with full test coverage of your code.
+
+**Note**: If you don't want to write tests for new functionality then we can find someone to work with you to write the tests.
 
 ## Available Commands
 
