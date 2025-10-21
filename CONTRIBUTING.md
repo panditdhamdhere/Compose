@@ -208,7 +208,7 @@ The design and implementation of Compose is based on the following design princi
 
    If you need to modify the functionality of standard ERC721 functions, then in that case you cannot use onchain composition. You can make your own custom ERC721 facet by copying the `ERC721Facet.sol` file in Compose and make the necessary changes, or you can inherit the `ERC721Facet`.
 
-7. **Maintain compatibility with existing standards, libraries, and systems**
+#### 7. Maintain compatibility with existing standards, libraries, and systems:
    We want things we build to interoperate and be compatible with existing tools, systems, and expectations. So when writing a smart contract, or particular functionality, find out if there are implementation details that are already established that affect how the functionality works, and make sure your implementation works the way that will be expected. I'm not talking about how the code is written, but how it works, how it functions. We can write our code better (more clear, more readable, and better documented), but make it function the same as established smart contract functionality.
 
    When implementing new functionality, here are some things you need to consider and do to ensure interoperability and to meet existing expectations of functionality:
@@ -218,7 +218,7 @@ The design and implementation of Compose is based on the following design princi
    3. Are there existing widespread systems, (for example OpenSea, other NFT exchanges, and DAO and voting systems), which expect contracts to function a certain way? Match it.
 
 ### Diamond Contract Development
-- Design for ERC-2535 diamond standard compliance
+- Design for [ERC-2535 diamond standard](https://eips.ethereum.org/EIPS/eip-2535) compliance
 - Create reusable facets for maximum onchain composability
 - Use diamond storage patterns for state management
 - Follow established ERC standards for interoperability
