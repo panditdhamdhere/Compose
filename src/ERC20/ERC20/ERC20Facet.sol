@@ -287,6 +287,9 @@ contract ERC20Facet {
         bytes32 _r,
         bytes32 _s
     ) external {
+        if (_spender == address(0)) {
+            revert ERC20InvalidSpender(address(0));
+        }
         if (block.timestamp > _deadline) {
             revert ERC2612InvalidSignature(_owner, _spender, _value, _deadline, _v, _r, _s);
         }
