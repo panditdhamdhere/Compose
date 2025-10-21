@@ -25,7 +25,7 @@ Please take the time to read this guide and explore the codebase to get a sense 
 
 **⚠️ IMPORTANT**: Compose is at a very early stage and is currently only available to contributors for building the library. It is **NOT production ready**.
 
-The Solidity feature ban only applies to the library itself. It does not apply to the users of the library -- the people who will use this library to make their diamonds. 
+The Solidity feature ban only applies to the library itself. It does not apply to tests. It does not apply to the users of the library -- the people who will use this library to make their diamonds. 
 
 ***It is our job to help users do what they want to do.***
 
@@ -96,7 +96,7 @@ This is the perfect place to:
 - Ask "what if" questions
 - Explore possibilities before committing to implementation
 
-Once there is a clear idea of what we want to do, we will create the required issues and assign them based on priority and complexity.
+Once you have a clear idea of what you want to do, [create an issue](https://github.com/Perfect-Abstractions/Compose/issues/new). Provide as much data as you can and we will give you the go ahead to start or give more feedback about it.
 
 ## Code Standards
 
@@ -154,7 +154,7 @@ The following Solidity features are **banned**:
 
 Other Solidity features will likely be added to this ban list.
 
-**Note** that the feature ban applies to the smart contracts and libraries within Compose. It does not apply to the users that use Compose. Users can do what they want to do and it is our job to help them.
+**Note** that the feature ban applies to the smart contracts and libraries within Compose. It does not apply to tests or scripts. It does not apply to the users that use Compose. Users can do what they want to do and it is our job to help them.
 
 ### Design Principles
 
@@ -214,18 +214,17 @@ The design and implementation of Compose is based on the following design princi
    When implementing new functionality, here are some things you need to consider and do to ensure interoperability and to meet existing expectations of functionality:
 
    1. Are there any [ERC standards](https://eips.ethereum.org/erc) that cover the functionality? If so, should probably follow that.
-   2. Has an existing established library such as [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable) already implemented that functionality in their library? Make sure your version functions the same -- emits the same events, issues the same error messages, reverts when it reverts, etc. Generally we want to match existing widespread adopted functionality. We don't want to surprise our users, unless it is a good surprise.
+   2. Has an existing established library such as [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable) already implemented that functionality in their library? Make sure your version functions the same -- emits the same events, issues the same error messages, reverts when it reverts, etc. Some judgement is required here, don't do the same thing as another library if it isn't good and doesn't really matter for compatibility. Generally we want to match existing widespread adopted functionality that matters. We don't want to surprise our users, unless it is a good surprise.
    3. Are there existing widespread systems, (for example OpenSea, other NFT exchanges, and DAO and voting systems), which expect contracts to function a certain way? Match it.
 
 ### Diamond Contract Development
-- Design for ERC-2535 diamond standard compliance
 - Create reusable facets for maximum onchain composability
 - Use diamond storage patterns for state management
 - Follow established ERC standards for interoperability
 
 ### Security Considerations
 - All functions must be thoroughly tested
-- Gas optimization is important but security comes first
+- Gas efficiency is important but how easy the code is to read is more important
 - Follow established patterns from existing implementations
 - Consider edge cases and potential attack vectors
 
@@ -342,9 +341,10 @@ Examples of behavior that contributes to creating a positive environment include
 ## Getting Help
 
 If you have contribution or development questions:
-- Create an issue on GitHub
+- See if the [README](https://github.com/Perfect-Abstractions/Compose/blob/main/README.md) or this CONTRIBUTING document answers your question.
+- Start a [discussion](https://github.com/Perfect-Abstractions/Compose/discussions/new?category=q-a)
 - Join our Discord: https://discord.gg/DCBD2UKbxc
-- Contact the maintainers
+- Contact Nick Mudge
 
 ### Community Guidelines
 - Be respectful and constructive in all interactions
