@@ -22,10 +22,6 @@ contract ERC20Facet {
     /// @param _needed Amount required to complete the operation.
     error ERC20InsufficientAllowance(address _spender, uint256 _allowance, uint256 _needed);
 
-    /// @notice Thrown when the approver address is invalid (e.g., zero address).
-    /// @param _approver Invalid approver address.
-    error ERC20InvalidApprover(address _approver);
-
     /// @notice Thrown when the spender address is invalid (e.g., zero address).
     /// @param _spender Invalid spender address.
     error ERC20InvalidSpender(address _spender);
