@@ -4,7 +4,6 @@ pragma solidity >=0.8.30;
 /// @title ERC-721 Token Standard Interface
 /// @notice Interface for ERC-721 token contracts with custom errors
 /// @dev This interface includes all custom errors used by ERC-721 implementations
-/// @author ogazboiz
 interface IERC721 {
     /// @notice Error indicating the queried owner address is invalid (zero address).
     error ERC721InvalidOwner(address _owner);

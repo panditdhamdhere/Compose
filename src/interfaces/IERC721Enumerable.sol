@@ -4,7 +4,6 @@ pragma solidity >=0.8.30;
 /// @title ERC-721 Enumerable Token Standard Interface
 /// @notice Interface for ERC-721 token contracts with enumeration support and custom errors
 /// @dev This interface includes all custom errors used by ERC-721 Enumerable implementations
-/// @author ogazboiz
 interface IERC721Enumerable {
     /// @notice Thrown when querying or transferring from an invalid owner address.
     error ERC721InvalidOwner(address _owner);
