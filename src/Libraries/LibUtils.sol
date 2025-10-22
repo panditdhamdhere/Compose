@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
@@ -6,7 +5,6 @@ pragma solidity >=0.8.30;
 /// @notice Provides common utility functions for Solidity contracts.
 /// @dev Implements functions for data type conversions.
 library LibUtils {
-
     /// From openzeppelin/contracts/utils/Strings.sol
     /// @dev Converts a `uint256` to its ASCII `string` decimal representation.
     function toString(uint256 value) internal pure returns (string memory) {
