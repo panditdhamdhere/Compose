@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
+import {IERC173} from "../IERC173.sol";
+
 /// @title ERC-173 Contract Ownership
 library LibERC173 {
     /// @dev This emits when ownership of a contract changes.
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
-    /// @notice Thrown when attempting to transfer ownership of a renounced contract.
-    error OwnableAlreadyRenounced();
 
     bytes32 constant STORAGE_POSITION = keccak256("compose.erc173");
 
@@ -37,7 +36,7 @@ library LibERC173 {
     /// @param _newOwner The address of the new owner of the contract
     function transferOwnership(address _newOwner) internal {
         ERC173Storage storage s = getStorage();
-        if (s.owner == address(0)) revert OwnableAlreadyRenounced();
+        if (s.owner == address(0)) revert IERC173.OwnableAlreadyRenounced();
         address previousOwner = s.owner;
         s.owner = _newOwner;
 

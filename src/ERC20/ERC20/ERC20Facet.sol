@@ -1,42 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
+import {IERC20} from "../IERC20.sol";
+
 contract ERC20Facet {
-    /// @notice Thrown when an account has insufficient balance for a transfer or burn.
-    /// @param _sender Address attempting the transfer.
-    /// @param _balance Current balance of the sender.
-    /// @param _needed Amount required to complete the operation.
-    error ERC20InsufficientBalance(address _sender, uint256 _balance, uint256 _needed);
-
-    /// @notice Thrown when the sender address is invalid (e.g., zero address).
-    /// @param _sender Invalid sender address.
-    error ERC20InvalidSender(address _sender);
-
-    /// @notice Thrown when the receiver address is invalid (e.g., zero address).
-    /// @param _receiver Invalid receiver address.
-    error ERC20InvalidReceiver(address _receiver);
-
-    /// @notice Thrown when a spender tries to use more than the approved allowance.
-    /// @param _spender Address attempting to spend.
-    /// @param _allowance Current allowance for the spender.
-    /// @param _needed Amount required to complete the operation.
-    error ERC20InsufficientAllowance(address _spender, uint256 _allowance, uint256 _needed);
-
-    /// @notice Thrown when the spender address is invalid (e.g., zero address).
-    /// @param _spender Invalid spender address.
-    error ERC20InvalidSpender(address _spender);
-
-    /// @notice Thrown when a permit signature is invalid or expired.
-    /// @param _owner The address that signed the permit.
-    /// @param _spender The address that was approved.
-    /// @param _value The amount that was approved.
-    /// @param _deadline The deadline for the permit.
-    /// @param _v The recovery byte of the signature.
-    /// @param _r The r value of the signature.
-    /// @param _s The s value of the signature.
-    error ERC2612InvalidSignature(
-        address _owner, address _spender, uint256 _value, uint256 _deadline, uint8 _v, bytes32 _r, bytes32 _s
-    );
 
     /// @notice Emitted when an approval is made for a spender by an owner.
     /// @param _owner The address granting the allowance.
@@ -139,7 +106,7 @@ contract ERC20Facet {
     function approve(address _spender, uint256 _value) external {
         ERC20Storage storage s = getStorage();
         if (_spender == address(0)) {
-            revert ERC20InvalidSpender(address(0));
+            revert IERC20.ERC20InvalidSpender(address(0));
         }
         s.allowances[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
@@ -154,11 +121,11 @@ contract ERC20Facet {
     function transfer(address _to, uint256 _value) external {
         ERC20Storage storage s = getStorage();
         if (_to == address(0)) {
-            revert ERC20InvalidReceiver(address(0));
+            revert IERC20.ERC20InvalidReceiver(address(0));
         }
         uint256 fromBalance = s.balanceOf[msg.sender];
         if (fromBalance < _value) {
-            revert ERC20InsufficientBalance(msg.sender, fromBalance, _value);
+            revert IERC20.ERC20InsufficientBalance(msg.sender, fromBalance, _value);
         }
         unchecked {
             s.balanceOf[msg.sender] = fromBalance - _value;
@@ -177,18 +144,18 @@ contract ERC20Facet {
     function transferFrom(address _from, address _to, uint256 _value) external {
         ERC20Storage storage s = getStorage();
         if (_from == address(0)) {
-            revert ERC20InvalidSender(address(0));
+            revert IERC20.ERC20InvalidSender(address(0));
         }
         if (_to == address(0)) {
-            revert ERC20InvalidReceiver(address(0));
+            revert IERC20.ERC20InvalidReceiver(address(0));
         }
         uint256 currentAllowance = s.allowances[_from][msg.sender];
         if (currentAllowance < _value) {
-            revert ERC20InsufficientAllowance(msg.sender, currentAllowance, _value);
+            revert IERC20.ERC20InsufficientAllowance(msg.sender, currentAllowance, _value);
         }
         uint256 fromBalance = s.balanceOf[_from];
         if (fromBalance < _value) {
-            revert ERC20InsufficientBalance(_from, fromBalance, _value);
+            revert IERC20.ERC20InsufficientBalance(_from, fromBalance, _value);
         }
         unchecked {
             s.allowances[_from][msg.sender] = currentAllowance - _value;
@@ -207,7 +174,7 @@ contract ERC20Facet {
         ERC20Storage storage s = getStorage();
         uint256 balance = s.balanceOf[msg.sender];
         if (balance < _value) {
-            revert ERC20InsufficientBalance(msg.sender, balance, _value);
+            revert IERC20.ERC20InsufficientBalance(msg.sender, balance, _value);
         }
         unchecked {
             s.balanceOf[msg.sender] = balance - _value;
@@ -226,11 +193,11 @@ contract ERC20Facet {
         ERC20Storage storage s = getStorage();
         uint256 currentAllowance = s.allowances[_account][msg.sender];
         if (currentAllowance < _value) {
-            revert ERC20InsufficientAllowance(msg.sender, currentAllowance, _value);
+            revert IERC20.ERC20InsufficientAllowance(msg.sender, currentAllowance, _value);
         }
         uint256 balance = s.balanceOf[_account];
         if (balance < _value) {
-            revert ERC20InsufficientBalance(_account, balance, _value);
+            revert IERC20.ERC20InsufficientBalance(_account, balance, _value);
         }
         unchecked {
             s.allowances[_account][msg.sender] = currentAllowance - _value;
@@ -290,10 +257,10 @@ contract ERC20Facet {
         bytes32 _s
     ) external {
         if (_spender == address(0)) {
-            revert ERC20InvalidSpender(address(0));
+            revert IERC20.ERC20InvalidSpender(address(0));
         }
         if (block.timestamp > _deadline) {
-            revert ERC2612InvalidSignature(_owner, _spender, _value, _deadline, _v, _r, _s);
+            revert IERC20.ERC2612InvalidSignature(_owner, _spender, _value, _deadline, _v, _r, _s);
         }
 
         ERC20Storage storage s = getStorage();
@@ -327,7 +294,7 @@ contract ERC20Facet {
 
         address signer = ecrecover(hash, _v, _r, _s);
         if (signer != _owner || signer == address(0)) {
-            revert ERC2612InvalidSignature(_owner, _spender, _value, _deadline, _v, _r, _s);
+            revert IERC20.ERC2612InvalidSignature(_owner, _spender, _value, _deadline, _v, _r, _s);
         }
 
         s.allowances[_owner][_spender] = _value;

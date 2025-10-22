@@ -2,49 +2,12 @@
 pragma solidity >=0.8.30;
 
 import {LibUtils} from "../../Libraries/LibUtils.sol";
-
-/// @title ERC-721 Token Receiver Interface
-/// @notice Interface for contracts that want to handle safe transfers of ERC-721 tokens.
-/// @dev Contracts implementing this must return the selector to confirm token receipt.
-interface IERC721Receiver {
-    /// @notice Handles the receipt of an NFT.
-    /// @param _operator The address which called `safeTransferFrom`.
-    /// @param _from The previous owner of the token.
-    /// @param _tokenId The NFT identifier being transferred.
-    /// @param _data Additional data with no specified format.
-    /// @return The selector to confirm the token transfer.
-    function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes calldata _data)
-        external
-        returns (bytes4);
-}
+import {IERC721, IERC721Receiver} from "../IERC721.sol";
 
 /// @title ERC-721 Token (Zero-Dependency Implementation)
 /// @notice A complete, dependency-free ERC-721 implementation using the diamond storage pattern.
 /// @dev This facet provides metadata, ownership, approvals, safe transfers, minting, burning, and helpers.
 contract ERC721Facet {
-    /// @notice Error indicating the queried owner address is invalid (zero address).
-    error ERC721InvalidOwner(address _owner);
-
-    /// @notice Error indicating that the queried token does not exist.
-    error ERC721NonexistentToken(uint256 _tokenId);
-
-    /// @notice Error indicating the sender does not match the token owner.
-    error ERC721IncorrectOwner(address _sender, uint256 _tokenId, address _owner);
-
-    /// @notice Error indicating the sender address is invalid.
-    error ERC721InvalidSender(address _sender);
-
-    /// @notice Error indicating the receiver address is invalid.
-    error ERC721InvalidReceiver(address _receiver);
-
-    /// @notice Error indicating the operator lacks approval to transfer the given token.
-    error ERC721InsufficientApproval(address _operator, uint256 _tokenId);
-
-    /// @notice Error indicating the approver address is invalid.
-    error ERC721InvalidApprover(address _approver);
-
-    /// @notice Error indicating the operator address is invalid.
-    error ERC721InvalidOperator(address _operator);
 
     /// @notice Emitted when ownership of an NFT changes by any mechanism.
     event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
@@ -95,7 +58,7 @@ contract ERC721Facet {
     /// @return The balance (number of tokens) owned by `_owner`.
     function balanceOf(address _owner) external view returns (uint256) {
         if (_owner == address(0)) {
-            revert ERC721InvalidOwner(_owner);
+            revert IERC721.ERC721InvalidOwner(_owner);
         }
         return getStorage().balanceOf[_owner];
     }
@@ -106,7 +69,7 @@ contract ERC721Facet {
     function ownerOf(uint256 _tokenId) public view returns (address) {
         address owner = getStorage().ownerOf[_tokenId];
         if (owner == address(0)) {
-            revert ERC721NonexistentToken(_tokenId);
+            revert IERC721.ERC721NonexistentToken(_tokenId);
         }
         return owner;
     }
@@ -117,7 +80,7 @@ contract ERC721Facet {
     function getApproved(uint256 _tokenId) external view returns (address) {
         address owner = getStorage().ownerOf[_tokenId];
         if (owner == address(0)) {
-            revert ERC721NonexistentToken(_tokenId);
+            revert IERC721.ERC721NonexistentToken(_tokenId);
         }
         return getStorage().approved[_tokenId];
     }
@@ -137,10 +100,10 @@ contract ERC721Facet {
         ERC721Storage storage s = getStorage();
         address owner = s.ownerOf[_tokenId];
         if (owner == address(0)) {
-            revert ERC721NonexistentToken(_tokenId);
+            revert IERC721.ERC721NonexistentToken(_tokenId);
         }
         if (msg.sender != owner && !s.isApprovedForAll[owner][msg.sender]) {
-            revert ERC721InvalidApprover(_approved);
+            revert IERC721.ERC721InvalidApprover(_approved);
         }
         s.approved[_tokenId] = _approved;
         emit Approval(owner, _approved, _tokenId);
@@ -151,7 +114,7 @@ contract ERC721Facet {
     /// @param _approved True to approve, false to revoke.
     function setApprovalForAll(address _operator, bool _approved) external {
         if (_operator == address(0)) {
-            revert ERC721InvalidOperator(_operator);
+            revert IERC721.ERC721InvalidOperator(_operator);
         }
         getStorage().isApprovedForAll[msg.sender][_operator] = _approved;
         emit ApprovalForAll(msg.sender, _operator, _approved);
@@ -164,18 +127,18 @@ contract ERC721Facet {
     function internalTransferFrom(address _from, address _to, uint256 _tokenId) internal {
         ERC721Storage storage s = getStorage();
         if (_to == address(0)) {
-            revert ERC721InvalidReceiver(address(0));
+            revert IERC721.ERC721InvalidReceiver(address(0));
         }
         address owner = s.ownerOf[_tokenId];
         if (owner == address(0)) {
-            revert ERC721NonexistentToken(_tokenId);
+            revert IERC721.ERC721NonexistentToken(_tokenId);
         }
         if (owner != _from) {
-            revert ERC721IncorrectOwner(_from, _tokenId, owner);
+            revert IERC721.ERC721IncorrectOwner(_from, _tokenId, owner);
         }
         if (msg.sender != _from) {
             if (!s.isApprovedForAll[_from][msg.sender] && msg.sender != s.approved[_tokenId]) {
-                revert ERC721InsufficientApproval(msg.sender, _tokenId);
+                revert IERC721.ERC721InsufficientApproval(msg.sender, _tokenId);
             }
         }
         delete s.approved[_tokenId];
@@ -205,11 +168,11 @@ contract ERC721Facet {
         if (_to.code.length > 0) {
             try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, "") returns (bytes4 returnValue) {
                 if (returnValue != IERC721Receiver.onERC721Received.selector) {
-                    revert ERC721InvalidReceiver(_to);
+                    revert IERC721.ERC721InvalidReceiver(_to);
                 }
             } catch (bytes memory reason) {
                 if (reason.length == 0) {
-                    revert ERC721InvalidReceiver(_to);
+                    revert IERC721.ERC721InvalidReceiver(_to);
                 } else {
                     assembly ("memory-safe") {
                         revert(add(reason, 0x20), mload(reason))
@@ -229,11 +192,11 @@ contract ERC721Facet {
         if (_to.code.length > 0) {
             try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data) returns (bytes4 returnValue) {
                 if (returnValue != IERC721Receiver.onERC721Received.selector) {
-                    revert ERC721InvalidReceiver(_to);
+                    revert IERC721.ERC721InvalidReceiver(_to);
                 }
             } catch (bytes memory reason) {
                 if (reason.length == 0) {
-                    revert ERC721InvalidReceiver(_to);
+                    revert IERC721.ERC721InvalidReceiver(_to);
                 } else {
                     assembly ("memory-safe") {
                         revert(add(reason, 0x20), mload(reason))
@@ -250,7 +213,7 @@ contract ERC721Facet {
         ERC721Storage storage s = getStorage();
         address owner = s.ownerOf[_tokenId];
         if (owner == address(0)) {
-            revert ERC721NonexistentToken(_tokenId);
+            revert IERC721.ERC721NonexistentToken(_tokenId);
         }
 
         if (bytes(s.baseURI).length == 0) {
