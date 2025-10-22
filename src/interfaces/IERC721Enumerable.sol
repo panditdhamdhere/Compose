@@ -106,6 +106,6 @@ interface IERC721Enumerable {
     /// @param _from The current owner of the token.
     /// @param _to The recipient address.
     /// @param _tokenId The token ID to transfer.
-    /// @param _data Additional data to send to the receiver contract.
+    /// @param _data Additional data to send to the receiver.
     function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes calldata _data) external;
 }
