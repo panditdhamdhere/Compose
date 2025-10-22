@@ -9,19 +9,19 @@
 
 Before submitting this PR, please ensure:
 
- **1. Code follows the Solidity feature ban** - No inheritance, constructors, modifiers, public/private variables, external library functions, `using for` directives, or `selfdestruct`
+- [ ] **Code follows the Solidity feature ban** - No inheritance, constructors, modifiers, public/private variables, external library functions, `using for` directives, or `selfdestruct`
 
- **2. Code follows Design Principles** - Readable, uses diamond storage, favors composition over inheritance
+- [ ] **Code follows Design Principles** - Readable, uses diamond storage, favors composition over inheritance
 
- **3. Code matches the codebase style** - Consistent formatting, documentation, and patterns (e.g. ERC20Facet.sol)
+- [ ] **Code matches the codebase style** - Consistent formatting, documentation, and patterns (e.g. ERC20Facet.sol)
 
- **4. Code is formatted with `forge fmt`**
+- [ ] **Code is formatted with `forge fmt`**
 
- **5. Tests are included** - All new functionality has comprehensive tests
+- [ ] **Tests are included** - All new functionality has comprehensive tests
 
- **6. All tests pass** - Run `forge test` and ensure everything works
+- [ ] **All tests pass** - Run `forge test` and ensure everything works
 
- **7. Documentation updated** - If applicable, update relevant documentation
+- [ ] **Documentation updated** - If applicable, update relevant documentation
 
 Make sure to follow the [CONTRIBUTING.md](https://github.com/Perfect-Abstractions/Compose/blob/main/CONTRIBUTING.md) guidelines.
 
