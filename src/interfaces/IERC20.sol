@@ -4,6 +4,7 @@ pragma solidity >=0.8.30;
 /// @title ERC-20 Token Standard Interface
 /// @notice Interface for ERC-20 token contracts with custom errors
 /// @dev This interface includes all custom errors used by ERC-20 implementations
+/// @author ogazboiz
 interface IERC20 {
     /// @notice Thrown when an account has insufficient balance for a transfer or burn.
     /// @param _sender Address attempting the transfer.
