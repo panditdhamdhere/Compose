@@ -50,7 +50,7 @@ contract ERC721Facet {
     event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
 
     /// @notice Emitted when the approved address for an NFT is changed or reaffirmed.
-    event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
+    event Approval(address indexed _owner, address indexed _to, uint256 indexed _tokenId);
 
     /// @notice Emitted when an operator is enabled or disabled for an owner.
     event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
@@ -131,19 +131,19 @@ contract ERC721Facet {
     }
 
     /// @notice Approves another address to transfer the given token ID.
-    /// @param _approved The address to be approved.
+    /// @param _to The address to be approved.
     /// @param _tokenId The token ID to approve.
-    function approve(address _approved, uint256 _tokenId) external {
+    function approve(address _to, uint256 _tokenId) external {
         ERC721Storage storage s = getStorage();
         address owner = s.ownerOf[_tokenId];
         if (owner == address(0)) {
             revert ERC721NonexistentToken(_tokenId);
         }
         if (msg.sender != owner && !s.isApprovedForAll[owner][msg.sender]) {
-            revert ERC721InvalidApprover(_approved);
+            revert ERC721InvalidApprover(msg.sender);
         }
-        s.approved[_tokenId] = _approved;
-        emit Approval(owner, _approved, _tokenId);
+        s.approved[_tokenId] = _to;
+        emit Approval(owner, _to, _tokenId);
     }
 
     /// @notice Approves or revokes permission for an operator to manage all caller's assets.
