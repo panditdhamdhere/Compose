@@ -1,13 +1,43 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-import {IERC721Enumerable} from "../IERC721Enumerable.sol";
-import {IERC721Receiver} from "../IERC721.sol";
+/// @title ERC721 Receiver Interface
+/// @notice Interface for contracts that want to support safe ERC721 token transfers.
+/// @dev Implementers must return the function selector to confirm token receipt.
+interface IERC721Receiver {
+    /// @notice Handles the receipt of an NFT.
+    /// @param _operator The address which initiated the transfer.
+    /// @param _from The previous owner of the token.
+    /// @param _tokenId The NFT identifier being transferred.
+    /// @param _data Additional data with no specified format.
+    /// @return A bytes4 value indicating acceptance of the transfer.
+    function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes calldata _data)
+        external
+        returns (bytes4);
+}
 
 /// @title ERC-721 Enumerable Token (Zero-dependency Implementation)
 /// @notice A complete, dependency-free ERC-721 implementation with enumeration support using a custom storage layout.
 /// @dev Provides metadata, ownership, approvals, enumeration, safe transfers, minting, and burning features.
 contract ERC721EnumerableFacet {
+    /// @notice Thrown when querying or transferring from an invalid owner address.
+    error ERC721InvalidOwner(address _owner);
+    /// @notice Thrown when operating on a non-existent token.
+    error ERC721NonexistentToken(uint256 _tokenId);
+    /// @notice Thrown when the provided owner does not match the actual owner of the token.
+    error ERC721IncorrectOwner(address _sender, uint256 _tokenId, address _owner);
+    /// @notice Thrown when the sender address is invalid.
+    error ERC721InvalidSender(address _sender);
+    /// @notice Thrown when the receiver address is invalid.
+    error ERC721InvalidReceiver(address _receiver);
+    /// @notice Thrown when the operator lacks sufficient approval for a transfer.
+    error ERC721InsufficientApproval(address _operator, uint256 _tokenId);
+    /// @notice Thrown when an invalid approver is provided.
+    error ERC721InvalidApprover(address _approver);
+    /// @notice Thrown when an invalid operator is provided.
+    error ERC721InvalidOperator(address _operator);
+    /// @notice Thrown when an index is out of bounds during enumeration.
+    error ERC721OutOfBoundsIndex(address _owner, uint256 _index);
 
     /// @notice Emitted when a token is transferred between addresses.
     event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
@@ -64,7 +94,7 @@ contract ERC721EnumerableFacet {
     /// @return The balance (number of tokens owned).
     function balanceOf(address _owner) external view returns (uint256) {
         if (_owner == address(0)) {
-            revert IERC721Enumerable.ERC721InvalidOwner(_owner);
+            revert ERC721InvalidOwner(_owner);
         }
         return getStorage().ownedTokensOf[_owner].length;
     }
@@ -75,7 +105,7 @@ contract ERC721EnumerableFacet {
     function ownerOf(uint256 _tokenId) public view returns (address) {
         address owner = getStorage().ownerOf[_tokenId];
         if (owner == address(0)) {
-            revert IERC721Enumerable.ERC721NonexistentToken(_tokenId);
+            revert ERC721NonexistentToken(_tokenId);
         }
         return owner;
     }
@@ -87,7 +117,7 @@ contract ERC721EnumerableFacet {
     function tokenOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256) {
         ERC721EnumerableStorage storage s = getStorage();
         if (_index >= s.ownedTokensOf[_owner].length) {
-            revert IERC721Enumerable.ERC721OutOfBoundsIndex(_owner, _index);
+            revert ERC721OutOfBoundsIndex(_owner, _index);
         }
         return s.ownedTokensOf[_owner][_index];
     }
@@ -98,7 +128,7 @@ contract ERC721EnumerableFacet {
     function getApproved(uint256 _tokenId) external view returns (address) {
         address owner = getStorage().ownerOf[_tokenId];
         if (owner == address(0)) {
-            revert IERC721Enumerable.ERC721NonexistentToken(_tokenId);
+            revert ERC721NonexistentToken(_tokenId);
         }
         return getStorage().approved[_tokenId];
     }
@@ -118,10 +148,10 @@ contract ERC721EnumerableFacet {
         ERC721EnumerableStorage storage s = getStorage();
         address owner = s.ownerOf[_tokenId];
         if (owner == address(0)) {
-            revert IERC721Enumerable.ERC721NonexistentToken(_tokenId);
+            revert ERC721NonexistentToken(_tokenId);
         }
         if (msg.sender != owner && !s.isApprovedForAll[owner][msg.sender]) {
-            revert IERC721Enumerable.ERC721InvalidApprover(_approved);
+            revert ERC721InvalidApprover(_approved);
         }
         s.approved[_tokenId] = _approved;
         emit Approval(owner, _approved, _tokenId);
@@ -132,7 +162,7 @@ contract ERC721EnumerableFacet {
     /// @param _approved True to approve, false to revoke.
     function setApprovalForAll(address _operator, bool _approved) external {
         if (_operator == address(0)) {
-            revert IERC721Enumerable.ERC721InvalidOperator(_operator);
+            revert ERC721InvalidOperator(_operator);
         }
         getStorage().isApprovedForAll[msg.sender][_operator] = _approved;
         emit ApprovalForAll(msg.sender, _operator, _approved);
@@ -145,18 +175,18 @@ contract ERC721EnumerableFacet {
     function internalTransferFrom(address _from, address _to, uint256 _tokenId) internal {
         ERC721EnumerableStorage storage s = getStorage();
         if (_to == address(0)) {
-            revert IERC721Enumerable.ERC721InvalidReceiver(address(0));
+            revert ERC721InvalidReceiver(address(0));
         }
         address owner = s.ownerOf[_tokenId];
         if (owner == address(0)) {
-            revert IERC721Enumerable.ERC721NonexistentToken(_tokenId);
+            revert ERC721NonexistentToken(_tokenId);
         }
         if (owner != _from) {
-            revert IERC721Enumerable.ERC721IncorrectOwner(_from, _tokenId, owner);
+            revert ERC721IncorrectOwner(_from, _tokenId, owner);
         }
         if (msg.sender != _from) {
             if (!s.isApprovedForAll[_from][msg.sender] && msg.sender != s.approved[_tokenId]) {
-                revert IERC721Enumerable.ERC721InsufficientApproval(msg.sender, _tokenId);
+                revert ERC721InsufficientApproval(msg.sender, _tokenId);
             }
         }
         delete s.approved[_tokenId];
@@ -194,10 +224,10 @@ contract ERC721EnumerableFacet {
         if (_to.code.length > 0) {
             try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, "") returns (bytes4 returnValue) {
                 if (returnValue != IERC721Receiver.onERC721Received.selector) {
-                    revert IERC721Enumerable.ERC721InvalidReceiver(_to);
+                    revert ERC721InvalidReceiver(_to);
                 }
             } catch (bytes memory reason) {
-                if (reason.length == 0) revert IERC721Enumerable.ERC721InvalidReceiver(_to);
+                if (reason.length == 0) revert ERC721InvalidReceiver(_to);
                 assembly ("memory-safe") {
                     revert(add(reason, 0x20), mload(reason))
                 }
@@ -215,10 +245,10 @@ contract ERC721EnumerableFacet {
         if (_to.code.length > 0) {
             try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data) returns (bytes4 returnValue) {
                 if (returnValue != IERC721Receiver.onERC721Received.selector) {
-                    revert IERC721Enumerable.ERC721InvalidReceiver(_to);
+                    revert ERC721InvalidReceiver(_to);
                 }
             } catch (bytes memory reason) {
-                if (reason.length == 0) revert IERC721Enumerable.ERC721InvalidReceiver(_to);
+                if (reason.length == 0) revert ERC721InvalidReceiver(_to);
                 assembly ("memory-safe") {
                     revert(add(reason, 0x20), mload(reason))
                 }

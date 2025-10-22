@@ -1,12 +1,33 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-import {IERC20} from "../../IERC20.sol";
-
 /// @title LibERC20 — ERC-20 Library
 /// @notice Provides internal functions and storage layout for ERC-20 token logic.
 /// @dev Uses ERC-8042 for storage location standardization and ERC-6093 for error conventions.
 library LibERC20 {
+    /// @notice Thrown when a sender attempts to transfer or burn more tokens than their balance.
+    /// @param _sender The address attempting the transfer or burn.
+    /// @param _balance The sender's current balance.
+    /// @param _needed The amount required to complete the operation.
+    error ERC20InsufficientBalance(address _sender, uint256 _balance, uint256 _needed);
+
+    /// @notice Thrown when the sender address is invalid (e.g., zero address).
+    /// @param _sender The invalid sender address.
+    error ERC20InvalidSender(address _sender);
+
+    /// @notice Thrown when the receiver address is invalid (e.g., zero address).
+    /// @param _receiver The invalid receiver address.
+    error ERC20InvalidReceiver(address _receiver);
+
+    /// @notice Thrown when a spender tries to spend more than their allowance.
+    /// @param _spender The address attempting to spend.
+    /// @param _allowance The current allowance.
+    /// @param _needed The required amount to complete the transfer.
+    error ERC20InsufficientAllowance(address _spender, uint256 _allowance, uint256 _needed);
+
+    /// @notice Thrown when the spender address is invalid (e.g., zero address).
+    /// @param _spender The invalid spender address.
+    error ERC20InvalidSpender(address _spender);
 
     /// @notice Emitted when tokens are transferred between addresses.
     /// @param _from The address tokens are transferred from.
@@ -52,7 +73,7 @@ library LibERC20 {
     function mint(address _account, uint256 _value) internal {
         ERC20Storage storage s = getStorage();
         if (_account == address(0)) {
-            revert IERC20.ERC20InvalidReceiver(address(0));
+            revert ERC20InvalidReceiver(address(0));
         }
         s.totalSupply += _value;
         s.balanceOf[_account] += _value;
@@ -66,11 +87,11 @@ library LibERC20 {
     function burn(address _account, uint256 _value) internal {
         ERC20Storage storage s = getStorage();
         if (_account == address(0)) {
-            revert IERC20.ERC20InvalidSender(address(0));
+            revert ERC20InvalidSender(address(0));
         }
         uint256 accountBalance = s.balanceOf[_account];
         if (accountBalance < _value) {
-            revert IERC20.ERC20InsufficientBalance(_account, accountBalance, _value);
+            revert ERC20InsufficientBalance(_account, accountBalance, _value);
         }
         unchecked {
             s.balanceOf[_account] = accountBalance - _value;
@@ -87,18 +108,18 @@ library LibERC20 {
     function transferFrom(address _from, address _to, uint256 _value) internal {
         ERC20Storage storage s = getStorage();
         if (_from == address(0)) {
-            revert IERC20.ERC20InvalidSender(address(0));
+            revert ERC20InvalidSender(address(0));
         }
         if (_to == address(0)) {
-            revert IERC20.ERC20InvalidReceiver(address(0));
+            revert ERC20InvalidReceiver(address(0));
         }
         uint256 currentAllowance = s.allowances[_from][msg.sender];
         if (currentAllowance < _value) {
-            revert IERC20.ERC20InsufficientAllowance(msg.sender, currentAllowance, _value);
+            revert ERC20InsufficientAllowance(msg.sender, currentAllowance, _value);
         }
         uint256 fromBalance = s.balanceOf[_from];
         if (fromBalance < _value) {
-            revert IERC20.ERC20InsufficientBalance(_from, fromBalance, _value);
+            revert ERC20InsufficientBalance(_from, fromBalance, _value);
         }
         unchecked {
             s.allowances[_from][msg.sender] = currentAllowance - _value;
@@ -115,11 +136,11 @@ library LibERC20 {
     function transfer(address _to, uint256 _value) internal {
         ERC20Storage storage s = getStorage();
         if (_to == address(0)) {
-            revert IERC20.ERC20InvalidReceiver(address(0));
+            revert ERC20InvalidReceiver(address(0));
         }
         uint256 fromBalance = s.balanceOf[msg.sender];
         if (fromBalance < _value) {
-            revert IERC20.ERC20InsufficientBalance(msg.sender, fromBalance, _value);
+            revert ERC20InsufficientBalance(msg.sender, fromBalance, _value);
         }
         unchecked {
             s.balanceOf[msg.sender] = fromBalance - _value;
@@ -134,7 +155,7 @@ library LibERC20 {
     /// @param _value The amount of tokens to approve.
     function approve(address _spender, uint256 _value) internal {
         if (_spender == address(0)) {
-            revert IERC20.ERC20InvalidSpender(address(0));
+            revert ERC20InvalidSpender(address(0));
         }
         ERC20Storage storage s = getStorage();
         s.allowances[msg.sender][_spender] = _value;

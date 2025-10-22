@@ -1,13 +1,33 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-import {IERC721Enumerable} from "../../IERC721Enumerable.sol";
-
 /// @title ERC-721 Enumerable Library for Compose
 /// @notice Provides internal logic for enumerable ERC-721 tokens using diamond storage.
 /// @dev Implements ERC-721 operations with token enumeration support (tracking owned and global tokens).
 /// Follows ERC-8042 for storage layout and ERC-6093 for standardized custom errors.
 library LibERC721 {
+    /// @notice Thrown when attempting to interact with a non-existent token.
+    /// @param _tokenId The ID of the token that does not exist.
+    error ERC721NonexistentToken(uint256 _tokenId);
+
+    /// @notice Thrown when the sender is not the owner of the token.
+    /// @param _sender The address attempting the operation.
+    /// @param _tokenId The ID of the token being transferred.
+    /// @param _owner The actual owner of the token.
+    error ERC721IncorrectOwner(address _sender, uint256 _tokenId, address _owner);
+
+    /// @notice Thrown when the sender address is invalid.
+    /// @param _sender The invalid sender address.
+    error ERC721InvalidSender(address _sender);
+
+    /// @notice Thrown when the receiver address is invalid.
+    /// @param _receiver The invalid receiver address.
+    error ERC721InvalidReceiver(address _receiver);
+
+    /// @notice Thrown when an operator lacks approval to manage a token.
+    /// @param _operator The address attempting the unauthorized operation.
+    /// @param _tokenId The ID of the token involved.
+    error ERC721InsufficientApproval(address _operator, uint256 _tokenId);
 
     /// @notice Emitted when ownership of a token changes, including minting and burning.
     /// @param _from The address transferring the token, or zero for minting.
@@ -52,18 +72,18 @@ library LibERC721 {
     function transferFrom(address _from, address _to, uint256 _tokenId, address _sender) internal {
         ERC721EnumerableStorage storage s = getStorage();
         if (_to == address(0)) {
-            revert IERC721Enumerable.ERC721InvalidReceiver(address(0));
+            revert ERC721InvalidReceiver(address(0));
         }
         address owner = s.ownerOf[_tokenId];
         if (owner == address(0)) {
-            revert IERC721Enumerable.ERC721NonexistentToken(_tokenId);
+            revert ERC721NonexistentToken(_tokenId);
         }
         if (owner != _from) {
-            revert IERC721Enumerable.ERC721IncorrectOwner(_from, _tokenId, owner);
+            revert ERC721IncorrectOwner(_from, _tokenId, owner);
         }
         if (_sender != _from) {
             if (!s.isApprovedForAll[_from][_sender] && _sender != s.approved[_tokenId]) {
-                revert IERC721Enumerable.ERC721InsufficientApproval(_sender, _tokenId);
+                revert ERC721InsufficientApproval(_sender, _tokenId);
             }
         }
 
@@ -91,10 +111,10 @@ library LibERC721 {
     function mint(address _to, uint256 _tokenId) internal {
         ERC721EnumerableStorage storage s = getStorage();
         if (_to == address(0)) {
-            revert IERC721Enumerable.ERC721InvalidReceiver(address(0));
+            revert ERC721InvalidReceiver(address(0));
         }
         if (s.ownerOf[_tokenId] != address(0)) {
-            revert IERC721Enumerable.ERC721InvalidSender(address(0));
+            revert ERC721InvalidSender(address(0));
         }
 
         s.ownedTokensIndexOf[_tokenId] = s.ownedTokensOf[_to].length;
@@ -112,11 +132,11 @@ library LibERC721 {
         ERC721EnumerableStorage storage s = getStorage();
         address owner = s.ownerOf[_tokenId];
         if (owner == address(0)) {
-            revert IERC721Enumerable.ERC721NonexistentToken(_tokenId);
+            revert ERC721NonexistentToken(_tokenId);
         }
         if (_sender != owner) {
             if (!s.isApprovedForAll[owner][_sender] && _sender != s.approved[_tokenId]) {
-                revert IERC721Enumerable.ERC721InsufficientApproval(_sender, _tokenId);
+                revert ERC721InsufficientApproval(_sender, _tokenId);
             }
         }
 
