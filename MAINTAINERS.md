@@ -7,6 +7,7 @@ Among Nick’s duties are defining the overall direction of the project, approvi
 
 - @maxnorm
 - @panditdhamdhere
+- @Haroldwonder
 
 # Volunteer Basis
 
