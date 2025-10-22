@@ -4,6 +4,7 @@ pragma solidity >=0.8.30;
 /// @title ERC-173 Contract Ownership Standard Interface
 /// @notice Interface for contract ownership with custom errors
 /// @dev This interface includes all custom errors used by ERC-173 implementations
+/// @author ogazboiz
 interface IERC173 {
     /// @notice Thrown when attempting to transfer ownership while not being the owner.
     error OwnableUnauthorizedAccount();
