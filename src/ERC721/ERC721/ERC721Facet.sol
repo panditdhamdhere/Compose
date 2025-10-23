@@ -18,7 +18,7 @@ interface IERC721Receiver {
         returns (bytes4);
 }
 
-/// @title ERC-721 Token (Zero-Dependency Implementation)
+/// @title ERC-721 Token
 /// @notice A complete, dependency-free ERC-721 implementation using the diamond storage pattern.
 /// @dev This facet provides metadata, ownership, approvals, safe transfers, minting, burning, and helpers.
 contract ERC721Facet {
@@ -88,6 +88,23 @@ contract ERC721Facet {
     /// @return The symbol of the token collection.
     function symbol() external view returns (string memory) {
         return getStorage().symbol;
+    }
+
+    /// @notice Provide the metadata URI for a given token ID.
+    /// @param _tokenId tokenID of the NFT to query the metadata from
+    /// @return the URI providing the detailed metadata of the specified tokenID
+    function tokenURI(uint256 _tokenId) external view returns (string memory) {
+        ERC721Storage storage s = getStorage();
+        address owner = s.ownerOf[_tokenId];
+        if (owner == address(0)) {
+            revert ERC721NonexistentToken(_tokenId);
+        }
+
+        if (bytes(s.baseURI).length == 0) {
+            return "";
+        }
+
+        return string.concat(s.baseURI, LibUtils.toString(_tokenId));
     }
 
     /// @notice Returns the number of tokens owned by a given address.
@@ -241,22 +258,5 @@ contract ERC721Facet {
                 }
             }
         }
-    }
-
-    /// @notice Provide the metadata URI for a given token ID.
-    /// @param _tokenId tokenID of the NFT to query the metadata from
-    /// @return the URI providing the detailed metadata of the specified tokenID
-    function tokenURI(uint256 _tokenId) external view returns (string memory) {
-        ERC721Storage storage s = getStorage();
-        address owner = s.ownerOf[_tokenId];
-        if (owner == address(0)) {
-            revert ERC721NonexistentToken(_tokenId);
-        }
-
-        if (bytes(s.baseURI).length == 0) {
-            return "";
-        }
-
-        return string.concat(s.baseURI, LibUtils.toString(_tokenId));
     }
 }

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
+import {LibUtils} from "../../Libraries/LibUtils.sol";
+
 /// @title ERC721 Receiver Interface
 /// @notice Interface for contracts that want to support safe ERC721 token transfers.
 /// @dev Implementers must return the function selector to confirm token receipt.
@@ -16,7 +18,7 @@ interface IERC721Receiver {
         returns (bytes4);
 }
 
-/// @title ERC-721 Enumerable Token (Zero-dependency Implementation)
+/// @title ERC-721 Enumerable Token
 /// @notice A complete, dependency-free ERC-721 implementation with enumeration support using a custom storage layout.
 /// @dev Provides metadata, ownership, approvals, enumeration, safe transfers, minting, and burning features.
 contract ERC721EnumerableFacet {
@@ -52,6 +54,7 @@ contract ERC721EnumerableFacet {
     struct ERC721EnumerableStorage {
         string name;
         string symbol;
+        string baseURI;
         mapping(uint256 tokenId => string tokenURI) tokenURIOf;
         mapping(uint256 tokenId => address owner) ownerOf;
         mapping(address owner => uint256[] ownedTokens) ownedTokensOf;
@@ -81,6 +84,23 @@ contract ERC721EnumerableFacet {
     /// @return The token symbol.
     function symbol() external view returns (string memory) {
         return getStorage().symbol;
+    }
+
+    /// @notice Provide the metadata URI for a given token ID.
+    /// @param _tokenId tokenID of the NFT to query the metadata from
+    /// @return the URI providing the detailed metadata of the specified tokenID
+    function tokenURI(uint256 _tokenId) external view returns (string memory) {
+        ERC721EnumerableStorage storage s = getStorage();
+        address owner = s.ownerOf[_tokenId];
+        if (owner == address(0)) {
+            revert ERC721NonexistentToken(_tokenId);
+        }
+
+        if (bytes(s.baseURI).length == 0) {
+            return "";
+        }
+
+        return string.concat(s.baseURI, LibUtils.toString(_tokenId));
     }
 
     /// @notice Returns the total number of tokens in existence.
