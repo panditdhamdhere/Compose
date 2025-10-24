@@ -51,7 +51,7 @@ jobs:
               const needsImprovementThreshold = 60;
               const poorThreshold = 40;
               
-              // Parse more detailed coverage info - get the LAST occurrence (summary)
+              // Parse more detailed coverage info - look for summary section
               const lines = content.split('\n');
               let totalLines = 0;
               let coveredLines = 0;
@@ -60,35 +60,48 @@ jobs:
               let totalBranches = 0;
               let coveredBranches = 0;
               
-              // Find the last occurrence of each metric (which should be the totals)
-              for (let i = lines.length - 1; i >= 0; i--) {
-                const line = lines[i];
-                
-                if (line.startsWith('LF:') && totalLines === 0) {
-                  const match = line.match(/LF:\s*(\d+)\s*LH:\s*(\d+)/);
-                  if (match) {
-                    totalLines = parseInt(match[1]);
-                    coveredLines = parseInt(match[2]);
-                  }
+              // Debug: log the content to see what we're working with
+              console.log('lcov.info content length:', content.length);
+              console.log('First 500 chars:', content.substring(0, 500));
+              console.log('Last 500 chars:', content.substring(content.length - 500));
+              
+              // Look for all LF:, FNF:, BRF: lines and take the last ones
+              const lfLines = lines.filter(line => line.startsWith('LF:'));
+              const fnfLines = lines.filter(line => line.startsWith('FNF:'));
+              const brfLines = lines.filter(line => line.startsWith('BRF:'));
+              
+              console.log('Found LF lines:', lfLines.length);
+              console.log('Found FNF lines:', fnfLines.length);
+              console.log('Found BRF lines:', brfLines.length);
+              
+              // Get the last occurrence of each (should be the totals)
+              if (lfLines.length > 0) {
+                const lastLF = lfLines[lfLines.length - 1];
+                const match = lastLF.match(/LF:\s*(\d+)\s*LH:\s*(\d+)/);
+                if (match) {
+                  totalLines = parseInt(match[1]);
+                  coveredLines = parseInt(match[2]);
+                  console.log('Total lines:', totalLines, 'Covered lines:', coveredLines);
                 }
-                if (line.startsWith('FNF:') && totalFunctions === 0) {
-                  const match = line.match(/FNF:\s*(\d+)\s*FNH:\s*(\d+)/);
-                  if (match) {
-                    totalFunctions = parseInt(match[1]);
-                    coveredFunctions = parseInt(match[2]);
-                  }
+              }
+              
+              if (fnfLines.length > 0) {
+                const lastFNF = fnfLines[fnfLines.length - 1];
+                const match = lastFNF.match(/FNF:\s*(\d+)\s*FNH:\s*(\d+)/);
+                if (match) {
+                  totalFunctions = parseInt(match[1]);
+                  coveredFunctions = parseInt(match[2]);
+                  console.log('Total functions:', totalFunctions, 'Covered functions:', coveredFunctions);
                 }
-                if (line.startsWith('BRF:') && totalBranches === 0) {
-                  const match = line.match(/BRF:\s*(\d+)\s*BRH:\s*(\d+)/);
-                  if (match) {
-                    totalBranches = parseInt(match[1]);
-                    coveredBranches = parseInt(match[2]);
-                  }
-                }
-                
-                // Stop if we found all metrics
-                if (totalLines > 0 && totalFunctions > 0 && totalBranches > 0) {
-                  break;
+              }
+              
+              if (brfLines.length > 0) {
+                const lastBRF = brfLines[brfLines.length - 1];
+                const match = lastBRF.match(/BRF:\s*(\d+)\s*BRH:\s*(\d+)/);
+                if (match) {
+                  totalBranches = parseInt(match[1]);
+                  coveredBranches = parseInt(match[2]);
+                  console.log('Total branches:', totalBranches, 'Covered branches:', coveredBranches);
                 }
               }
               
