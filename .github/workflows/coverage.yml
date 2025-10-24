@@ -20,24 +20,28 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
+      - name: Run tests with coverage
+        run: |
+          forge coverage --report lcov
+
       - name: Install coverage tools
         run: |
           sudo apt-get update
           sudo apt-get install -y lcov
 
-      - name: Run tests with coverage
-        run: |
-          forge coverage --report lcov --report-file coverage.lcov
-
       - name: Process coverage report
         run: |
-          if [ -f coverage.lcov ]; then
-            lcov --remove coverage.lcov '*/test/*' '*/script/*' '*/lib/*' --output-file coverage.info
-            lcov --list coverage.info
+          # Find the coverage file that Foundry generated
+          if [ -f lcov.info ]; then
+            echo "Found lcov.info, processing..."
+            lcov --remove lcov.info '*/test/*' '*/script/*' '*/lib/*' --output-file coverage.info
           else
-            echo "No coverage file found"
+            echo "No lcov.info found, looking for other coverage files..."
+            ls -la *.lcov || echo "No .lcov files found"
             exit 1
           fi
+          
+          lcov --list coverage.info
 
       - name: Comment coverage on PR
         if: github.event_name == 'pull_request'
