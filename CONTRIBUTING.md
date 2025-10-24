@@ -233,9 +233,9 @@ The design and implementation of Compose is based on the following design princi
 
 ## Reading a Facet
 
-A facet smart contract in Compose contains the storage variables and logic require to implement its main functionality. Users are able to read and understand the source code of a facet by starting at the first line in the file, read it, and then read the next line, and so on, until the end of the file. Users are able to do this without jumping around to other places in the file or having to look in other files. Our facets are read and understood from the top down.
+In Compose, each facet smart contract contains the storage variables and logic needed to implement its core functionality. The code in a facet is written to be easily read and understood from top to bottom—users can start at the first line and follow the logic sequentially to the end of the file without needing to jump to other sections or files.
 
-Each facet in Compose contains the full source code of its main functionality. They do not reference or use functions from other contracts or Solidity libraries for their main functionality.
+Each facet includes the complete implementation of its main functionality. Facets do not rely on external contracts or Solidity libraries to implement their core behavior.
 
 ## The Use of Solidity Libraries
 
