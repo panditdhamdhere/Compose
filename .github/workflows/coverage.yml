@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  FOUNDRY_PROFILE: ci
+
+jobs:
+  check:
+    name: Coverage report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Install coverage tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lcov
+
+      - name: Run tests with coverage
+        run: |
+          forge coverage --report lcov
+
+      - name: Generate coverage report
+        run: |
+          lcov --capture --directory . --output-file coverage.info
+          lcov --remove coverage.info '*/test/*' '*/script/*' '*/lib/*' --output-file coverage.info
+          lcov --list coverage.info
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const lcov = fs.readFileSync('coverage.info', 'utf8');
+            const lines = lcov.split('\n');
+            const summary = lines.find(line => line.startsWith('LF:'));
+            const hit = lines.find(line => line.startsWith('LH:'));
+            
+            if (summary && hit) {
+              const total = summary.split(':')[1];
+              const covered = hit.split(':')[1];
+              const percentage = Math.round((covered / total) * 100);
+              
+              const comment = `## Test Coverage Report
+              
+              **Coverage: ${percentage}%** (${covered}/${total} lines)
+              
+              <details>
+              <summary>View detailed coverage report</summary>
+              
+              \`\`\`
+              ${lcov}
+              \`\`\`
+              </details>`;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
