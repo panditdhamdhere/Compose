@@ -29,9 +29,16 @@ jobs:
 
       - name: Generate coverage report
         if: github.event_name == 'pull_request'
+        env:
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
         run: |
           node .github/scripts/coverage-comment.js
           echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> coverage-data.txt
+          echo "COMMIT_SHA=${{ github.event.pull_request.head.sha }}" >> coverage-data.txt
+          echo "REPO_OWNER=${{ github.repository_owner }}" >> coverage-data.txt
+          echo "REPO_NAME=${{ github.event.repository.name }}" >> coverage-data.txt
           echo "Generated coverage report for PR #${{ github.event.pull_request.number }}"
 
       - name: Upload coverage data

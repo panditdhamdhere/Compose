@@ -5,13 +5,13 @@ on:
     workflows: ["Coverage"]
     types:
       - completed
-
+ 
 permissions:
   actions: read
   pull-requests: write
   issues: write
   contents: read
-
+  
 jobs:
   comment:
     name: Post Coverage Comment
