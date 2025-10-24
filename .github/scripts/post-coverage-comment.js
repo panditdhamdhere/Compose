@@ -26,12 +26,12 @@ module.exports = async ({ github, context }) => {
   );
   
   if (!coverageArtifact) {
-    console.log('❌ No coverage artifact found');
+    console.log('No coverage artifact found');
     console.log('Available artifacts:', artifacts.data.artifacts.map(a => a.name).join(', '));
     return;
   }
   
-  console.log('✓ Found coverage artifact, downloading...');
+  console.log('Found coverage artifact, downloading...');
   
   const download = await github.rest.actions.downloadArtifact({
     owner: context.repo.owner,
@@ -44,7 +44,7 @@ module.exports = async ({ github, context }) => {
   const artifactPath = path.join(process.env.GITHUB_WORKSPACE, 'coverage-data.zip');
   fs.writeFileSync(artifactPath, Buffer.from(download.data));
   
-  console.log('✓ Artifact downloaded, extracting...');
+  console.log('Artifact downloaded, extracting...');
   
   // Unzip the artifact
   execSync(`unzip -o ${artifactPath} -d ${process.env.GITHUB_WORKSPACE}`);
@@ -53,7 +53,7 @@ module.exports = async ({ github, context }) => {
   const prDataPath = path.join(process.env.GITHUB_WORKSPACE, 'coverage-data.txt');
   
   if (!fs.existsSync(prDataPath)) {
-    console.log('❌ coverage-data.txt not found in artifact');
+    console.log('coverage-data.txt not found in artifact');
     console.log('Extracted files:', execSync(`ls -la ${process.env.GITHUB_WORKSPACE}`).toString());
     return;
   }
@@ -62,19 +62,19 @@ module.exports = async ({ github, context }) => {
   const prMatch = prData.match(/PR_NUMBER=(\d+)/);
   
   if (!prMatch) {
-    console.log('❌ Could not find PR number in coverage-data.txt');
+    console.log('Could not find PR number in coverage-data.txt');
     console.log('File contents:', prData);
     return;
   }
   
   const prNumber = parseInt(prMatch[1]);
-  console.log(`✓ Processing coverage for PR #${prNumber}`);
+  console.log(`Processing coverage for PR #${prNumber}`);
   
   // Read coverage report
   const reportPath = path.join(process.env.GITHUB_WORKSPACE, 'coverage-report.md');
   
   if (!fs.existsSync(reportPath)) {
-    console.log('❌ coverage-report.md not found in artifact');
+    console.log("coverage-report.md not found in artifact");
     return;
   }
   
@@ -103,7 +103,7 @@ module.exports = async ({ github, context }) => {
       comment_id: botComment.id,
       body: body
     });
-    console.log('✅ Coverage comment updated successfully!');
+    console.log("Coverage comment updated successfully!");
   } else {
     // Create new comment
     console.log('Creating new coverage comment...');
@@ -113,7 +113,7 @@ module.exports = async ({ github, context }) => {
       issue_number: prNumber,
       body: body
     });
-    console.log('✅ Coverage comment posted successfully!');
+    console.log("Coverage comment posted successfully!");
   }
 };
 
