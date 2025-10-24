@@ -27,13 +27,17 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          forge coverage --report lcov
+          forge coverage --report lcov --report-file coverage.lcov
 
-      - name: Generate coverage report
+      - name: Process coverage report
         run: |
-          lcov --capture --directory . --output-file coverage.info
-          lcov --remove coverage.info '*/test/*' '*/script/*' '*/lib/*' --output-file coverage.info
-          lcov --list coverage.info
+          if [ -f coverage.lcov ]; then
+            lcov --remove coverage.lcov '*/test/*' '*/script/*' '*/lib/*' --output-file coverage.info
+            lcov --list coverage.info
+          else
+            echo "No coverage file found"
+            exit 1
+          fi
 
       - name: Comment coverage on PR
         if: github.event_name == 'pull_request'
