@@ -65,10 +65,20 @@ contract ERC20FacetTest is Test {
         vm.prank(alice);
         vm.expectEmit(true, true, true, true);
         emit Transfer(alice, bob, amount);
-        token.transfer(bob, amount);
+        bool success = token.transfer(bob, amount);
 
+        assertTrue(success);
         assertEq(token.balanceOf(alice), INITIAL_SUPPLY - amount);
         assertEq(token.balanceOf(bob), amount);
+    }
+
+    function test_Transfer_ReturnsTrue() public {
+        uint256 amount = 100e18;
+
+        vm.prank(alice);
+        bool result = token.transfer(bob, amount);
+
+        assertTrue(result, "transfer should return true");
     }
 
     function test_Transfer_ToSelf() public {
@@ -155,9 +165,19 @@ contract ERC20FacetTest is Test {
         vm.prank(alice);
         vm.expectEmit(true, true, true, true);
         emit Approval(alice, bob, amount);
-        token.approve(bob, amount);
+        bool success = token.approve(bob, amount);
 
+        assertTrue(success);
         assertEq(token.allowance(alice, bob), amount);
+    }
+
+    function test_Approve_ReturnsTrue() public {
+        uint256 amount = 100e18;
+
+        vm.prank(alice);
+        bool result = token.approve(bob, amount);
+
+        assertTrue(result, "approve should return true");
     }
 
     function test_Approve_UpdateExisting() public {
@@ -206,11 +226,24 @@ contract ERC20FacetTest is Test {
         vm.prank(bob);
         vm.expectEmit(true, true, true, true);
         emit Transfer(alice, charlie, amount);
-        token.transferFrom(alice, charlie, amount);
+        bool success = token.transferFrom(alice, charlie, amount);
 
+        assertTrue(success);
         assertEq(token.balanceOf(alice), INITIAL_SUPPLY - amount);
         assertEq(token.balanceOf(charlie), amount);
         assertEq(token.allowance(alice, bob), 0);
+    }
+
+    function test_TransferFrom_ReturnsTrue() public {
+        uint256 amount = 100e18;
+
+        vm.prank(alice);
+        token.approve(bob, amount);
+
+        vm.prank(bob);
+        bool result = token.transferFrom(alice, charlie, amount);
+
+        assertTrue(result, "transferFrom should return true");
     }
 
     function test_TransferFrom_PartialAllowance() public {
@@ -241,6 +274,56 @@ contract ERC20FacetTest is Test {
         assertEq(token.balanceOf(alice), INITIAL_SUPPLY - amount);
         assertEq(token.balanceOf(charlie), amount);
         assertEq(token.allowance(alice, bob), approval - amount);
+    }
+
+    function test_TransferFrom_UnlimitedAllowance() public {
+        uint256 amount = 100e18;
+        uint256 maxAllowance = type(uint256).max;
+
+        // Set unlimited allowance
+        vm.prank(alice);
+        token.approve(bob, maxAllowance);
+
+        // Perform first transfer
+        vm.prank(bob);
+        token.transferFrom(alice, charlie, amount);
+
+        // Check that allowance remains unchanged (unlimited)
+        assertEq(token.allowance(alice, bob), maxAllowance);
+        assertEq(token.balanceOf(alice), INITIAL_SUPPLY - amount);
+        assertEq(token.balanceOf(charlie), amount);
+
+        // Perform second transfer to verify allowance is still unlimited
+        vm.prank(bob);
+        token.transferFrom(alice, charlie, amount);
+
+        // Check that allowance is still unchanged (unlimited)
+        assertEq(token.allowance(alice, bob), maxAllowance);
+        assertEq(token.balanceOf(alice), INITIAL_SUPPLY - 2 * amount);
+        assertEq(token.balanceOf(charlie), 2 * amount);
+    }
+
+    function test_TransferFrom_UnlimitedAllowance_MultipleTransfers() public {
+        uint256 maxAllowance = type(uint256).max;
+        uint256 transferAmount = 50e18;
+        uint256 numTransfers = 10;
+
+        // Set unlimited allowance
+        vm.prank(alice);
+        token.approve(bob, maxAllowance);
+
+        // Perform multiple transfers
+        for (uint256 i = 0; i < numTransfers; i++) {
+            vm.prank(bob);
+            token.transferFrom(alice, charlie, transferAmount);
+
+            // Verify allowance remains unlimited after each transfer
+            assertEq(token.allowance(alice, bob), maxAllowance);
+        }
+
+        // Verify final balances
+        assertEq(token.balanceOf(alice), INITIAL_SUPPLY - (transferAmount * numTransfers));
+        assertEq(token.balanceOf(charlie), transferAmount * numTransfers);
     }
 
     function test_RevertWhen_TransferFromZeroAddressSender() public {
@@ -388,6 +471,56 @@ contract ERC20FacetTest is Test {
         assertEq(token.balanceOf(alice), INITIAL_SUPPLY - amount);
         assertEq(token.allowance(alice, bob), approval - amount);
         assertEq(token.totalSupply(), INITIAL_SUPPLY - amount);
+    }
+
+    function test_BurnFrom_UnlimitedAllowance() public {
+        uint256 amount = 100e18;
+        uint256 maxAllowance = type(uint256).max;
+
+        // Set unlimited allowance
+        vm.prank(alice);
+        token.approve(bob, maxAllowance);
+
+        // Perform first burn
+        vm.prank(bob);
+        token.burnFrom(alice, amount);
+
+        // Check that allowance remains unchanged (unlimited)
+        assertEq(token.allowance(alice, bob), maxAllowance);
+        assertEq(token.balanceOf(alice), INITIAL_SUPPLY - amount);
+        assertEq(token.totalSupply(), INITIAL_SUPPLY - amount);
+
+        // Perform second burn to verify allowance is still unlimited
+        vm.prank(bob);
+        token.burnFrom(alice, amount);
+
+        // Check that allowance is still unchanged (unlimited)
+        assertEq(token.allowance(alice, bob), maxAllowance);
+        assertEq(token.balanceOf(alice), INITIAL_SUPPLY - 2 * amount);
+        assertEq(token.totalSupply(), INITIAL_SUPPLY - 2 * amount);
+    }
+
+    function test_BurnFrom_UnlimitedAllowance_MultipleBurns() public {
+        uint256 maxAllowance = type(uint256).max;
+        uint256 burnAmount = 50e18;
+        uint256 numBurns = 10;
+
+        // Set unlimited allowance
+        vm.prank(alice);
+        token.approve(bob, maxAllowance);
+
+        // Perform multiple burns
+        for (uint256 i = 0; i < numBurns; i++) {
+            vm.prank(bob);
+            token.burnFrom(alice, burnAmount);
+
+            // Verify allowance remains unlimited after each burn
+            assertEq(token.allowance(alice, bob), maxAllowance);
+        }
+
+        // Verify final balances and total supply
+        assertEq(token.balanceOf(alice), INITIAL_SUPPLY - (burnAmount * numBurns));
+        assertEq(token.totalSupply(), INITIAL_SUPPLY - (burnAmount * numBurns));
     }
 
     function test_RevertWhen_BurnFromInsufficientAllowance() public {
