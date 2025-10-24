@@ -113,7 +113,7 @@ jobs:
                 `|--------|----------|----------|\n` +
                 `| **Lines** | ${lineCoverage}% | ${coveredLines}/${totalLines} lines |\n` +
                 `| **Functions** | ${functionCoverage}% | ${coveredFunctions}/${totalFunctions} functions |\n` +
-                `| **Branches** | ${branchCoverage}% | ${coveredBranches}/${totalBranches} branches |\n\n` +;
+                `| **Branches** | ${branchCoverage}% | ${coveredBranches}/${totalBranches} branches |\n\n`;
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
