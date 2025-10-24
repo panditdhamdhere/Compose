@@ -1,7 +1,9 @@
 name: CI
 
 on:
+  push:
   pull_request:
+  workflow_dispatch:
 
 env:
   FOUNDRY_PROFILE: ci
@@ -24,6 +26,7 @@ jobs:
           ls -la lcov.info || echo "lcov.info not found"
 
       - name: Comment on PR
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -39,7 +42,7 @@ jobs:
                 const covered = Number(match[2]);
                 pct = Math.round((covered / total)*100) + '%';
               }
-              const body = `## 📊 Coverage Report\n\n**Coverage:** ${pct}\n\n<details><summary>lcov.info</summary>\n\`\`\`\n${fs.readFileSync(file,'utf8')}\n\`\`\`\n</details>`;
+              const body = `## Coverage Report\n\n**Coverage:** ${pct}\n\n<details><summary>lcov.info</summary>\n\`\`\`\n${fs.readFileSync(file,'utf8')}\n\`\`\`\n</details>`;
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
