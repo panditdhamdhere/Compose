@@ -89,9 +89,9 @@ jobs:
               
               // Create coverage badge
               const getBadgeColor = (coverage) => {
-                if (coverage >= 80) return 'brightgreen';
-                if (coverage >= 60) return 'yellow';
-                if (coverage >= 40) return 'orange';
+                if (coverage >= goodThreshold) return 'brightgreen';
+                if (coverage >= needsImprovementThreshold) return 'yellow';
+                if (coverage >= poorThreshold) return 'orange';
                 return 'red';
               };
               
@@ -106,7 +106,7 @@ jobs:
                 `| **Branches** | ${branchCoverage}% | ${coveredBranches}/${totalBranches} branches |\n\n` +
                 `### Coverage Summary\n` +
                 `- **Overall Coverage:** ${pct}\n` +
-                `- **Status:** ${lineCoverage >= 80 ? '✅ Good' : lineCoverage >= 60 ? '⚠️ Needs Improvement' : '❌ Poor'}\n\n` +
+                `- **Status:** ${lineCoverage >= goodThreshold ? '✅ Good' : lineCoverage >= needsImprovementThreshold ? '⚠️ Needs Improvement' : '❌ Poor'}\n\n` +
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
