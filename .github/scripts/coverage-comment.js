@@ -86,9 +86,10 @@ function getBadgeColor(coverage) {
 /**
  * Generate coverage report comment body
  * @param {object} metrics - Coverage metrics
+ * @param {object} commitInfo - Optional commit information
  * @returns {string} Markdown formatted comment body
  */
-function generateCoverageReport(metrics) {
+function generateCoverageReport(metrics, commitInfo = {}) {
   const lineCoverage = calculateCoverage(metrics.coveredLines, metrics.totalLines);
   const functionCoverage = calculateCoverage(metrics.coveredFunctions, metrics.totalFunctions);
   const branchCoverage = calculateCoverage(metrics.coveredBranches, metrics.totalBranches);
@@ -98,6 +99,13 @@ function generateCoverageReport(metrics) {
   
   // Generate timestamp
   const timestamp = new Date().toUTCString();
+  
+  // Build commit link if info is available
+  let commitLink = '';
+  if (commitInfo.sha && commitInfo.owner && commitInfo.repo) {
+    const shortSha = commitInfo.sha.substring(0, 7);
+    commitLink = ` for commit [\`${shortSha}\`](https://github.com/${commitInfo.owner}/${commitInfo.repo}/commit/${commitInfo.sha})`;
+  }
 
   return `## Coverage Report\n` +
     `${badge}\n\n` +
@@ -106,7 +114,7 @@ function generateCoverageReport(metrics) {
     `| **Lines** | ${lineCoverage}% | ${metrics.coveredLines}/${metrics.totalLines} lines |\n` +
     `| **Functions** | ${functionCoverage}% | ${metrics.coveredFunctions}/${metrics.totalFunctions} functions |\n` +
     `| **Branches** | ${branchCoverage}% | ${metrics.coveredBranches}/${metrics.totalBranches} branches |\n\n` +
-    `*Last updated: ${timestamp}*\n`;
+    `*Last updated: ${timestamp}*${commitLink}\n`;
 }
 
 /**
@@ -161,7 +169,14 @@ function generateCoverageFile() {
   console.log('- Functions:', metrics.coveredFunctions, '/', metrics.totalFunctions);
   console.log('- Branches:', metrics.coveredBranches, '/', metrics.totalBranches);
 
-  const body = generateCoverageReport(metrics);
+  // Get commit info from environment variables
+  const commitInfo = {
+    sha: process.env.COMMIT_SHA,
+    owner: process.env.REPO_OWNER,
+    repo: process.env.REPO_NAME
+  };
+
+  const body = generateCoverageReport(metrics, commitInfo);
   fs.writeFileSync('coverage-report.md', body);
   console.log('Coverage report saved to coverage-report.md');
 }
