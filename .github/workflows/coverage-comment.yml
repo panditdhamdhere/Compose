@@ -5,7 +5,7 @@ on:
     workflows: ["Coverage"]
     types:
       - completed
-
+ 
 permissions:
   actions: read
   pull-requests: write
