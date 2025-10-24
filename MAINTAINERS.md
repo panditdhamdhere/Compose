@@ -1,7 +1,13 @@
+# Senior Maintainer
+- @mudgen
+
+Among Nick’s duties are defining the overall direction of the project, approving or rejecting the development of new functionality, and creating/approving and maintaining standards for the project. Nick also fulfills the same responsibilities as other maintainers.
+
 # Maintainers
 
-- @mudgen
 - @maxnorm
+- @panditdhamdhere
+- @Haroldwonder
 
 # Volunteer Basis
 
@@ -34,7 +40,7 @@ This is something I really need help with. It is a bottleneck for the project un
 
 Only work on pull requests that you want to work on. If you don't feel you should handle a particular pull request for some reason, don't work on it. If you only want to review a pull request and give feedback on it, but not merge it, that's great. Do what you feel is right for yourself and the project. 
 
-Assign to yourself a pull request that you are reviewing so others know it is being reviewed. More than one person or maintainer can review the same pull request at the same time.
+Assign to yourself a pull request that you are reviewing so others know it is being reviewed. More than one person or maintainer can review the same pull request at the same time. Depending on the pull request, and the context, it can be important that more than one maintainer reviews it.
 
 Before merging a pull request look at all the data concerning the pull request. Look at the code in the pull request and see if it makes sense.
 

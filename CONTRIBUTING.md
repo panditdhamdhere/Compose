@@ -173,9 +173,11 @@ The design and implementation of Compose is based on the following design princi
 
    In traditional software, DRY reduces duplication and makes it easier to update multiple parts of a program by changing one section of code. But deployed smart contracts *don't change*. DRY can actually reduce clarity. Every internal function adds another indirection that developers must trace through, and those functions sometimes introduce extra logic for different cases. Repetition can make smart contracts easier to read and reason about.
 
-   That said, DRY still has its place. When a large block of code performs a complete, self-contained action and is used identically in multiple locations, moving it into an internal function can improve readability. For example, Compose's ERC-721 implementation uses an `internalTransferFrom` function to eliminate duplication while keeping the code easy to read and understand.
+   That said, DRY still has its place. When a large block of code performs a complete, self-contained action and is used identically in multiple locations, moving it into an internal function can improve readability. For example, Compose's ERC-721 implementation uses an `internalTransferFrom` function to eliminate duplication while keeping the code easy to read and understand. 
+   
+   Another example is a block of complicated code that performs a specific function that is not part of the main logic of what is being implemented can be put in a library function. The `toString(uint256)` function in the LibUtil library is such a function.
 
-   **Guideline:** Repeat yourself when it makes your code easier to read and understand. Use DRY sparingly and only to make code more readable by removing a lot of unnecessary duplication.
+   **Guideline:** Repeat yourself when it makes your code easier to read and understand. Use DRY sparingly and only to make code more readable.
 
 #### 4. Compose diamonds:
    A diamond contract is a smart contract that gets its functionality from other contracts called facets. You can add, replace, or remove functionality from these facets, which lets the diamond contract change or grow without deploying a completely new contract. This design makes it easier to build smart contracts that are modular (made of separate parts) and composable (able to work together in flexible ways). A diamond contract can be deployed and then incrementally developed by adding/replacing/removing functionality over time. Diamond contracts can be upgradeable or immutable. [ERC-2535 Diamonds](https://eips.ethereum.org/EIPS/eip-2535) is the standard that defines how diamond contracts work.
@@ -227,6 +229,23 @@ The design and implementation of Compose is based on the following design princi
 - Gas efficiency is important but how easy the code is to read is more important
 - Follow established patterns from existing implementations
 - Consider edge cases and potential attack vectors
+
+
+## Reading a Facet
+
+In Compose, each facet smart contract contains the storage variables and logic needed to implement its core functionality. The code in a facet is written to be easily read and understood from top to bottom—users can start at the first line and follow the logic sequentially to the end of the file without needing to jump to other sections or files.
+
+Each facet includes the complete implementation of its main functionality. Facets do not rely on external contracts or Solidity libraries to implement their core behavior.
+
+## The Use of Solidity Libraries
+
+In Compose, it’s common for a facet to have a corresponding Solidity library. These libraries are designed to help developers integrate their custom facets with Compose’s built-in facets.
+
+For example, Compose includes a facet called `ERC721Facet.sol` and a corresponding library called `LibERC721.sol`. The `ERC721Facet.sol` file contains the complete implementation of the ERC-721 functionality—it does not reference or depend on `LibERC721.sol`.
+
+The `LibERC721.sol` library intentionally duplicates the storage variables and parts of the logic from `ERC721Facet.sol`. This allows developers creating their own custom facets to easily access and work with the `ERC-721` storage variables and functionality provided by Compose.
+
+All Solidity libraries in Compose are prefixed with `Lib`.
 
 ## Testing
 

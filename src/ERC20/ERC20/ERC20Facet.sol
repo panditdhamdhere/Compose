@@ -135,14 +135,16 @@ contract ERC20Facet {
      * @dev Emits an {Approval} event.
      * @param _spender The address approved to spend tokens.
      * @param _value The number of tokens to approve.
+     * @return True if the approval was successful.
      */
-    function approve(address _spender, uint256 _value) external {
+    function approve(address _spender, uint256 _value) external returns (bool) {
         ERC20Storage storage s = getStorage();
         if (_spender == address(0)) {
             revert ERC20InvalidSpender(address(0));
         }
         s.allowances[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
+        return true;
     }
 
     /**
@@ -150,8 +152,9 @@ contract ERC20Facet {
      * @dev Emits a {Transfer} event.
      * @param _to The address to receive the tokens.
      * @param _value The amount of tokens to transfer.
+     * @return True if the transfer was successful.
      */
-    function transfer(address _to, uint256 _value) external {
+    function transfer(address _to, uint256 _value) external returns (bool) {
         ERC20Storage storage s = getStorage();
         if (_to == address(0)) {
             revert ERC20InvalidReceiver(address(0));
@@ -165,6 +168,7 @@ contract ERC20Facet {
         }
         s.balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
+        return true;
     }
 
     /**
@@ -173,8 +177,9 @@ contract ERC20Facet {
      * @param _from The address to transfer tokens from.
      * @param _to The address to transfer tokens to.
      * @param _value The amount of tokens to transfer.
+     * @return True if the transfer was successful.
      */
-    function transferFrom(address _from, address _to, uint256 _value) external {
+    function transferFrom(address _from, address _to, uint256 _value) external returns (bool) {
         ERC20Storage storage s = getStorage();
         if (_from == address(0)) {
             revert ERC20InvalidSender(address(0));
@@ -191,11 +196,14 @@ contract ERC20Facet {
             revert ERC20InsufficientBalance(_from, fromBalance, _value);
         }
         unchecked {
-            s.allowances[_from][msg.sender] = currentAllowance - _value;
+            if (currentAllowance != type(uint256).max) {
+                s.allowances[_from][msg.sender] = currentAllowance - _value;
+            }
             s.balanceOf[_from] = fromBalance - _value;
         }
         s.balanceOf[_to] += _value;
         emit Transfer(_from, _to, _value);
+        return true;
     }
 
     /**
@@ -233,7 +241,9 @@ contract ERC20Facet {
             revert ERC20InsufficientBalance(_account, balance, _value);
         }
         unchecked {
-            s.allowances[_account][msg.sender] = currentAllowance - _value;
+            if (currentAllowance != type(uint256).max) {
+                s.allowances[_account][msg.sender] = currentAllowance - _value;
+            }
             s.balanceOf[_account] = balance - _value;
             s.totalSupply -= _value;
         }
