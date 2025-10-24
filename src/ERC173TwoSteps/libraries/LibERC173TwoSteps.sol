@@ -5,9 +5,9 @@ pragma solidity >=0.8.30;
 /// @notice Provides two-step ownership transfer logic for facets or modular contracts.
 library LibERC173TwoSteps {
     /// @dev Emitted when ownership transfer is initiated (pending owner set).
-    event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferStarted(address indexed _previousOwner, address indexed _newOwner);
     /// @dev Emitted when ownership transfer is finalized.
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(address indexed _previousOwner, address indexed _newOwner);
 
     /// @notice Thrown when a non-owner or non-pending owner tries to act.
     error OwnableUnauthorizedAccount();
@@ -20,20 +20,8 @@ library LibERC173TwoSteps {
 
     /// @custom:storage-location erc8042:compose.erc173
     struct ERC173TwoStepsStorage {
-        bool initialized;
         address owner;
         address pendingOwner;
-    }
-
-    /// @notice Initializes the contract.
-    /// @dev Initializes the contract and sets the owner to the caller.
-    function initialize() external {
-        ERC173TwoStepsStorage storage s = getStorage();
-        if (s.initialized) {
-            revert OwnableAlreadyInitialized();
-        }
-        s.initialized = true;
-        s.owner = msg.sender;
     }
 
     /// @notice Returns a pointer to the ERC-173 storage struct.
@@ -60,9 +48,12 @@ library LibERC173TwoSteps {
     /// @param _newOwner The address of the new owner (set to `address(0)` to renounce).
     function transferOwnership(address _newOwner) internal {
         ERC173TwoStepsStorage storage s = getStorage();
-        if (s.owner == address(0)) revert OwnableAlreadyRenounced();
-        if (msg.sender != s.owner) revert OwnableUnauthorizedAccount();
-
+        if (s.owner == address(0)) {
+            revert OwnableAlreadyRenounced();
+        }
+        if (msg.sender != s.owner) {
+            revert OwnableUnauthorizedAccount();
+        }
         s.pendingOwner = _newOwner;
         emit OwnershipTransferStarted(s.owner, _newOwner);
     }
@@ -70,7 +61,9 @@ library LibERC173TwoSteps {
     /// @notice Finalizes ownership transfer; must be called by the pending owner.
     function acceptOwnership() internal {
         ERC173TwoStepsStorage storage s = getStorage();
-        if (msg.sender != s.pendingOwner) revert OwnableUnauthorizedAccount();
+        if (msg.sender != s.pendingOwner) {
+            revert OwnableUnauthorizedAccount();
+        }
 
         address oldOwner = s.owner;
         s.owner = s.pendingOwner;

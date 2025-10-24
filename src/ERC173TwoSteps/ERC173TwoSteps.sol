@@ -17,20 +17,8 @@ contract ERC173TwoStepsFacet {
 
     /// @custom:storage-location erc8042:compose.erc173
     struct ERC173TwoStepsStorage {
-        bool initialized;
         address owner;
         address pendingOwner;
-    }
-
-    /// @notice Initializes the contract.
-    /// @dev Initializes the contract and sets the owner to the caller.
-    function initialize() external {
-        ERC173TwoStepsStorage storage s = getStorage();
-        if (s.initialized) {
-            revert OwnableAlreadyInitialized();
-        }
-        s.initialized = true;
-        s.owner = msg.sender;
     }
 
     /// @notice Returns a pointer to the ERC-173 storage struct.
