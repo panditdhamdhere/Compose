@@ -7,18 +7,27 @@ on:
       - completed
 
 permissions:
+  actions: read
   pull-requests: write
   issues: write
+  contents: read
 
 jobs:
   comment:
     name: Post Coverage Comment
     runs-on: ubuntu-latest
-    if: >
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success'
+    # Only run if the workflow run was for a pull request
+    if: github.event.workflow_run.event == 'pull_request'
     steps:
+      - name: Check workflow run status
+        run: |
+          echo "Workflow run conclusion: ${{ github.event.workflow_run.conclusion }}"
+          echo "Workflow run event: ${{ github.event.workflow_run.event }}"
+          echo "Workflow run ID: ${{ github.event.workflow_run.id }}"
+          echo "Head branch: ${{ github.event.workflow_run.head_branch }}"
+      
       - name: Download and post coverage comment
+        if: github.event.workflow_run.conclusion == 'success'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -33,6 +33,7 @@ jobs:
         run: |
           node .github/scripts/coverage-comment.js
           echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> coverage-data.txt
+          echo "Generated coverage report for PR #${{ github.event.pull_request.number }}"
 
       - name: Upload coverage data
         if: github.event_name == 'pull_request'
