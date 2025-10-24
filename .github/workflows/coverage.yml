@@ -1,16 +1,14 @@
 name: CI
 
 on:
-  push:
   pull_request:
-  workflow_dispatch:
 
 env:
   FOUNDRY_PROFILE: ci
 
 jobs:
   check:
-    name: Coverage report
+    name: Coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,61 +18,34 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
-      - name: Run tests with coverage
+      - name: Run coverage
         run: |
-          forge coverage --report lcov
+          forge coverage --report summary --report lcov
+          ls -la lcov.info || echo "lcov.info not found"
 
-      - name: Install coverage tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y lcov
-
-      - name: Process coverage report
-        run: |
-          # Find the coverage file that Foundry generated
-          if [ -f lcov.info ]; then
-            echo "Found lcov.info, processing..."
-            lcov --remove lcov.info '*/test/*' '*/script/*' '*/lib/*' --output-file coverage.info
-          else
-            echo "No lcov.info found, looking for other coverage files..."
-            ls -la *.lcov || echo "No .lcov files found"
-            exit 1
-          fi
-          
-          lcov --list coverage.info
-
-      - name: Comment coverage on PR
-        if: github.event_name == 'pull_request'
+      - name: Comment on PR
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const lcov = fs.readFileSync('coverage.info', 'utf8');
-            const lines = lcov.split('\n');
-            const summary = lines.find(line => line.startsWith('LF:'));
-            const hit = lines.find(line => line.startsWith('LH:'));
-            
-            if (summary && hit) {
-              const total = summary.split(':')[1];
-              const covered = hit.split(':')[1];
-              const percentage = Math.round((covered / total) * 100);
-              
-              const comment = `## Test Coverage Report
-              
-              **Coverage: ${percentage}%** (${covered}/${total} lines)
-              
-              <details>
-              <summary>View detailed coverage report</summary>
-              
-              \`\`\`
-              ${lcov}
-              \`\`\`
-              </details>`;
-              
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
+            const file = 'lcov.info';
+            let pct = '-';
+            if (fs.existsSync(file)) {
+              const content = fs.readFileSync(file, 'utf8');
+              const match = content.match(/LF:\s*(\d+)\s*LH:\s*(\d+)/);
+              if (match) {
+                const total = Number(match[1]);
+                const covered = Number(match[2]);
+                pct = Math.round((covered / total)*100) + '%';
+              }
+              const body = `## 📊 Coverage Report\n\n**Coverage:** ${pct}\n\n<details><summary>lcov.info</summary>\n\`\`\`\n${fs.readFileSync(file,'utf8')}\n\`\`\`\n</details>`;
+              await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: comment
+                issue_number: context.issue.number,
+                body: body
               });
+            } else {
+              console.log('Coverage file not found.');
             }
