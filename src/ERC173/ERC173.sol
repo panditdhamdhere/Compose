@@ -10,13 +10,25 @@ contract ERC173Facet {
 
     /// @notice Thrown when attempting to transfer ownership while not being the owner.
     error OwnableUnauthorizedAccount();
+    /// @notice Thrown when attempting to initialize the contract more than once.
+    error OwnableAlreadyInitialized();
 
     bytes32 constant STORAGE_POSITION = keccak256("compose.erc173");
 
     /// @custom:storage-location erc8042:compose.erc173
     struct ERC173Storage {
+        bool initialized;
         address owner;
         address pendingOwner;
+    }
+
+    /// @notice Initializes the contract.
+    /// @dev Initializes the contract and sets the owner to the caller.
+    function initialize() external {
+        ERC173Storage storage s = _getStorage();
+        if (s.initialized) revert OwnableAlreadyInitialized();
+        s.initialized = true;
+        s.owner = msg.sender;
     }
 
     /// @notice Returns a pointer to the ERC-173 storage struct.
