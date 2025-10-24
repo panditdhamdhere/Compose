@@ -79,6 +79,24 @@ Compose follows unique design principles specifically for smart contract develop
 
 For detailed explanations and examples, see [CONTRIBUTING.md](CONTRIBUTING.md#design-principles).
 
+
+## Reading a Facet
+
+A facet smart contract in Compose contains the storage variables and logic require to implement its main functionality. Users are able to read and understand the source code of a facet by starting at the first line in the file, read it, and then read the next line, and so on, until the end of the file. Users are able to do this without jumping around to other places in the file or having to look in other files. Our facets are read and understood from the top down.
+
+Each facet in Compose contains the full source code of its main functionality. They do not reference or use functions from other contracts or Solidity libraries for their main functionality.
+
+## The Use of Solidity Libraries
+
+It is common for a facet in Compose to have a corresponding Solidity library. These Solidity libraries exist to integrate custom facets with Compose' facets.
+
+For example in Compose we have the facet `ERC721Facet.sol` and we have the Solidity library `LibERC721.sol`. The `ERC721Facet` facet contains the full source code of what it implements. It does not reference or use `LibERC721.sol`.
+
+The `LibERC721.sol` Solidity library intentionally duplicates the storage variables and some of the functionality that exists in `ERC721Facet.sol`.  When a user implements their own custom facet they can use `LibERC721.sol` to access ERC721 storage variables and functionality.
+
+All Solidity libraries in Compose are prefixed with `Lib`.
+
+
 ## Contributing
 
 We welcome contributions from everyone! 
