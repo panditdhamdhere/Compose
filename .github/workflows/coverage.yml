@@ -60,30 +60,35 @@ jobs:
               let totalBranches = 0;
               let coveredBranches = 0;
               
-              // Sum up all individual file records
-              lines.forEach(line => {
+              // LF:, LH:, FNF:, FNH:, BRF:, BRH: are on separate lines
+              // We need to track them separately and match them up
+              for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // Lines Found and Lines Hit
                 if (line.startsWith('LF:')) {
-                  const match = line.match(/LF:\s*(\d+)\s*LH:\s*(\d+)/);
-                  if (match) {
-                    totalLines += parseInt(match[1]);
-                    coveredLines += parseInt(match[2]);
-                  }
+                  totalLines += parseInt(line.substring(3)) || 0;
                 }
+                if (line.startsWith('LH:')) {
+                  coveredLines += parseInt(line.substring(3)) || 0;
+                }
+                
+                // Functions Found and Functions Hit
                 if (line.startsWith('FNF:')) {
-                  const match = line.match(/FNF:\s*(\d+)\s*FNH:\s*(\d+)/);
-                  if (match) {
-                    totalFunctions += parseInt(match[1]);
-                    coveredFunctions += parseInt(match[2]);
-                  }
+                  totalFunctions += parseInt(line.substring(4)) || 0;
                 }
+                if (line.startsWith('FNH:')) {
+                  coveredFunctions += parseInt(line.substring(4)) || 0;
+                }
+                
+                // Branches Found and Branches Hit
                 if (line.startsWith('BRF:')) {
-                  const match = line.match(/BRF:\s*(\d+)\s*BRH:\s*(\d+)/);
-                  if (match) {
-                    totalBranches += parseInt(match[1]);
-                    coveredBranches += parseInt(match[2]);
-                  }
+                  totalBranches += parseInt(line.substring(4)) || 0;
                 }
-              });
+                if (line.startsWith('BRH:')) {
+                  coveredBranches += parseInt(line.substring(4)) || 0;
+                }
+              }
               
               console.log('Summed totals - Lines:', totalLines, 'Covered:', coveredLines);
               console.log('Summed totals - Functions:', totalFunctions, 'Covered:', coveredFunctions);
