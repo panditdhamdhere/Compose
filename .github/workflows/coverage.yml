@@ -2,7 +2,10 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
+    paths-ignore:
+      - '**.md'
   workflow_dispatch:
 
 env:
@@ -42,7 +45,68 @@ jobs:
                 const covered = Number(match[2]);
                 pct = Math.round((covered / total)*100) + '%';
               }
-              const body = `## Coverage Report\n\n**Coverage:** ${pct}\n\n<details><summary>lcov.info</summary>\n\`\`\`\n${fs.readFileSync(file,'utf8')}\n\`\`\`\n</details>`;
+              // THIS IS THE THRESHOLDS 
+              const goodThreshold = 80;
+              const needsImprovementThreshold = 60;
+              const poorThreshold = 40;
+              
+              // Parse more detailed coverage info
+              const lines = content.split('\n');
+              let totalLines = 0;
+              let coveredLines = 0;
+              let totalFunctions = 0;
+              let coveredFunctions = 0;
+              let totalBranches = 0;
+              let coveredBranches = 0;
+              
+              lines.forEach(line => {
+                if (line.startsWith('LF:')) {
+                  const match = line.match(/LF:\s*(\d+)\s*LH:\s*(\d+)/);
+                  if (match) {
+                    totalLines = parseInt(match[1]);
+                    coveredLines = parseInt(match[2]);
+                  }
+                }
+                if (line.startsWith('FNF:')) {
+                  const match = line.match(/FNF:\s*(\d+)\s*FNH:\s*(\d+)/);
+                  if (match) {
+                    totalFunctions = parseInt(match[1]);
+                    coveredFunctions = parseInt(match[2]);
+                  }
+                }
+                if (line.startsWith('BRF:')) {
+                  const match = line.match(/BRF:\s*(\d+)\s*BRH:\s*(\d+)/);
+                  if (match) {
+                    totalBranches = parseInt(match[1]);
+                    coveredBranches = parseInt(match[2]);
+                  }
+                }
+              });
+              
+              const lineCoverage = totalLines > 0 ? Math.round((coveredLines / totalLines) * 100) : 0;
+              const functionCoverage = totalFunctions > 0 ? Math.round((coveredFunctions / totalFunctions) * 100) : 0;
+              const branchCoverage = totalBranches > 0 ? Math.round((coveredBranches / totalBranches) * 100) : 0;
+              
+              // Create coverage badge
+              const getBadgeColor = (coverage) => {
+                if (coverage >= 80) return 'brightgreen';
+                if (coverage >= 60) return 'yellow';
+                if (coverage >= 40) return 'orange';
+                return 'red';
+              };
+              
+              const badgeColor = getBadgeColor(lineCoverage);
+              const badge = `![Coverage](https://img.shields.io/badge/coverage-${lineCoverage}%25-${badgeColor})`;
+              
+              const body = `## Coverage Report ${badge}\n\n` +
+                `| Metric | Coverage | Details |\n` +
+                `|--------|----------|----------|\n` +
+                `| **Lines** | ${lineCoverage}% | ${coveredLines}/${totalLines} lines |\n` +
+                `| **Functions** | ${functionCoverage}% | ${coveredFunctions}/${totalFunctions} functions |\n` +
+                `| **Branches** | ${branchCoverage}% | ${coveredBranches}/${totalBranches} branches |\n\n` +
+                `### Coverage Summary\n` +
+                `- **Overall Coverage:** ${pct}\n` +
+                `- **Status:** ${lineCoverage >= 80 ? '✅ Good' : lineCoverage >= 60 ? '⚠️ Needs Improvement' : '❌ Poor'}\n\n` +
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
