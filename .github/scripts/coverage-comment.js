@@ -138,5 +138,34 @@ async function postCoverageComment(github, context) {
   console.log('Coverage comment posted successfully!');
 }
 
-module.exports = { postCoverageComment };
+/**
+ * Generate coverage report and save to file (for workflow artifacts)
+ */
+function generateCoverageFile() {
+  const file = 'lcov.info';
+
+  if (!fs.existsSync(file)) {
+    console.log('Coverage file not found.');
+    return;
+  }
+
+  const content = fs.readFileSync(file, 'utf8');
+  const metrics = parseLcovContent(content);
+
+  console.log('Coverage Metrics:');
+  console.log('- Lines:', metrics.coveredLines, '/', metrics.totalLines);
+  console.log('- Functions:', metrics.coveredFunctions, '/', metrics.totalFunctions);
+  console.log('- Branches:', metrics.coveredBranches, '/', metrics.totalBranches);
+
+  const body = generateCoverageReport(metrics);
+  fs.writeFileSync('coverage-report.md', body);
+  console.log('Coverage report saved to coverage-report.md');
+}
+
+// If run directly (not as module), generate the file
+if (require.main === module) {
+  generateCoverageFile();
+}
+
+module.exports = { postCoverageComment, generateCoverageFile };
 
