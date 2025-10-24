@@ -95,6 +95,9 @@ function generateCoverageReport(metrics) {
 
   const badgeColor = getBadgeColor(lineCoverage);
   const badge = `![Coverage](https://img.shields.io/badge/coverage-${lineCoverage}%25-${badgeColor})`;
+  
+  // Generate timestamp
+  const timestamp = new Date().toUTCString();
 
   return `## Coverage Report\n` +
     `${badge}\n\n` +
@@ -102,7 +105,8 @@ function generateCoverageReport(metrics) {
     `|--------|----------|----------|\n` +
     `| **Lines** | ${lineCoverage}% | ${metrics.coveredLines}/${metrics.totalLines} lines |\n` +
     `| **Functions** | ${functionCoverage}% | ${metrics.coveredFunctions}/${metrics.totalFunctions} functions |\n` +
-    `| **Branches** | ${branchCoverage}% | ${metrics.coveredBranches}/${metrics.totalBranches} branches |\n\n`;
+    `| **Branches** | ${branchCoverage}% | ${metrics.coveredBranches}/${metrics.totalBranches} branches |\n\n` +
+    `*Last updated: ${timestamp}*\n`;
 }
 
 /**
