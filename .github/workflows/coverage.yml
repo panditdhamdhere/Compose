@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+env:
+  FOUNDRY_PROFILE: ci
+
+jobs:
+  check:
+    name: Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Run coverage
+        run: |
+          forge coverage --report summary --report lcov
+          ls -la lcov.info || echo "lcov.info not found"
+
+      - name: Generate coverage report
+        if: github.event_name == 'pull_request'
+        run: |
+          node .github/scripts/coverage-comment.js
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> coverage-data.txt
+          echo "Generated coverage report for PR #${{ github.event.pull_request.number }}"
+
+      - name: Upload coverage data
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data
+          path: |
+            coverage-report.md
+            coverage-data.txt
+          retention-days: 1

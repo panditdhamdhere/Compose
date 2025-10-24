@@ -1,5 +1,6 @@
 name: CI
 
+
 on:
   push:
     branches: [main]
@@ -13,7 +14,7 @@ env:
 
 jobs:
   check:
-    name: Foundry Tests
+    name: Static Analysis
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,21 +24,13 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
-      - name: Show Forge version
-        run: |
-          forge --version
+      - name: Build contracts
+        run: forge build
 
-      - name: Run Forge fmt
+      - name: Install Slither
         run: |
-          forge fmt --check
-        id: fmt
+          pip install slither-analyzer
 
-      - name: Run Forge build
+      - name: Run Slither analysis
         run: |
-          forge build --sizes
-        id: build
-
-      - name: Run Forge tests
-        run: |
-          forge test -vvv
-        id: test
+          slither . --exclude-dependencies

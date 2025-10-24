@@ -5,4 +5,14 @@ libs = ["lib"]
 optimizer = true
 optimizer_runs = 20_000
 
+[profile.ci]
+src = "src"
+out = "out"
+libs = ["lib"]
+optimizer = true
+optimizer_runs = 20_000
+# Coverage settings
+fuzz = { runs = 1000 }
+invariant = { runs = 1000 }
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
