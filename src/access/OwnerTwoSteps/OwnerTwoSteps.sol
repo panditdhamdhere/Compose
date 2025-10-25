@@ -13,7 +13,7 @@ contract OwnerTwoStepsFacet {
     /// @notice Thrown when attempting to initialize the contract more than once.
     error OwnerAlreadyInitialized();
 
-    bytes32 constant STORAGE_POSITION = keccak256("compose.ownertwosteps");
+    bytes32 constant STORAGE_POSITION = keccak256("compose.owner");
 
     /// @custom:storage-location erc8042:compose.ownertwosteps
     struct OwnerTwoStepsStorage {

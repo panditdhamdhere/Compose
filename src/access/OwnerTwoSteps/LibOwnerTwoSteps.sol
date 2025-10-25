@@ -16,7 +16,7 @@ library LibERC173TwoSteps {
     /// @notice Thrown when attempting to initialize the contract more than once.
     error OwnableAlreadyInitialized();
 
-    bytes32 constant STORAGE_POSITION = keccak256("compose.erc173twosteps");
+    bytes32 constant STORAGE_POSITION = keccak256("compose.owner");
 
     /// @custom:storage-location erc8042:compose.erc173
     struct ERC173TwoStepsStorage {
