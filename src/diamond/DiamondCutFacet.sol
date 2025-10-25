@@ -9,11 +9,11 @@ pragma solidity >=0.8.30;
 // contract DiamondCutFacet {
 
 //     bytes32 constant ERC173_STORAGE_POSITION = keccak256("compose.erc173");
-    
+
 //     /// @custom:storage-location erc8042:compose.erc173
 //     struct ERC173Storage {
 //         address owner;
-//     }    
+//     }
 
 //     /// @notice Returns a pointer to the ERC-173 storage struct.
 //     /// @dev Uses inline assembly to access the storage slot defined by STORAGE_POSITION.
@@ -24,9 +24,6 @@ pragma solidity >=0.8.30;
 //             s.slot := position
 //         }
 //     }
-
-
-
 
 //     /// @notice Add/replace/remove any number of functions and optionally execute
 //     ///         a function with delegatecall
