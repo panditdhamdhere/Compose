@@ -4,27 +4,27 @@ pragma solidity >=0.8.30;
 library LibAccessControl {
 
     /// @notice Emitted when the admin role for a role is changed.
-    /// @param role The role that was changed.
-    /// @param previousAdminRole The previous admin role.
-    /// @param newAdminRole The new admin role.
-    event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole);
+    /// @param _role The role that was changed.
+    /// @param _previousAdminRole The previous admin role.
+    /// @param _newAdminRole The new admin role.
+    event RoleAdminChanged(bytes32 indexed _role, bytes32 indexed _previousAdminRole, bytes32 indexed _newAdminRole);
 
     /// @notice Emitted when a role is granted to an account.
-    /// @param role The role that was granted.
-    /// @param account The account that was granted the role.
-    /// @param sender The sender that granted the role.
-    event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender);
+    /// @param _role The role that was granted.
+    /// @param _account The account that was granted the role.
+    /// @param _sender The sender that granted the role.
+    event RoleGranted(bytes32 indexed _role, address indexed _account, address indexed _sender);
 
     /// @notice Emitted when a role is revoked from an account.
-    /// @param role The role that was revoked.
-    /// @param account The account from which the role was revoked.
-    /// @param sender The account that revoked the role.
-    event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender);
+    /// @param _role The role that was revoked.
+    /// @param _account The account from which the role was revoked.
+    /// @param _sender The account that revoked the role.
+    event RoleRevoked(bytes32 indexed _role, address indexed _account, address indexed _sender);
 
     /// @notice Thrown when the account does not have a specific role.
-    /// @param role The role that the account does not have.
-    /// @param account The account that does not have the role.
-    error AccessControlUnauthorizedAccount(address account, bytes32 role);
+    /// @param _role The role that the account does not have.
+    /// @param _account The account that does not have the role.
+    error AccessControlUnauthorizedAccount(address _account, bytes32 _role);
 
     /// @notice Storage slot identifier.
     bytes32 constant STORAGE_POSITION = keccak256("compose.accesscontrol");
@@ -34,57 +34,59 @@ library LibAccessControl {
 
     /// @notice storage struct for the AccessControl.
     struct AccessControlStorage {
-        mapping(address account => mapping(bytes32 role => bool hasRole)) _hasRole; 
-        mapping(bytes32 role => bytes32 adminRole) _adminRole; 
+        mapping(address account => mapping(bytes32 role => bool hasRole)) hasRole; 
+        mapping(bytes32 role => bytes32 adminRole) adminRole; 
     }
 
     /// @notice Returns the storage for the AccessControl.
-    /// @return s The storage for the AccessControl.
-    function getStorage() internal pure returns (AccessControlStorage storage s) {
+    /// @return _s The storage for the AccessControl.
+    function getStorage() internal pure returns (AccessControlStorage storage _s) {
         bytes32 position = STORAGE_POSITION;
         assembly {
-            s.slot := position
+            _s.slot := position
         }
     }
     
     /// @notice function to check if an account has a required role.
-    /// @param role The role to assert.
-    /// @param account The account to assert the role for.
+    /// @param _role The role to assert.
+    /// @param _account The account to assert the role for.
     /// @custom:error AccessControlUnauthorizedAccount If the account does not have the role.
-    function requireRole(bytes32 role, address account) internal view {
+    function requireRole(bytes32 _role, address _account) internal view {
         AccessControlStorage storage s = getStorage();
-        if (!s._hasRole[account][role]) revert AccessControlUnauthorizedAccount(account, role);
+        if (!s.hasRole[_account][_role]){
+            revert AccessControlUnauthorizedAccount(_account, _role);
+        }
     }   
 
     /// @notice function to check if an account has a role.
-    /// @param role The role to check.
-    /// @param account The account to check the role for.
+    /// @param _role The role to check.
+    /// @param _account The account to check the role for.
     /// @return True if the account has the role, false otherwise.
-    function hasRole(bytes32 role, address account) internal view returns (bool) {
+    function hasRole(bytes32 _role, address _account) internal view returns (bool) {
         AccessControlStorage storage s = getStorage();
-        return s._hasRole[account][role];
+        return s.hasRole[_account][_role];
     }
 
     /// @notice function to set the admin role for a role.
-    /// @param role The role to set the admin for.
-    /// @param adminRole The admin role to set.
-    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal {
+    /// @param _role The role to set the admin for.
+    /// @param _adminRole The admin role to set.
+    function setRoleAdmin(bytes32 _role, bytes32 _adminRole) internal {
         AccessControlStorage storage s = getStorage();
-        bytes32 previousAdminRole = s._adminRole[role];
-        s._adminRole[role] = adminRole;
-        emit RoleAdminChanged(role, previousAdminRole, adminRole);
+        bytes32 previousAdminRole = s.adminRole[_role];
+        s.adminRole[_role] = _adminRole;
+        emit RoleAdminChanged(_role, previousAdminRole, _adminRole);
     }
  
     /// @notice function to grant a role to an account.
-    /// @param role The role to grant.
-    /// @param account The account to grant the role to.
+    /// @param _role The role to grant.
+    /// @param _account The account to grant the role to.
     /// @return True if the role was granted, false otherwise.
-    function _grantRole(bytes32 role, address account) internal returns (bool) {
+    function grantRole(bytes32 _role, address _account) internal returns (bool) {
         AccessControlStorage storage s = getStorage();
-        bool hasRole = s._hasRole[account][role];
-        if (!hasRole) {
-            s._hasRole[account][role] = true;
-            emit RoleGranted(role, account, msg.sender);
+        bool _hasRole = s.hasRole[_account][_role];
+        if (!_hasRole) {
+            s.hasRole[_account][_role] = true;
+            emit RoleGranted(_role, _account, msg.sender);
             return true;
         } else {
             return false;
@@ -92,15 +94,15 @@ library LibAccessControl {
     }
 
     /// @notice function to revoke a role from an account.
-    /// @param role The role to revoke.
-    /// @param account The account to revoke the role from.
+    /// @param _role The role to revoke.
+    /// @param _account The account to revoke the role from.
     /// @return True if the role was revoked, false otherwise.
-    function _revokeRole(bytes32 role, address account) internal returns (bool) {
+    function revokeRole(bytes32 _role, address _account) internal returns (bool) {
         AccessControlStorage storage s = getStorage();
-        bool hasRole = s._hasRole[account][role];
-        if (hasRole) {
-            s._hasRole[account][role] = false;
-            emit RoleRevoked(role, account, msg.sender);
+        bool _hasRole = s.hasRole[_account][_role];
+        if (_hasRole) {
+            s.hasRole[_account][_role] = false;
+            emit RoleRevoked(_role, _account, msg.sender);
             return true;
         } else {
             return false;
