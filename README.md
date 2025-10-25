@@ -2,6 +2,13 @@
 
 > **⚠️ Early Stage**: Compose is currently in development and only available to contributors. It is **NOT production ready**.
 
+## Purpose of Compose
+
+The purpose of Compose is to help people create their own smart contract systems.
+
+Compose will provide an on-chain standard library of facets (smart contracts) and a simple, standardized way to deploy diamond contracts that use both the Compose library and your own custom facets.
+
+The project is flexible and will evolve based on community input—so tell us what you’d like Compose to do for you.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Chat-blue.svg)](https://discord.gg/DCBD2UKbxc)
