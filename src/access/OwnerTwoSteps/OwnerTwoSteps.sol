@@ -15,7 +15,7 @@ contract OwnerTwoStepsFacet {
 
     bytes32 constant STORAGE_POSITION = keccak256("compose.owner");
 
-    /// @custom:storage-location erc8042:compose.ownertwosteps
+    /// @custom:storage-location erc8042:compose.owner
     struct OwnerTwoStepsStorage {
         address owner;
         address pendingOwner;

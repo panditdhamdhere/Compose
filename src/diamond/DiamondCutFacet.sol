@@ -4,14 +4,14 @@ pragma solidity >=0.8.30;
 // import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
 // import { LibDiamond } from "../libraries/LibDiamond.sol";
 
-// Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
-// The loupe functions are required by the EIP2535 Diamonds standard
+// // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
+// // The loupe functions are required by the EIP2535 Diamonds standard
 // contract DiamondCutFacet {
 
-//     bytes32 constant ERC173_STORAGE_POSITION = keccak256("compose.erc173");
+//     bytes32 constant OWNER_STORAGE_POSITION = keccak256("compose.owner");
 
-//     /// @custom:storage-location erc8042:compose.erc173
-//     struct ERC173Storage {
+//     /// @custom:storage-location erc8042:compose.owner
+//     struct OwnerStorage {
 //         address owner;
 //     }
 
