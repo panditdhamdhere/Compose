@@ -84,20 +84,23 @@ interface IERC20 {
     /// @dev Emits an {Approval} event.
     /// @param _spender The address approved to spend tokens.
     /// @param _value The number of tokens to approve.
-    function approve(address _spender, uint256 _value) external;
+    /// @return True if the operation succeeded.
+    function approve(address _spender, uint256 _value) external returns (bool);
 
     /// @notice Transfers tokens to another address.
     /// @dev Emits a {Transfer} event.
     /// @param _to The address to receive the tokens.
     /// @param _value The amount of tokens to transfer.
-    function transfer(address _to, uint256 _value) external;
+    /// @return True if the operation succeeded.
+    function transfer(address _to, uint256 _value) external returns (bool);
 
     /// @notice Transfers tokens on behalf of another account, provided sufficient allowance exists.
     /// @dev Emits a {Transfer} event and decreases the spender's allowance.
     /// @param _from The address to transfer tokens from.
     /// @param _to The address to transfer tokens to.
     /// @param _value The amount of tokens to transfer.
-    function transferFrom(address _from, address _to, uint256 _value) external;
+    /// @return True if the operation succeeded.
+    function transferFrom(address _from, address _to, uint256 _value) external returns (bool);
 
     /// @notice Burns (destroys) a specific amount of tokens from the caller's balance.
     /// @dev Emits a {Transfer} event to the zero address.
