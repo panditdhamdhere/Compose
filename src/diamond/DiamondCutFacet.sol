@@ -107,7 +107,8 @@ contract DiamondCutFacet {
             if (oldFacetAddressAndSelectorPosition.selectorPosition != selectorCount) {
                 bytes4 lastSelector = ds.selectors[selectorCount];
                 ds.selectors[oldFacetAddressAndSelectorPosition.selectorPosition] = lastSelector;
-                ds.facetAddressAndSelectorPosition[lastSelector].selectorPosition = oldFacetAddressAndSelectorPosition.selectorPosition;
+                ds.facetAddressAndSelectorPosition[lastSelector].selectorPosition =
+                oldFacetAddressAndSelectorPosition.selectorPosition;
             }
             // delete last selector
             ds.selectors.pop();
