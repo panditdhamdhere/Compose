@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-library LibDiamondCut {
-    error NotContractOwner(address _user, address _contractOwner);
+library LibDiamondCut {    
     error NoSelectorsProvidedForFacet(address _facet);
     error NoBytecodeAtAddress(address _contractAddress, string _message);
     error RemoveFacetAddressMustBeZeroAddress(address _facet);

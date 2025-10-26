@@ -21,8 +21,7 @@ contract DiamondCutFacet {
             s.slot := position
         }
     }
-
-    error NotContractOwner(address _user, address _contractOwner);
+    
     error NoSelectorsProvidedForFacet(address _facet);
     error NoBytecodeAtAddress(address _contractAddress, string _message);
     error RemoveFacetAddressMustBeZeroAddress(address _facet);
