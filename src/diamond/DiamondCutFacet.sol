@@ -8,16 +8,14 @@ import {LibOwner} from "../access/Owner/LibOwner.sol";
 contract DiamondCutFacet {
     error NoSelectorsGivenToAdd();
     error NotContractOwner(address _user, address _contractOwner);
-    error NoSelectorsProvidedForFacet(address _facetAddress);
-    error CannotAddSelectorsToZeroAddress(bytes4[] _selectors);
+    error NoSelectorsProvidedForFacet(address _facetAddress);    
     error NoBytecodeAtAddress(address _contractAddress, string _message);
+    error RemoveFacetAddressMustBeZeroAddress(address _facetAddress);
     error IncorrectFacetCutAction(uint8 _action);
-    error CannotAddFunctionToDiamondThatAlreadyExists(bytes4 _selector);
-    error CannotReplaceFunctionsFromFacetWithZeroAddress(bytes4[] _selectors);
+    error CannotAddFunctionToDiamondThatAlreadyExists(bytes4 _selector);    
     error CannotReplaceImmutableFunction(bytes4 _selector);
     error CannotReplaceFunctionWithTheSameFunctionFromTheSameFacet(bytes4 _selector);
-    error CannotReplaceFunctionThatDoesNotExists(bytes4 _selector);
-    error RemoveFacetAddressMustBeZeroAddress(address _facetAddress);
+    error CannotReplaceFunctionThatDoesNotExists(bytes4 _selector);    
     error CannotRemoveFunctionThatDoesNotExist(bytes4 _selector);
     error CannotRemoveImmutableFunction(bytes4 _selector);
     error InitializationFunctionReverted(address _initializationContractAddress, bytes _calldata);
@@ -47,14 +45,11 @@ contract DiamondCutFacet {
     }
 
     function addFunctions(address _facetAddress, bytes4[] calldata _functionSelectors) internal {
-        if (_facetAddress == address(0)) {
-            revert CannotAddSelectorsToZeroAddress(_functionSelectors);
-        }
         DiamondStorage storage ds = getDiamondStorage();
-        uint16 selectorCount = uint16(ds.selectors.length);
         if (_facetAddress.code.length == 0) {
             revert NoBytecodeAtAddress(_facetAddress, "DiamondCutFacet: Add facet has no code");
         }
+        uint16 selectorCount = uint16(ds.selectors.length);        
         for (uint256 selectorIndex; selectorIndex < _functionSelectors.length; selectorIndex++) {
             bytes4 selector = _functionSelectors[selectorIndex];
             address oldFacetAddress = ds.facetAddressAndSelectorPosition[selector].facetAddress;
@@ -69,9 +64,6 @@ contract DiamondCutFacet {
 
     function replaceFunctions(address _facetAddress, bytes4[] calldata _functionSelectors) internal {
         DiamondStorage storage ds = getDiamondStorage();
-        if (_facetAddress == address(0)) {
-            revert CannotReplaceFunctionsFromFacetWithZeroAddress(_functionSelectors);
-        }
         if (_facetAddress.code.length == 0) {
             revert NoBytecodeAtAddress(_facetAddress, "DiamondCutFacet: Replace facet has no code");
         }
