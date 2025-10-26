@@ -32,6 +32,7 @@ library LibAccessControl {
     bytes32 constant DEFAULT_ADMIN_ROLE = 0x00;
 
     /// @notice storage struct for the AccessControl.
+    /// @custom:storage-location erc8042:compose.accesscontrol
     struct AccessControlStorage {
         mapping(address account => mapping(bytes32 role => bool hasRole)) hasRole;
         mapping(bytes32 role => bytes32 adminRole) adminRole;
