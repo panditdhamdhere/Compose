@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-library LibDiamondCut {    
+library LibDiamond {    
     error NoSelectorsProvidedForFacet(address _facet);
     error NoBytecodeAtAddress(address _contractAddress, string _message);
     error RemoveFacetAddressMustBeZeroAddress(address _facet);
@@ -41,7 +41,7 @@ library LibDiamondCut {
     function addFunctions(address _facet, bytes4[] calldata _functionSelectors) internal {
         Storage storage s = getStorage();
         if (_facet.code.length == 0) {
-            revert NoBytecodeAtAddress(_facet, "LibDiamondCut: Add facet has no code");
+            revert NoBytecodeAtAddress(_facet, "LibDiamond: Add facet has no code");
         }
         // The position to store the next selector in the selectors array
         uint16 selectorPosition = uint16(s.selectors.length);
@@ -60,7 +60,7 @@ library LibDiamondCut {
     function replaceFunctions(address _facet, bytes4[] calldata _functionSelectors) internal {
         Storage storage s = getStorage();
         if (_facet.code.length == 0) {
-            revert NoBytecodeAtAddress(_facet, "LibDiamondCut: Replace facet has no code");
+            revert NoBytecodeAtAddress(_facet, "LibDiamond: Replace facet has no code");
         }
         for (uint256 selectorIndex; selectorIndex < _functionSelectors.length; selectorIndex++) {
             bytes4 selector = _functionSelectors[selectorIndex];
@@ -134,7 +134,7 @@ library LibDiamondCut {
     /// @param _init The address of the contract or facet to execute _calldata
     /// @param _calldata A function call, including function selector and arguments
     ///                  _calldata is executed with delegatecall on _init
-    function diamondCut(FacetCut[] calldata _diamondCut, address _init, bytes calldata _calldata) external {
+    function diamondCut(FacetCut[] calldata _diamondCut, address _init, bytes calldata _calldata) internal {
         for (uint256 facetIndex; facetIndex < _diamondCut.length; facetIndex++) {
             bytes4[] calldata functionSelectors = _diamondCut[facetIndex].functionSelectors;
             address facetAddress = _diamondCut[facetIndex].facetAddress;
@@ -159,7 +159,7 @@ library LibDiamondCut {
             return;
         }
         if (_init.code.length == 0) {
-            revert NoBytecodeAtAddress(_init, "LibDiamondCut: _init address no code");
+            revert NoBytecodeAtAddress(_init, "LibDiamond: _init address no code");
         }
         (bool success, bytes memory error) = _init.delegatecall(_calldata);
         if (!success) {
