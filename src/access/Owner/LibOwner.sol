@@ -19,7 +19,7 @@ library LibOwner {
 
     /// @notice Returns a pointer to the ERC-173 storage struct.
     /// @dev Uses inline assembly to access the storage slot defined by STORAGE_POSITION.
-    /// @return s The ERC173Storage struct in storage.
+    /// @return s The OwnerStorage struct in storage.
     function getStorage() internal pure returns (OwnerStorage storage s) {
         bytes32 position = STORAGE_POSITION;
         assembly {
