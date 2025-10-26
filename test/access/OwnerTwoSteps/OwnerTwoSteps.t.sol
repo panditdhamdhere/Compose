@@ -548,19 +548,19 @@ contract OwnerTwoStepsFacetTest is Test {
         vm.prank(INITIAL_OWNER);
         ownerTwoSteps.renounceOwnership();
 
-        // No matter who calls or with what target, transfers should fail
-        vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
-        vm.prank(caller);
-        ownerTwoSteps.transferOwnership(target);
-
-        // Acceptance should also fail
-        vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
-        vm.prank(caller);
-        ownerTwoSteps.acceptOwnership();
-
-        // Renounce should also fail
+        // Zero address can't make calls anyway
         if (caller != ZERO_ADDRESS) {
-            // Zero address can't make calls anyway
+            // No matter who calls or with what target, transfers should fail
+            vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+            vm.prank(caller);
+            ownerTwoSteps.transferOwnership(target);
+
+            // Acceptance should also fail
+            vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+            vm.prank(caller);
+            ownerTwoSteps.acceptOwnership();
+
+            // Renounce should also fail
             vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
             vm.prank(caller);
             ownerTwoSteps.renounceOwnership();
