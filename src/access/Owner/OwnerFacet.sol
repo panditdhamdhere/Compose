@@ -16,7 +16,7 @@ contract OwnerFacet {
         address owner;
     }
 
-    /// @notice Returns a pointer to the ower storage struct.
+    /// @notice Returns a pointer to the owner storage struct.
     /// @dev Uses inline assembly to access the storage slot defined by STORAGE_POSITION.
     /// @return s The OwnerStorage struct in storage.
     function getStorage() internal pure returns (OwnerStorage storage s) {
@@ -43,5 +43,17 @@ contract OwnerFacet {
         address previousOwner = s.owner;
         s.owner = _newOwner;
         emit OwnershipTransferred(previousOwner, _newOwner);
+    }
+
+    /// @notice Renounce ownership of the contract
+    /// @dev Sets the owner to address(0), disabling all functions restricted to the owner.
+    function renounceOwnership() external {
+        OwnerStorage storage s = getStorage();
+        if (msg.sender != s.owner) {
+            revert OwnerUnauthorizedAccount();
+        }
+        address previousOwner = s.owner;
+        s.owner = address(0);
+        emit OwnershipTransferred(previousOwner, address(0));
     }
 }

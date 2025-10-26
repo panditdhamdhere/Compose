@@ -7,8 +7,8 @@ library LibOwner {
     /// @dev This emits when ownership of a contract changes.
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-    /// @notice Thrown when attempting to transfer ownership of a renounced contract.
-    error OwnerAlreadyRenounced();
+    /// @notice Thrown when a non-owner attempts an action restricted to owner.
+    error OwnerUnauthorizedAccount();
 
     bytes32 constant STORAGE_POSITION = keccak256("compose.owner");
 
@@ -33,14 +33,18 @@ library LibOwner {
         return getStorage().owner;
     }
 
+    /// @notice Reverts if the caller is not the owner.
+    function requireOwner() internal view {
+        if (getStorage().owner != msg.sender) {
+            revert OwnerUnauthorizedAccount();
+        }
+    }
+
     /// @notice Set the address of the new owner of the contract
     /// @dev Set _newOwner to address(0) to renounce any ownership.
     /// @param _newOwner The address of the new owner of the contract
     function transferOwnership(address _newOwner) internal {
         OwnerStorage storage s = getStorage();
-        if (s.owner == address(0)) {
-            revert OwnerAlreadyRenounced();
-        }
         address previousOwner = s.owner;
         s.owner = _newOwner;
         emit OwnershipTransferred(previousOwner, _newOwner);

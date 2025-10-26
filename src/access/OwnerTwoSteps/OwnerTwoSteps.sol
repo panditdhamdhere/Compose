@@ -10,8 +10,6 @@ contract OwnerTwoStepsFacet {
 
     /// @notice Thrown when a non-owner attempts an action restricted to owner.
     error OwnerUnauthorizedAccount();
-    /// @notice Thrown when attempting to initialize the contract more than once.
-    error OwnerAlreadyInitialized();
 
     bytes32 constant STORAGE_POSITION = keccak256("compose.owner");
 
@@ -66,5 +64,18 @@ contract OwnerTwoStepsFacet {
         s.owner = s.pendingOwner;
         s.pendingOwner = address(0);
         emit OwnershipTransferred(oldOwner, s.owner);
+    }
+
+    /// @notice Renounce ownership of the contract
+    /// @dev Sets the owner to address(0), disabling all functions restricted to the owner.
+    function renounceOwnership() external {
+        OwnerTwoStepsStorage storage s = getStorage();
+        if (msg.sender != s.owner) {
+            revert OwnerUnauthorizedAccount();
+        }
+        address previousOwner = s.owner;
+        s.owner = address(0);
+        s.pendingOwner = address(0);
+        emit OwnershipTransferred(previousOwner, address(0));
     }
 }
