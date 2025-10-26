@@ -48,7 +48,7 @@ library LibOwnerTwoSteps {
     }
 
     /// @notice Initiates a two-step ownership transfer.
-    /// @param _newOwner The address of the new owner (set to `address(0)` to renounce).
+    /// @param _newOwner The address of the new owner of the contract
     function transferOwnership(address _newOwner) internal {
         OwnerTwoStepsStorage storage s = getStorage();
         s.pendingOwner = _newOwner;
