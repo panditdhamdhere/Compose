@@ -113,8 +113,8 @@ contract ERC721EnumerableFacet {
         while (_tokenId != 0) {
             stringLength--;
             // Convert each digit to its ASCII representation
-            // by adding 48 to get the ASCII code for the digit
-            // and storing it in the byte array
+            // by adding 48 to get the ASCII code for the digit.
+            // Then store it in the byte array
             tokenIdString[stringLength] = bytes1(uint8(48 + (_tokenId % 10)));
             _tokenId /= 10;
         }
