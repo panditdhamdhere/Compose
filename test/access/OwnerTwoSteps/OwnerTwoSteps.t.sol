@@ -293,4 +293,297 @@ contract OwnerTwoStepsFacetTest is Test {
         vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
         ownerTwoSteps.acceptOwnership();
     }
+
+    // ============================================
+    // Direct Renouncement Tests (renounceOwnership)
+    // ============================================
+
+    function test_RenounceOwnership_DirectlyRenounces() public {
+        // Call renounceOwnership directly
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.renounceOwnership();
+
+        // Verify both owner and pendingOwner are zero
+        assertEq(ownerTwoSteps.owner(), ZERO_ADDRESS);
+        assertEq(ownerTwoSteps.pendingOwner(), ZERO_ADDRESS);
+    }
+
+    function test_RenounceOwnership_OnlyOwnerCanCall() public {
+        // Only the owner should be able to renounce
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.renounceOwnership();
+
+        assertEq(ownerTwoSteps.owner(), ZERO_ADDRESS);
+    }
+
+    function test_RenounceOwnership_EmitsOwnershipTransferredEvent() public {
+        vm.expectEmit(true, true, false, true);
+        emit OwnershipTransferred(INITIAL_OWNER, ZERO_ADDRESS);
+
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.renounceOwnership();
+    }
+
+    function test_RenounceOwnership_ClearsPendingOwner() public {
+        // Set a pending owner first
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.transferOwnership(NEW_OWNER);
+        assertEq(ownerTwoSteps.pendingOwner(), NEW_OWNER);
+
+        // Renounce should clear pending owner
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.renounceOwnership();
+
+        assertEq(ownerTwoSteps.owner(), ZERO_ADDRESS);
+        assertEq(ownerTwoSteps.pendingOwner(), ZERO_ADDRESS);
+    }
+
+    function test_RevertWhen_RenounceOwnership_CalledByNonOwner() public {
+        vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+        vm.prank(ALICE);
+        ownerTwoSteps.renounceOwnership();
+
+        // Owner should remain unchanged
+        assertEq(ownerTwoSteps.owner(), INITIAL_OWNER);
+    }
+
+    function test_RevertWhen_RenounceOwnership_CalledByPendingOwner() public {
+        // Set pending owner
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.transferOwnership(NEW_OWNER);
+
+        // Pending owner cannot renounce
+        vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+        vm.prank(NEW_OWNER);
+        ownerTwoSteps.renounceOwnership();
+    }
+
+    function test_RenounceOwnership_PreventsAllFutureTransfers() public {
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.renounceOwnership();
+
+        // Any address trying to transfer should fail
+        vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+        vm.prank(ALICE);
+        ownerTwoSteps.transferOwnership(BOB);
+
+        // Even the previous owner cannot transfer
+        vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.transferOwnership(NEW_OWNER);
+    }
+
+    function test_RenounceOwnership_CannotBeReversed() public {
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.renounceOwnership();
+
+        // Cannot accept ownership (no pending owner)
+        vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+        vm.prank(ALICE);
+        ownerTwoSteps.acceptOwnership();
+
+        // Cannot renounce again
+        vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+        vm.prank(ALICE);
+        ownerTwoSteps.renounceOwnership();
+    }
+
+    // ============================================
+    // Storage Tests
+    // ============================================
+
+    function test_StorageSlot_Consistency() public {
+        bytes32 expectedSlot = keccak256("compose.owner");
+
+        // Set pending owner
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.transferOwnership(NEW_OWNER);
+
+        // Accept ownership
+        vm.prank(NEW_OWNER);
+        ownerTwoSteps.acceptOwnership();
+
+        // Read directly from storage
+        bytes32 storedValue = vm.load(address(ownerTwoSteps), expectedSlot);
+        address storedOwner = address(uint160(uint256(storedValue)));
+
+        assertEq(storedOwner, NEW_OWNER);
+        assertEq(ownerTwoSteps.owner(), NEW_OWNER);
+    }
+
+    function test_StorageSlot_PendingOwner() public {
+        bytes32 expectedSlot = keccak256("compose.owner");
+        bytes32 pendingSlot = bytes32(uint256(expectedSlot) + 1);
+
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.transferOwnership(ALICE);
+
+        // Read pending owner from storage
+        bytes32 pendingValue = vm.load(address(ownerTwoSteps), pendingSlot);
+        address storedPendingOwner = address(uint160(uint256(pendingValue)));
+
+        assertEq(storedPendingOwner, ALICE);
+        assertEq(ownerTwoSteps.pendingOwner(), ALICE);
+    }
+
+    // ============================================
+    // Edge Cases
+    // ============================================
+
+    function test_RenounceOwnership_WithPendingTransfer() public {
+        // Start a two-step transfer
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.transferOwnership(NEW_OWNER);
+        assertEq(ownerTwoSteps.pendingOwner(), NEW_OWNER);
+
+        // Direct renouncement should override pending transfer
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.renounceOwnership();
+
+        // Both should be zero
+        assertEq(ownerTwoSteps.owner(), ZERO_ADDRESS);
+        assertEq(ownerTwoSteps.pendingOwner(), ZERO_ADDRESS);
+
+        // Pending owner can no longer accept
+        vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+        vm.prank(NEW_OWNER);
+        ownerTwoSteps.acceptOwnership();
+    }
+
+    function test_DirectRenounce_vs_TwoStepRenounce() public {
+        // Test 1: Two-step renounce (can be cancelled)
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.transferOwnership(ZERO_ADDRESS);
+
+        // Can still change mind
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.transferOwnership(NEW_OWNER);
+        assertEq(ownerTwoSteps.pendingOwner(), NEW_OWNER);
+
+        // Reset for test 2
+        vm.prank(NEW_OWNER);
+        ownerTwoSteps.acceptOwnership();
+
+        // Test 2: Direct renounce (immediate and irreversible)
+        vm.prank(NEW_OWNER);
+        ownerTwoSteps.renounceOwnership();
+        assertEq(ownerTwoSteps.owner(), ZERO_ADDRESS);
+        assertEq(ownerTwoSteps.pendingOwner(), ZERO_ADDRESS);
+    }
+
+    // ============================================
+    // Gas Benchmarks
+    // ============================================
+
+    function test_Gas_Owner() public view {
+        uint256 gasBefore = gasleft();
+        ownerTwoSteps.owner();
+        uint256 gasUsed = gasBefore - gasleft();
+
+        console2.log("Gas used for owner():", gasUsed);
+        assertTrue(gasUsed < 10000, "Owner getter uses too much gas");
+    }
+
+    function test_Gas_PendingOwner() public view {
+        uint256 gasBefore = gasleft();
+        ownerTwoSteps.pendingOwner();
+        uint256 gasUsed = gasBefore - gasleft();
+
+        console2.log("Gas used for pendingOwner():", gasUsed);
+        assertTrue(gasUsed < 10000, "Pending owner getter uses too much gas");
+    }
+
+    function test_Gas_TransferOwnership() public {
+        uint256 gasBefore = gasleft();
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.transferOwnership(NEW_OWNER);
+        uint256 gasUsed = gasBefore - gasleft();
+
+        console2.log("Gas used for transferOwnership():", gasUsed);
+        assertTrue(gasUsed < 50000, "Transfer ownership uses too much gas");
+    }
+
+    function test_Gas_AcceptOwnership() public {
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.transferOwnership(NEW_OWNER);
+
+        uint256 gasBefore = gasleft();
+        vm.prank(NEW_OWNER);
+        ownerTwoSteps.acceptOwnership();
+        uint256 gasUsed = gasBefore - gasleft();
+
+        console2.log("Gas used for acceptOwnership():", gasUsed);
+        assertTrue(gasUsed < 35000, "Accept ownership uses too much gas");
+    }
+
+    function test_Gas_RenounceOwnership() public {
+        uint256 gasBefore = gasleft();
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.renounceOwnership();
+        uint256 gasUsed = gasBefore - gasleft();
+
+        console2.log("Gas used for renounceOwnership():", gasUsed);
+        assertTrue(gasUsed < 30000, "Renounce ownership uses too much gas");
+    }
+
+    // ============================================
+    // Additional Fuzz Tests
+    // ============================================
+
+    function test_Fuzz_RenounceOwnership_OnlyOwner(address caller) public {
+        if (caller == INITIAL_OWNER) {
+            vm.prank(caller);
+            ownerTwoSteps.renounceOwnership();
+            assertEq(ownerTwoSteps.owner(), ZERO_ADDRESS);
+        } else {
+            vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+            vm.prank(caller);
+            ownerTwoSteps.renounceOwnership();
+            assertEq(ownerTwoSteps.owner(), INITIAL_OWNER);
+        }
+    }
+
+    function test_Fuzz_StateAfterRenounce(address caller, address target) public {
+        // Renounce ownership
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.renounceOwnership();
+
+        // No matter who calls or with what target, transfers should fail
+        vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+        vm.prank(caller);
+        ownerTwoSteps.transferOwnership(target);
+
+        // Acceptance should also fail
+        vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+        vm.prank(caller);
+        ownerTwoSteps.acceptOwnership();
+
+        // Renounce should also fail
+        if (caller != ZERO_ADDRESS) {
+            // Zero address can't make calls anyway
+            vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+            vm.prank(caller);
+            ownerTwoSteps.renounceOwnership();
+        }
+    }
+
+    function test_Fuzz_RenounceWithPendingOwner(address pendingOwner) public {
+        vm.assume(pendingOwner != address(0));
+
+        // Set pending owner
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.transferOwnership(pendingOwner);
+
+        // Renounce clears everything
+        vm.prank(INITIAL_OWNER);
+        ownerTwoSteps.renounceOwnership();
+
+        assertEq(ownerTwoSteps.owner(), ZERO_ADDRESS);
+        assertEq(ownerTwoSteps.pendingOwner(), ZERO_ADDRESS);
+
+        // Pending owner can no longer accept
+        vm.expectRevert(OwnerTwoStepsFacet.OwnerUnauthorizedAccount.selector);
+        vm.prank(pendingOwner);
+        ownerTwoSteps.acceptOwnership();
+    }
 }
