@@ -1,27 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-contract DiamondCutFacet {
-    /// @notice Thrown when a non-owner attempts an action restricted to owner.
-    error OwnerUnauthorizedAccount();
-
-    bytes32 constant OWNER_STORAGE_POSITION = keccak256("compose.owner");
-
-    /// @custom:storage-location erc8042:compose.owner
-    struct OwnerStorage {
-        address owner;
-    }
-
-    /// @notice Returns a pointer to the owner storage struct.
-    /// @dev Uses inline assembly to access the storage slot defined by STORAGE_POSITION.
-    /// @return s The OwnerStorage struct in storage.
-    function getOwnerStorage() internal pure returns (OwnerStorage storage s) {
-        bytes32 position = OWNER_STORAGE_POSITION;
-        assembly {
-            s.slot := position
-        }
-    }
-
+library LibDiamondCut {
     error NotContractOwner(address _user, address _contractOwner);
     error NoSelectorsProvidedForFacet(address _facet);
     error NoBytecodeAtAddress(address _contractAddress, string _message);
@@ -46,13 +26,13 @@ contract DiamondCutFacet {
     }
 
     /// @custom:storage-location erc8042:compose.diamond
-    struct DiamondStorage {
+    struct Storage {
         mapping(bytes4 functionSelector => FacetAndPosition) facetAndPosition;
         // Array of all function selectors that can be called in the diamond
         bytes4[] selectors;
     }
 
-    function getDiamondStorage() internal pure returns (DiamondStorage storage s) {
+    function getStorage() internal pure returns (Storage storage s) {
         bytes32 position = DIAMOND_STORAGE_POSITION;
         assembly {
             s.slot := position
@@ -60,9 +40,9 @@ contract DiamondCutFacet {
     }
 
     function addFunctions(address _facet, bytes4[] calldata _functionSelectors) internal {
-        DiamondStorage storage s = getDiamondStorage();
+        Storage storage s = getStorage();
         if (_facet.code.length == 0) {
-            revert NoBytecodeAtAddress(_facet, "DiamondCutFacet: Add facet has no code");
+            revert NoBytecodeAtAddress(_facet, "LibDiamondCut: Add facet has no code");
         }
         // The position to store the next selector in the selectors array
         uint16 selectorPosition = uint16(s.selectors.length);
@@ -79,9 +59,9 @@ contract DiamondCutFacet {
     }
 
     function replaceFunctions(address _facet, bytes4[] calldata _functionSelectors) internal {
-        DiamondStorage storage s = getDiamondStorage();
+        Storage storage s = getStorage();
         if (_facet.code.length == 0) {
-            revert NoBytecodeAtAddress(_facet, "DiamondCutFacet: Replace facet has no code");
+            revert NoBytecodeAtAddress(_facet, "LibDiamondCut: Replace facet has no code");
         }
         for (uint256 selectorIndex; selectorIndex < _functionSelectors.length; selectorIndex++) {
             bytes4 selector = _functionSelectors[selectorIndex];
@@ -102,7 +82,7 @@ contract DiamondCutFacet {
     }
 
     function removeFunctions(address _facet, bytes4[] calldata _functionSelectors) internal {
-        DiamondStorage storage s = getDiamondStorage();
+        Storage storage s = getStorage();
         uint256 selectorCount = s.selectors.length;
         if (_facet != address(0)) {
             revert RemoveFacetAddressMustBeZeroAddress(_facet);
@@ -156,9 +136,6 @@ contract DiamondCutFacet {
     /// @param _calldata A function call, including function selector and arguments
     ///                  _calldata is executed with delegatecall on _init
     function diamondCut(FacetCut[] calldata _diamondCut, address _init, bytes calldata _calldata) external {
-        if (getOwnerStorage().owner != msg.sender) {
-            revert OwnerUnauthorizedAccount();
-        }
         for (uint256 facetIndex; facetIndex < _diamondCut.length; facetIndex++) {
             bytes4[] calldata functionSelectors = _diamondCut[facetIndex].functionSelectors;
             address facetAddress = _diamondCut[facetIndex].facetAddress;
@@ -183,7 +160,7 @@ contract DiamondCutFacet {
             return;
         }
         if (_init.code.length == 0) {
-            revert NoBytecodeAtAddress(_init, "DiamondCutFacet: _init address no code");
+            revert NoBytecodeAtAddress(_init, "LibDiamondCut: _init address no code");
         }
         (bool success, bytes memory error) = _init.delegatecall(_calldata);
         if (!success) {
