@@ -2,7 +2,6 @@
 pragma solidity >=0.8.30;
 
 contract AccessControlFacet {
-
     /// @notice Emitted when the admin role for a role is changed.
     /// @param _role The role that was changed.
     /// @param _previousAdminRole The previous admin role.
@@ -39,8 +38,8 @@ contract AccessControlFacet {
 
     /// @notice storage struct for the AccessControl.
     struct AccessControlStorage {
-        mapping(address account => mapping(bytes32 role => bool hasRole)) hasRole; 
-        mapping(bytes32 role => bytes32 adminRole) adminRole; 
+        mapping(address account => mapping(bytes32 role => bool hasRole)) hasRole;
+        mapping(bytes32 role => bytes32 adminRole) adminRole;
     }
 
     /// @notice Returns the storage for the AccessControl.
@@ -56,11 +55,10 @@ contract AccessControlFacet {
     /// @param _role The role to check.
     /// @param _account The account to check the role for.
     /// @return True if the account has the role, false otherwise.
-    function hasRole(bytes32 _role, address _account) external view returns(bool){
+    function hasRole(bytes32 _role, address _account) external view returns (bool) {
         AccessControlStorage storage s = getStorage();
         return s.hasRole[_account][_role];
     }
-
 
     /// @notice Checks if an account has a required role.
     /// @param _role The role to check.
@@ -68,7 +66,7 @@ contract AccessControlFacet {
     /// @custom:error AccessControlUnauthorizedAccount If the account does not have the role.
     function requireRole(bytes32 _role, address _account) external view {
         AccessControlStorage storage s = getStorage();
-        if (!s.hasRole[_account][_role]){
+        if (!s.hasRole[_account][_role]) {
             revert AccessControlUnauthorizedAccount(_account, _role);
         }
     }
@@ -76,11 +74,10 @@ contract AccessControlFacet {
     /// @notice Returns the admin role for a role.
     /// @param _role The role to get the admin for.
     /// @return The admin role for the role.
-    function getRoleAdmin(bytes32 _role) external view returns(bytes32){
+    function getRoleAdmin(bytes32 _role) external view returns (bytes32) {
         AccessControlStorage storage s = getStorage();
         return s.adminRole[_role];
     }
-
 
     /// @notice Grants a role to an account.
     /// @param _role The role to grant.
@@ -92,7 +89,7 @@ contract AccessControlFacet {
         bytes32 adminRole = s.adminRole[_role];
 
         // Check if the caller is the admin of the role.
-        if (!s.hasRole[msg.sender][adminRole]){
+        if (!s.hasRole[msg.sender][adminRole]) {
             revert AccessControlUnauthorizedAccount(msg.sender, adminRole);
         }
 
@@ -113,7 +110,7 @@ contract AccessControlFacet {
         bytes32 adminRole = s.adminRole[_role];
 
         // Check if the caller is the admin of the role.
-        if (!s.hasRole[msg.sender][adminRole]){
+        if (!s.hasRole[msg.sender][adminRole]) {
             revert AccessControlUnauthorizedAccount(msg.sender, adminRole);
         }
 
@@ -124,7 +121,6 @@ contract AccessControlFacet {
         }
     }
 
-
     /// @notice Renounces a role from the caller.
     /// @param _role The role to renounce.
     /// @param _account The account to renounce the role from.
@@ -134,14 +130,13 @@ contract AccessControlFacet {
         AccessControlStorage storage s = getStorage();
 
         // Check If the caller is not the account to renounce the role from.
-        if(msg.sender != _account){
+        if (msg.sender != _account) {
             revert AccessControlUnauthorizedSender(msg.sender, _account);
         }
         bool _hasRole = s.hasRole[_account][_role];
         if (_hasRole) {
             s.hasRole[_account][_role] = false;
-            emit RoleRevoked(_role, _account, msg.sender);    
+            emit RoleRevoked(_role, _account, msg.sender);
         }
     }
-
 }

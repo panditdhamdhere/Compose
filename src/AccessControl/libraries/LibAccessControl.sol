@@ -2,7 +2,6 @@
 pragma solidity >=0.8.30;
 
 library LibAccessControl {
-
     /// @notice Emitted when the admin role for a role is changed.
     /// @param _role The role that was changed.
     /// @param _previousAdminRole The previous admin role.
@@ -34,8 +33,8 @@ library LibAccessControl {
 
     /// @notice storage struct for the AccessControl.
     struct AccessControlStorage {
-        mapping(address account => mapping(bytes32 role => bool hasRole)) hasRole; 
-        mapping(bytes32 role => bytes32 adminRole) adminRole; 
+        mapping(address account => mapping(bytes32 role => bool hasRole)) hasRole;
+        mapping(bytes32 role => bytes32 adminRole) adminRole;
     }
 
     /// @notice Returns the storage for the AccessControl.
@@ -46,17 +45,17 @@ library LibAccessControl {
             _s.slot := position
         }
     }
-    
+
     /// @notice function to check if an account has a required role.
     /// @param _role The role to assert.
     /// @param _account The account to assert the role for.
     /// @custom:error AccessControlUnauthorizedAccount If the account does not have the role.
     function requireRole(bytes32 _role, address _account) internal view {
         AccessControlStorage storage s = getStorage();
-        if (!s.hasRole[_account][_role]){
+        if (!s.hasRole[_account][_role]) {
             revert AccessControlUnauthorizedAccount(_account, _role);
         }
-    }   
+    }
 
     /// @notice function to check if an account has a role.
     /// @param _role The role to check.
@@ -76,7 +75,7 @@ library LibAccessControl {
         s.adminRole[_role] = _adminRole;
         emit RoleAdminChanged(_role, previousAdminRole, _adminRole);
     }
- 
+
     /// @notice function to grant a role to an account.
     /// @param _role The role to grant.
     /// @param _account The account to grant the role to.
@@ -108,6 +107,4 @@ library LibAccessControl {
             return false;
         }
     }
-
-
 }
