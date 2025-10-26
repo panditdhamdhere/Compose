@@ -25,13 +25,13 @@ library LibDiamond {
     }
 
     /// @custom:storage-location erc8042:compose.diamond
-    struct Storage {
+    struct DiamondStorage {
         mapping(bytes4 functionSelector => FacetAndPosition) facetAndPosition;
         // Array of all function selectors that can be called in the diamond
         bytes4[] selectors;
     }
 
-    function getStorage() internal pure returns (Storage storage s) {
+    function getStorage() internal pure returns (DiamondStorage storage s) {
         bytes32 position = DIAMOND_STORAGE_POSITION;
         assembly {
             s.slot := position
@@ -39,7 +39,7 @@ library LibDiamond {
     }
 
     function addFunctions(address _facet, bytes4[] calldata _functionSelectors) internal {
-        Storage storage s = getStorage();
+        DiamondStorage storage s = getStorage();
         if (_facet.code.length == 0) {
             revert NoBytecodeAtAddress(_facet, "LibDiamond: Add facet has no code");
         }
@@ -58,7 +58,7 @@ library LibDiamond {
     }
 
     function replaceFunctions(address _facet, bytes4[] calldata _functionSelectors) internal {
-        Storage storage s = getStorage();
+        DiamondStorage storage s = getStorage();
         if (_facet.code.length == 0) {
             revert NoBytecodeAtAddress(_facet, "LibDiamond: Replace facet has no code");
         }
@@ -81,7 +81,7 @@ library LibDiamond {
     }
 
     function removeFunctions(address _facet, bytes4[] calldata _functionSelectors) internal {
-        Storage storage s = getStorage();
+        DiamondStorage storage s = getStorage();
         uint256 selectorCount = s.selectors.length;
         if (_facet != address(0)) {
             revert RemoveFacetAddressMustBeZeroAddress(_facet);
