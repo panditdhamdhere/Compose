@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-library LibDiamond {    
+library LibDiamond {
     error NoSelectorsProvidedForFacet(address _facet);
     error NoBytecodeAtAddress(address _contractAddress, string _message);
     error RemoveFacetAddressMustBeZeroAddress(address _facet);

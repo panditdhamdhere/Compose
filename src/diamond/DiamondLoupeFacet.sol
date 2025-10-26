@@ -4,7 +4,6 @@ pragma solidity >=0.8.30;
 // The functions in DiamondLoupeFacet MUST be added to a diamond.
 // The EIP-2535 Diamond standard requires these functions.
 contract DiamondLoupeFacet {
-    
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("compose.diamond");
 
     /// @notice Data stored for each function selector
@@ -34,7 +33,7 @@ contract DiamondLoupeFacet {
         address facet;
         bytes4[] functionSelectors;
     }
-        
+
     /// @notice Gets all facets and their selectors.
     /// @return allFacets Facet
     function facets() external view returns (Facet[] memory allFacets) {
@@ -54,7 +53,7 @@ contract DiamondLoupeFacet {
             // find the functionSelectors array for selector and add selector to it
             for (uint256 facetIndex; facetIndex < numFacets; facetIndex++) {
                 if (allFacets[facetIndex].facet == facetAddress_) {
-                    allFacets[facetIndex].functionSelectors[numFacetSelectors[facetIndex]] = selector;                                   
+                    allFacets[facetIndex].functionSelectors[numFacetSelectors[facetIndex]] = selector;
                     numFacetSelectors[facetIndex]++;
                     continueLoop = true;
                     break;
@@ -104,7 +103,7 @@ contract DiamondLoupeFacet {
             }
         }
         // Set the number of selectors in the array
-        assembly ("memory-safe"){
+        assembly ("memory-safe") {
             mstore(facetSelectors, numSelectors)
         }
     }
@@ -151,5 +150,5 @@ contract DiamondLoupeFacet {
     function facetAddress(bytes4 _functionSelector) external view returns (address facet) {
         DiamondStorage storage s = getStorage();
         facet = s.facetAndPosition[_functionSelector].facet;
-    }   
+    }
 }
