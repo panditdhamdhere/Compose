@@ -153,26 +153,14 @@ contract LibOwnerTwoStepsTest is Test {
         assertEq(harness.owner(), INITIAL_OWNER); // Owner unchanged until accepted
     }
 
-    // TODO: When LibOwnerTwoSteps is fixed to make renouncement irreversible:
-    // 1. Rename this test to: test_RevertWhen_TransferOwnership_FromRenouncedOwner
-    // 2. Change logic to:
-    //    vm.expectRevert(LibOwnerTwoSteps.OwnerAlreadyRenounced.selector);
-    //    harness.transferOwnership(NEW_OWNER);
-    // 3. Remove the acceptance and recovery logic
-    function test_TransferOwnership_AfterRenounce_AllowsRecovery() public {
+    function test_RevertWhen_TransferOwnership_FromRenouncedOwner() public {
         // Force renounce
         harness.forceRenounce();
         assertEq(harness.owner(), ZERO_ADDRESS);
 
-        // CURRENT BEHAVIOR (BUG): Library allows setting pending owner even after renouncement
-        // EXPECTED BEHAVIOR: Should revert with OwnerAlreadyRenounced error
+        // Should revert with OwnerAlreadyRenounced error
+        vm.expectRevert(LibOwnerTwoSteps.OwnerAlreadyRenounced.selector);
         harness.transferOwnership(NEW_OWNER);
-        assertEq(harness.pendingOwner(), NEW_OWNER);
-
-        // Can even accept ownership to recover (this shouldn't be possible)
-        vm.prank(NEW_OWNER);
-        harness.acceptOwnership();
-        assertEq(harness.owner(), NEW_OWNER);
     }
 
     function test_TransferOwnership_FromPendingOwner_Allowed() public {
@@ -278,25 +266,13 @@ contract LibOwnerTwoStepsTest is Test {
         // Owner remains unchanged
     }
 
-    // TODO: When LibOwnerTwoSteps is fixed to make renouncement irreversible:
-    // 1. Rename this test to: test_RenounceOwnership_PreventsNewTransfersAfterForceRenounce
-    // 2. Change logic to:
-    //    vm.expectRevert(LibOwnerTwoSteps.OwnerAlreadyRenounced.selector);
-    //    harness.transferOwnership(ALICE);
-    // 3. Remove the acceptance and recovery logic
-    function test_RenounceOwnership_AllowsRecoveryAfterForceRenounce() public {
+    function test_RenounceOwnership_PreventsNewTransfersAfterForceRenounce() public {
         harness.forceRenounce();
         assertEq(harness.owner(), ZERO_ADDRESS);
 
-        // CURRENT BEHAVIOR (BUG): Library allows transferOwnership after renouncement
-        // EXPECTED BEHAVIOR: Should revert with OwnerAlreadyRenounced error
+        // Should revert with OwnerAlreadyRenounced error
+        vm.expectRevert(LibOwnerTwoSteps.OwnerAlreadyRenounced.selector);
         harness.transferOwnership(ALICE);
-        assertEq(harness.pendingOwner(), ALICE);
-
-        // Can recover ownership (this shouldn't be possible)
-        vm.prank(ALICE);
-        harness.acceptOwnership();
-        assertEq(harness.owner(), ALICE);
     }
 
     // ============================================
