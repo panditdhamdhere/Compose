@@ -6,7 +6,26 @@ import {LibOwner} from "../access/Owner/LibOwner.sol";
 // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
 // The loupe functions are required by the EIP2535 Diamonds standard
 contract DiamondCutFacet {
-    error NoSelectorsGivenToAdd();
+    /// @notice Thrown when a non-owner attempts an action restricted to owner.
+    error OwnerUnauthorizedAccount();
+
+    bytes32 constant OWNER_STORAGE_POSITION = keccak256("compose.owner");
+
+    /// @custom:storage-location erc8042:compose.owner
+    struct OwnerStorage {
+        address owner;
+    }
+
+    /// @notice Returns a pointer to the owner storage struct.
+    /// @dev Uses inline assembly to access the storage slot defined by STORAGE_POSITION.
+    /// @return s The OwnerStorage struct in storage.
+    function getOwnerStorage() internal pure returns (OwnerStorage storage s) {
+        bytes32 position = OWNER_STORAGE_POSITION;
+        assembly {
+            s.slot := position
+        }
+    }
+
     error NotContractOwner(address _user, address _contractOwner);
     error NoSelectorsProvidedForFacet(address _facet);
     error NoBytecodeAtAddress(address _contractAddress, string _message);
@@ -141,7 +160,9 @@ contract DiamondCutFacet {
     /// @param _calldata A function call, including function selector and arguments
     ///                  _calldata is executed with delegatecall on _init
     function diamondCut(FacetCut[] calldata _diamondCut, address _init, bytes calldata _calldata) external {
-        LibOwner.requireOwner();
+        if (getOwnerStorage().owner != msg.sender) {
+            revert OwnerUnauthorizedAccount();
+        }
         for (uint256 facetIndex; facetIndex < _diamondCut.length; facetIndex++) {
             bytes4[] calldata functionSelectors = _diamondCut[facetIndex].functionSelectors;
             address facetAddress = _diamondCut[facetIndex].facetAddress;

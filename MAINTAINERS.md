@@ -1,7 +1,7 @@
 # Senior Maintainer
 - @mudgen
 
-Among Nick’s duties are defining the overall direction of the project, approving or rejecting the development of new functionality, and creating/approving and maintaining standards for the project. Nick also fulfills the same responsibilities as other maintainers.
+Among Nick’s duties are defining the overall direction of the project, approving or rejecting the development of new functionality, and creating/approving and maintaining standards for the project. Nick also does regular maintainer activities.
 
 # Maintainers
 
@@ -13,12 +13,20 @@ Among Nick’s duties are defining the overall direction of the project, approvi
 
 Work on this as little or lot as you want to. Work on what you want to work on.
 
-# Responsibilities
+# Activities
+
 - Answer people's questions
 - Manage GitHub issues
 - Review and merge pull requests
 - Maintain documentation (including this file)
 - Maintain communication about the project
+- Develop new functionality
+- Improve existing functionality
+- Find and fix bugs
+- Discuss new ideas for the project
+- Improve testing
+- Improve the CI/build for the project
+- Improve tooling or infrastructure for the project
 
 ## Answer people's questions
 
