@@ -49,4 +49,13 @@ library LibOwner {
         s.owner = _newOwner;
         emit OwnershipTransferred(previousOwner, _newOwner);
     }
+
+    /// @notice Renounce ownership of the contract
+    /// @dev Sets the owner to address(0), disabling all functions restricted to the owner.
+    function renounceOwnership() internal {
+        OwnerStorage storage s = getStorage();
+        address previousOwner = s.owner;
+        s.owner = address(0);
+        emit OwnershipTransferred(previousOwner, address(0));
+    }
 }
