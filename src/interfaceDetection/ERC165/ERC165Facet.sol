@@ -40,14 +40,6 @@ contract ERC165Facet {
         }
     }
 
-    /// @notice Register that a contract supports an interface
-    /// @param _interfaceId The interface ID to register
-    /// @dev Call this function during initialization to register supported interfaces
-    function registerInterface(bytes4 _interfaceId) internal {
-        ERC165Storage storage s = getStorage();
-        s.supportedInterfaces[_interfaceId] = true;
-    }
-
     /// @notice Query if a contract implements an interface
     /// @param _interfaceId The interface identifier, as specified in ERC-165
     /// @dev This function checks if the diamond supports the given interface ID
