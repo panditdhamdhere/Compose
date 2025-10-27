@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-/// @title ERC-2981 NFT Royalty Standard
-/// @notice Implements royalty queries for NFT secondary sales.
+/// @title Royalty Facet - ERC-2981 NFT Royalty Standard Implementation
+/// @notice Implements royalty queries for NFT secondary sales per ERC-2981 standard.
 /// @dev Provides standardized royalty information to NFT marketplaces and platforms.
 ///      Supports both default and per-token royalty configurations using diamond storage.
-contract ERC2981Facet {
+///      This is an implementation of the ERC-2981 NFT Royalty Standard.
+contract RoyaltyFacet {
     /// @notice Thrown when default royalty fee exceeds 100% (10000 basis points).
     /// @param _numerator The fee numerator that exceeds the denominator.
     /// @param _denominator The fee denominator (10000 basis points).
@@ -44,15 +45,15 @@ contract ERC2981Facet {
     }
 
     /// @custom:storage-location erc8042:compose.erc2981
-    struct ERC2981Storage {
+    struct RoyaltyStorage {
         RoyaltyInfo defaultRoyaltyInfo;
         mapping(uint256 tokenId => RoyaltyInfo) tokenRoyaltyInfo;
     }
 
-    /// @notice Returns a pointer to the ERC-2981 storage struct.
+    /// @notice Returns a pointer to the royalty storage struct.
     /// @dev Uses inline assembly to access the storage slot defined by STORAGE_POSITION.
-    /// @return s The ERC2981Storage struct in storage.
-    function getStorage() internal pure returns (ERC2981Storage storage s) {
+    /// @return s The RoyaltyStorage struct in storage.
+    function getStorage() internal pure returns (RoyaltyStorage storage s) {
         bytes32 position = STORAGE_POSITION;
         assembly {
             s.slot := position
@@ -62,6 +63,7 @@ contract ERC2981Facet {
     /// @notice Returns royalty information for a given token and sale price.
     /// @dev Returns token-specific royalty if set, otherwise falls back to default royalty.
     ///      Royalty amount is calculated as a percentage of the sale price using basis points.
+    ///      Implements the ERC-2981 royaltyInfo function.
     /// @param _tokenId The NFT asset queried for royalty information.
     /// @param _salePrice The sale price of the NFT asset specified by _tokenId.
     /// @return receiver The address designated to receive the royalty payment.
@@ -71,7 +73,7 @@ contract ERC2981Facet {
         view
         returns (address receiver, uint256 royaltyAmount)
     {
-        ERC2981Storage storage s = getStorage();
+        RoyaltyStorage storage s = getStorage();
         RoyaltyInfo memory royalty = s.tokenRoyaltyInfo[_tokenId];
 
         if (royalty.receiver == address(0)) {

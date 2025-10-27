@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-/// @title LibERC2981 — ERC-2981 Royalty Standard Library
+/// @title LibRoyalty - ERC-2981 Royalty Standard Library
 /// @notice Provides internal functions and storage layout for ERC-2981 royalty logic.
 /// @dev Uses ERC-8042 for storage location standardization. Compatible with OpenZeppelin's ERC2981 behavior.
-library LibERC2981 {
+///      This is an implementation of the ERC-2981 NFT Royalty Standard.
+library LibRoyalty {
     /// @notice Thrown when default royalty fee exceeds 100% (10000 basis points).
     /// @param _numerator The fee numerator that exceeds the denominator.
     /// @param _denominator The fee denominator (10000 basis points).
@@ -43,15 +44,15 @@ library LibERC2981 {
     }
 
     /// @custom:storage-location erc8042:compose.erc2981
-    struct ERC2981Storage {
+    struct RoyaltyStorage {
         RoyaltyInfo defaultRoyaltyInfo;
         mapping(uint256 tokenId => RoyaltyInfo) tokenRoyaltyInfo;
     }
 
-    /// @notice Returns the ERC-2981 storage struct from its predefined slot.
+    /// @notice Returns the royalty storage struct from its predefined slot.
     /// @dev Uses inline assembly to access diamond storage location.
-    /// @return s The storage reference for ERC-2981 state variables.
-    function getStorage() internal pure returns (ERC2981Storage storage s) {
+    /// @return s The storage reference for royalty state variables.
+    function getStorage() internal pure returns (RoyaltyStorage storage s) {
         bytes32 position = STORAGE_POSITION;
         assembly {
             s.slot := position
@@ -61,6 +62,7 @@ library LibERC2981 {
     /// @notice Queries royalty information for a given token and sale price.
     /// @dev Returns token-specific royalty or falls back to default royalty.
     ///      Royalty amount is calculated as a percentage of the sale price using basis points.
+    ///      Implements the ERC-2981 royaltyInfo function logic.
     /// @param _tokenId The NFT asset queried for royalty information.
     /// @param _salePrice The sale price of the NFT asset.
     /// @return receiver The address designated to receive the royalty payment.
@@ -70,7 +72,7 @@ library LibERC2981 {
         view
         returns (address receiver, uint256 royaltyAmount)
     {
-        ERC2981Storage storage s = getStorage();
+        RoyaltyStorage storage s = getStorage();
         RoyaltyInfo memory royalty = s.tokenRoyaltyInfo[_tokenId];
 
         if (royalty.receiver == address(0)) {
@@ -93,14 +95,14 @@ library LibERC2981 {
             revert ERC2981InvalidDefaultRoyaltyReceiver(address(0));
         }
 
-        ERC2981Storage storage s = getStorage();
+        RoyaltyStorage storage s = getStorage();
         s.defaultRoyaltyInfo = RoyaltyInfo(_receiver, _feeNumerator);
     }
 
     /// @notice Removes default royalty information.
     /// @dev After calling this function, royaltyInfo will return (address(0), 0) for tokens without specific royalty.
     function deleteDefaultRoyalty() internal {
-        ERC2981Storage storage s = getStorage();
+        RoyaltyStorage storage s = getStorage();
         delete s.defaultRoyaltyInfo;
     }
 
@@ -117,7 +119,7 @@ library LibERC2981 {
             revert ERC2981InvalidTokenRoyaltyReceiver(_tokenId, address(0));
         }
 
-        ERC2981Storage storage s = getStorage();
+        RoyaltyStorage storage s = getStorage();
         s.tokenRoyaltyInfo[_tokenId] = RoyaltyInfo(_receiver, _feeNumerator);
     }
 
@@ -125,7 +127,7 @@ library LibERC2981 {
     /// @dev Clears token-specific royalty storage, causing fallback to default royalty.
     /// @param _tokenId The token ID to reset royalty configuration for.
     function resetTokenRoyalty(uint256 _tokenId) internal {
-        ERC2981Storage storage s = getStorage();
+        RoyaltyStorage storage s = getStorage();
         delete s.tokenRoyaltyInfo[_tokenId];
     }
 }
