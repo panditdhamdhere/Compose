@@ -213,3 +213,13 @@ This project is licensed under the MIT License. See the [LICENSE.md](LICENSE.md)
 **Compose is evolving with your help. Join us in building the future of smart contract development.**
 
 **-Nick & The Compose Community**
+
+<!-- automd:contributors github="Perfect-Abstractions/Compose" license="MIT" -->
+
+### Made with 🩵 by the [Compose Community](https://github.com/Perfect-Abstractions/Compose/graphs/contributors)
+
+<a href="https://github.com/Perfect-Abstractions/Compose/graphs/contributors">
+<img src="https://contrib.rocks/image?repo=Perfect-Abstractions/Compose" />
+</a>
+
+<!-- /automd -->
