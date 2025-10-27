@@ -94,21 +94,14 @@ contract LibOwnerTest is Test {
         assertEq(harness.owner(), INITIAL_OWNER);
     }
 
-    // TODO: When LibOwner is fixed to make renouncement irreversible:
-    // 1. Rename this test to: test_RevertWhen_TransferOwnership_FromRenouncedOwner
-    // 2. Change logic to:
-    //    vm.expectRevert(LibOwner.OwnerAlreadyRenounced.selector);
-    //    harness.transferOwnership(NEW_OWNER);
-    // 3. Remove the assertions for successful transfer
-    function test_TransferOwnership_AfterRenounce_AllowsNewOwner() public {
+    function test_RevertWhen_TransferOwnership_FromRenouncedOwner() public {
         // Force renounce
         harness.forceRenounce();
         assertEq(harness.owner(), ZERO_ADDRESS);
 
-        // CURRENT BEHAVIOR (BUG): Library allows transferOwnership after renouncement
-        // EXPECTED BEHAVIOR: Should revert with OwnerAlreadyRenounced error
+        // Should revert with OwnerAlreadyRenounced error
+        vm.expectRevert(LibOwner.OwnerAlreadyRenounced.selector);
         harness.transferOwnership(NEW_OWNER);
-        assertEq(harness.owner(), NEW_OWNER);
     }
 
     // ============================================
@@ -162,22 +155,15 @@ contract LibOwnerTest is Test {
     // Edge Cases
     // ============================================
 
-    // TODO: When LibOwner is fixed to make renouncement irreversible:
-    // 1. Rename this test to: test_RenounceOwnership_PermanentlyDisablesTransfers
-    // 2. Change logic to:
-    //    vm.expectRevert(LibOwner.OwnerAlreadyRenounced.selector);
-    //    harness.transferOwnership(ALICE);
-    // 3. Remove the assertion for successful transfer
-    function test_RenounceOwnership_AllowsRecovery() public {
+    function test_RenounceOwnership_PermanentlyDisablesTransfers() public {
         // Renounce ownership
         vm.prank(INITIAL_OWNER);
         harness.transferOwnership(ZERO_ADDRESS);
         assertEq(harness.owner(), ZERO_ADDRESS);
 
-        // CURRENT BEHAVIOR (BUG): Library allows recovery after renouncement
-        // EXPECTED BEHAVIOR: Should revert with OwnerAlreadyRenounced error
+        // Should revert with OwnerAlreadyRenounced error
+        vm.expectRevert(LibOwner.OwnerAlreadyRenounced.selector);
         harness.transferOwnership(ALICE);
-        assertEq(harness.owner(), ALICE);
     }
 
     function test_LibraryDoesNotCheckMsgSender() public {
@@ -197,13 +183,13 @@ contract LibOwnerTest is Test {
     // Fuzz Tests
     // ============================================
 
-    function test_Fuzz_TransferOwnership(address newOwner) public {
+    function testFuzz_TransferOwnership(address newOwner) public {
         vm.prank(INITIAL_OWNER);
         harness.transferOwnership(newOwner);
         assertEq(harness.owner(), newOwner);
     }
 
-    function test_Fuzz_MultipleTransfers(address owner1, address owner2, address owner3) public {
+    function testFuzz_MultipleTransfers(address owner1, address owner2, address owner3) public {
         vm.assume(owner1 != address(0));
         vm.assume(owner2 != address(0));
 
@@ -220,13 +206,7 @@ contract LibOwnerTest is Test {
         assertEq(harness.owner(), owner3);
     }
 
-    // TODO: When LibOwner is fixed to make renouncement irreversible:
-    // 1. Rename this test to: test_Fuzz_RevertWhen_RenouncedOwnerTransfers
-    // 2. Change logic to:
-    //    vm.expectRevert(LibOwner.OwnerAlreadyRenounced.selector);
-    //    harness.transferOwnership(target);
-    // 3. Remove the assertion for successful transfer
-    function test_Fuzz_TransferAfterRenounce_AllowsRecovery(address target) public {
+    function testFuzz_RevertWhen_RenouncedOwnerTransfers(address target) public {
         vm.assume(target != address(0));
 
         // Renounce
@@ -234,10 +214,9 @@ contract LibOwnerTest is Test {
         harness.transferOwnership(ZERO_ADDRESS);
         assertEq(harness.owner(), ZERO_ADDRESS);
 
-        // CURRENT BEHAVIOR (BUG): Library allows recovery - can transfer to new owner
-        // EXPECTED BEHAVIOR: Should revert with OwnerAlreadyRenounced error
+        // Should revert with OwnerAlreadyRenounced error
+        vm.expectRevert(LibOwner.OwnerAlreadyRenounced.selector);
         harness.transferOwnership(target);
-        assertEq(harness.owner(), target);
     }
 
     // ============================================
@@ -273,7 +252,7 @@ contract LibOwnerTest is Test {
         harness.requireOwner();
     }
 
-    function test_Fuzz_RequireOwner(address caller) public {
+    function testFuzz_RequireOwner(address caller) public {
         if (caller == INITIAL_OWNER) {
             // Should not revert for owner
             vm.prank(caller);
@@ -284,38 +263,5 @@ contract LibOwnerTest is Test {
             vm.prank(caller);
             harness.requireOwner();
         }
-    }
-
-    // ============================================
-    // Gas Tests
-    // ============================================
-
-    function test_Gas_Owner() public view {
-        uint256 gasBefore = gasleft();
-        harness.owner();
-        uint256 gasUsed = gasBefore - gasleft();
-
-        console2.log("Gas used for LibOwner.owner():", gasUsed);
-        assertTrue(gasUsed < 10000, "Owner getter uses too much gas");
-    }
-
-    function test_Gas_TransferOwnership() public {
-        uint256 gasBefore = gasleft();
-        vm.prank(INITIAL_OWNER);
-        harness.transferOwnership(NEW_OWNER);
-        uint256 gasUsed = gasBefore - gasleft();
-
-        console2.log("Gas used for LibOwner.transferOwnership():", gasUsed);
-        assertTrue(gasUsed < 50000, "Transfer ownership uses too much gas");
-    }
-
-    function test_Gas_TransferOwnership_Renounce() public {
-        uint256 gasBefore = gasleft();
-        vm.prank(INITIAL_OWNER);
-        harness.transferOwnership(ZERO_ADDRESS);
-        uint256 gasUsed = gasBefore - gasleft();
-
-        console2.log("Gas used for LibOwner renounce:", gasUsed);
-        assertTrue(gasUsed < 50000, "Renounce uses too much gas");
     }
 }

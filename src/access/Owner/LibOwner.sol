@@ -9,6 +9,8 @@ library LibOwner {
 
     /// @notice Thrown when a non-owner attempts an action restricted to owner.
     error OwnerUnauthorizedAccount();
+    /// @notice Thrown when attempting to transfer ownership from a renounced state.
+    error OwnerAlreadyRenounced();
 
     bytes32 constant STORAGE_POSITION = keccak256("compose.owner");
 
@@ -46,6 +48,9 @@ library LibOwner {
     function transferOwnership(address _newOwner) internal {
         OwnerStorage storage s = getStorage();
         address previousOwner = s.owner;
+        if (previousOwner == address(0)) {
+            revert OwnerAlreadyRenounced();
+        }
         s.owner = _newOwner;
         emit OwnershipTransferred(previousOwner, _newOwner);
     }
