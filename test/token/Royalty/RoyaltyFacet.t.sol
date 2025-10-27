@@ -180,11 +180,7 @@ contract RoyaltyFacetTest is Test {
         assertEq(royaltyAmount, (salePrice * feeNumerator) / FEE_DENOMINATOR);
     }
 
-    function testFuzz_RoyaltyInfo_WithTokenRoyalty(
-        uint256 tokenId,
-        uint96 feeNumerator,
-        uint256 salePrice
-    ) public {
+    function testFuzz_RoyaltyInfo_WithTokenRoyalty(uint256 tokenId, uint96 feeNumerator, uint256 salePrice) public {
         vm.assume(feeNumerator <= FEE_DENOMINATOR);
         vm.assume(salePrice <= 1000000 ether); // Prevent overflow with reasonable maximum
 
@@ -247,14 +243,14 @@ contract RoyaltyFacetTest is Test {
 
     function test_RoyaltyInfo_VariousFeePercentages() public {
         uint256 salePrice = 1 ether;
-        
+
         uint96[] memory fees = new uint96[](6);
-        fees[0] = 1;       // 0.01%
-        fees[1] = 25;      // 0.25%
-        fees[2] = 100;     // 1%
-        fees[3] = 250;     // 2.5%
-        fees[4] = 500;     // 5%
-        fees[5] = 750;     // 7.5%
+        fees[0] = 1; // 0.01%
+        fees[1] = 25; // 0.25%
+        fees[2] = 100; // 1%
+        fees[3] = 250; // 2.5%
+        fees[4] = 500; // 5%
+        fees[5] = 750; // 7.5%
 
         uint256[] memory expectedRoyalties = new uint256[](6);
         expectedRoyalties[0] = 0.0001 ether;
@@ -341,7 +337,7 @@ contract RoyaltyFacetTest is Test {
 
     function test_StorageSlot_Consistency() public {
         uint96 feeNumerator = 500; // 5%
-        
+
         facet.setDefaultRoyalty(royaltyReceiver, feeNumerator);
 
         // Read back through facet function to verify
@@ -369,7 +365,7 @@ contract RoyaltyFacetTest is Test {
     function test_RoyaltyInfo_WithMaximumValues() public {
         uint96 maxFee = 10000; // 100%
         uint256 maxSalePrice = 1000000000 ether; // Large but safe value
-        
+
         _setDefaultRoyalty(royaltyReceiver, maxFee);
 
         (address receiver, uint256 royaltyAmount) = facet.royaltyInfo(1, maxSalePrice);
@@ -392,10 +388,10 @@ contract RoyaltyFacetTest is Test {
 
         assertEq(receiver1, alice);
         assertEq(royalty1, 5 ether);
-        
+
         assertEq(receiver2, bob);
         assertEq(royalty2, 5 ether);
-        
+
         assertEq(receiver3, charlie);
         assertEq(royalty3, 5 ether);
     }
@@ -416,10 +412,10 @@ contract RoyaltyFacetTest is Test {
     function test_ComplexScenario_MultipleTokensAndDefaults() public {
         // Set up complex royalty structure
         _setDefaultRoyalty(alice, 500); // 5% default
-        
+
         _setTokenRoyalty(1, bob, 1000); // Token 1: 10%
         _setTokenRoyalty(2, charlie, 250); // Token 2: 2.5%
-        
+
         uint256 salePrice = 100 ether;
 
         // Token 1 should use token-specific
