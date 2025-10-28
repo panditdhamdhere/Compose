@@ -20,19 +20,5 @@ contract RoyaltyFacetHarness is RoyaltyFacet {
         RoyaltyStorage storage s = getStorage();
         s.tokenRoyaltyInfo[_tokenId] = RoyaltyInfo(_receiver, _feeNumerator);
     }
-
-    /// @notice Reset token royalty (for testing)
-    /// @dev Removes token-specific royalty info
-    function resetTokenRoyalty(uint256 _tokenId) external {
-        RoyaltyStorage storage s = getStorage();
-        delete s.tokenRoyaltyInfo[_tokenId];
-    }
-
-    /// @notice Delete default royalty (for testing)
-    /// @dev Removes default royalty info
-    function deleteDefaultRoyalty() external {
-        RoyaltyStorage storage s = getStorage();
-        delete s.defaultRoyaltyInfo;
-    }
 }
 
