@@ -75,4 +75,6 @@ Facets may not inherit other contracts or interfaces.
 
 ---
 
+Note: All these rules do not apply to *tests*.
+
 **All contributors must follow this style guide.**
