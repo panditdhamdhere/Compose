@@ -16,7 +16,7 @@ Importing other files into Compose facets is not allowed.
 ## 1. Facets Are Read From The Top Down
 Put your code in the facet in a way that it can be read from the top of the file and down to the bottom of the file, without having to jump to any other place in the file.
 
-This means that anything must be defined first before it used in a facet. This makes it easier to read a facet because the reader doesn't have to jump around the file to see what things are. In addition, it makes the code base consistent in how it is written and read.
+This means that everything must be defined first before it used in a facet. This makes it easier to read a facet because the reader doesn't have to jump around the file to see what things are. In addition, it makes the code base consistent in how it is written and read.
 
 ## 2. No Inheritance
 
