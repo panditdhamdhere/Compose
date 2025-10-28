@@ -26,8 +26,8 @@ This style guide documents the coding conventions required for all Compose code.
     ```
 
 ## 3. Internal Functions
-- **Facets:** Internal functions in facets must be marked `internal`. There should be few or no internal functions in facets; repeat code if it improves readability.
-- **Libraries:** Internal functions in libraries are not preceded by any visibility keyword (all are internal).
+- **Facets:** Internal function names in facets should be prefixed with `internal` if they otherwise have the same name as an external function in the same facet. Usually should be few or no internal functions in facets; repeat code if it improves readability.
+- **Libraries:** All functions in libraries use the `internal` visibility specifier. 
 
 ## 4. Value Resetting
 - Use `delete` to set a value to zero.
