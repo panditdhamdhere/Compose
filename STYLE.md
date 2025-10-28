@@ -28,7 +28,7 @@ Facets may not inherit other contracts or interfaces.
   contract ERC721Facet is IERCFacet {
   ```
 
-## 1. Naming Conventions
+## 3. Naming Conventions
 - **Parameter Names:** All parameters for events, errors, and functions must be preceded with an underscore (`_`).
   - Example:
     ```solidity
@@ -39,7 +39,7 @@ Facets may not inherit other contracts or interfaces.
 - **Camel Case:** Use camelCase for variable, function, contract, and library names, except for standard uppercase abbreviations (e.g., ERC).
   - Example: `totalSupply`, `LibERC20`, `ERC721Facet`
 
-## 2. Control Structures
+## 4. Control Structures
 - **Brackets Required:** One-line `if` statements without code block brackets `{}` are not allowed. Always use a newline and brackets.
   - Example:
     ```solidity
@@ -51,26 +51,26 @@ Facets may not inherit other contracts or interfaces.
     }
     ```
 
-## 3. Internal Functions
+## 5. Internal Functions
 - **Facets:** Internal function names in facets should be prefixed with `internal` if they otherwise have the same name as an external function in the same facet. Usually, there should be few or no internal functions in facets; repeat code if it improves readability.
 - **Libraries:** All functions in libraries use the `internal` visibility specifier. 
 
-## 4. Value Resetting
+## 6. Value Resetting
 - Use `delete` to set a value to zero.
   - Example:
     ```solidity
     delete balances[_owner];
     ```
 
-## 5. Formatting
+## 7. Formatting
 - Format code using the default settings of `forge fmt`. Run `forge fmt` before submitting code.
 
-## 6. References and Examples
+## 8. References and Examples
 - For more examples, see:
   - [`src/token/ERC721/ERC721/ERC721Facet.sol`](src/token/ERC721/ERC721/ERC721Facet.sol)
   - [`src/token/ERC721/ERC721/LibERC721.sol`](src/token/ERC721/ERC721/LibERC721.sol)
 
-## 7. Additional Rules
+## 9. Additional Rules
 - More rules may be derived from the above example files. When in doubt, follow the patterns established in those files.
 
 ---
