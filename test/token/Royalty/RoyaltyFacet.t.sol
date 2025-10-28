@@ -319,7 +319,7 @@ contract RoyaltyFacetTest is Test {
         assertEq(royaltyAmount, 5 ether);
     }
 
-    function test_RoyaltyInfo_ZeroAddressReceiverReturnsZero() public {
+    function test_RoyaltyInfo_ZeroAddressReceiverReturnsZero() public view {
         // Set up a token royalty with non-zero fee but zero address
         // This simulates the edge case
         uint256 tokenId = 5;
