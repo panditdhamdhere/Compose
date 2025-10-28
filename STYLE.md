@@ -4,7 +4,7 @@ This style guide documents the coding conventions required for all Compose code.
 
 
 ## 1. No Imports in Facets
-Facets in Compose are self-contained, stand-alone smart contracts. Keep the code in the facet and make it as readable as possible, 
+Facets in Compose are self-contained, stand-alone smart contracts. Keep the code in the facet and make it as readable as possible.
 
 Importing other files into Compose facets is not allowed.
 - Example:
