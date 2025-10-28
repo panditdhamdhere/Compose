@@ -4,8 +4,7 @@ pragma solidity >=0.8.30;
 /// @title LibNonReentrancy - Non-Reentrancy Library
 /// @notice Provides common non-reentrant functions for Solidity contracts.
 library LibNonReentrancy {
-    bytes32 internal constant NON_REENTRANT_SLOT =
-        keccak256("compose.nonReentrant");
+    bytes32 constant NON_REENTRANT_SLOT = keccak256("compose.nonReentrant");
 
     // Function selector - 0x43a0d067
     error Reentrancy();
