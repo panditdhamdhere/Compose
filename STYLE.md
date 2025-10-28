@@ -7,7 +7,7 @@ This style guide documents the coding conventions required for all Compose code.
 Facets in Compose are self-contained, stand-alone smart contracts. Keep the code in the facet and make it as readable as possible.
 
 Importing other files into Compose facets **is not allowed**.
-- Example:
+- Example of what not to do:
   ```solidity
   // This is not allowed in Compose' facets or libraries
   import {LibOwner} from "../../../src/access/Owner/LibOwner.sol";
@@ -16,13 +16,13 @@ Importing other files into Compose facets **is not allowed**.
 ## 2. Facets And Libraries Are Read From The Top Down
 Put your code in a facet or library in a way that it can be read from the top of the file and down to the bottom of the file, without having to jump to any other place in the file.
 
-This means that everything must be defined first before it used. This makes it easier to read a facet or library because the reader doesn't have to jump around the file to see what things are. In addition, it makes the code base consistent in how it is written and read.
+This means that everything must be defined before it used. This makes it easier to read a facet or library because the reader doesn't have to jump around the file to see what things are. In addition, it makes the code base consistent in how it is written and read.
 
 ## 3. No Inheritance
 
 Facets may not inherit other contracts or interfaces.
 
-- Example:
+- Example of what not to do:
   ```solidity
   // This is not allowed in Compose' facets or libraries
   contract ERC721Facet is IERCFacet {
