@@ -13,10 +13,10 @@ Importing other files into Compose facets **is not allowed**.
   import {LibOwner} from "../../../src/access/Owner/LibOwner.sol";
   ```
 
-## 2. Facets Are Read From The Top Down
-Put your code in the facet in a way that it can be read from the top of the file and down to the bottom of the file, without having to jump to any other place in the file.
+## 2. Facets And Libraries Are Read From The Top Down
+Put your code in a facet or library in a way that it can be read from the top of the file and down to the bottom of the file, without having to jump to any other place in the file.
 
-This means that everything must be defined first before it used in a facet. This makes it easier to read a facet because the reader doesn't have to jump around the file to see what things are. In addition, it makes the code base consistent in how it is written and read.
+This means that everything must be defined first before it used. This makes it easier to read a facet or library because the reader doesn't have to jump around the file to see what things are. In addition, it makes the code base consistent in how it is written and read.
 
 ## 3. No Inheritance
 
