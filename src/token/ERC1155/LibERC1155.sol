@@ -1,0 +1,179 @@
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.30;
+
+/// @title LibERC1155 — ERC-1155 Library
+/// @notice Provides internal functions and storage layout for ERC-1155 multi-token logic.
+/// @dev Uses ERC-8042 for storage location standardization and ERC-6093 for error conventions.
+///      This library is intended to be used by custom facets to integrate with ERC-1155 functionality.
+library LibERC1155 {
+    /// @notice Thrown when insufficient balance for a transfer or burn operation.
+    /// @param _sender Address attempting the operation.
+    /// @param _balance Current balance of the sender.
+    /// @param _needed Amount required to complete the operation.
+    /// @param _tokenId The token ID involved.
+    error ERC1155InsufficientBalance(address _sender, uint256 _balance, uint256 _needed, uint256 _tokenId);
+
+    /// @notice Thrown when the sender address is invalid.
+    /// @param _sender Invalid sender address.
+    error ERC1155InvalidSender(address _sender);
+
+    /// @notice Thrown when the receiver address is invalid.
+    /// @param _receiver Invalid receiver address.
+    error ERC1155InvalidReceiver(address _receiver);
+
+    /// @notice Thrown when array lengths don't match in batch operations.
+    /// @param _idsLength Length of the ids array.
+    /// @param _valuesLength Length of the values array.
+    error ERC1155InvalidArrayLength(uint256 _idsLength, uint256 _valuesLength);
+
+    /// @notice Emitted when a single token type is transferred.
+    /// @param _operator The address which initiated the transfer.
+    /// @param _from The address which previously owned the token.
+    /// @param _to The address which now owns the token.
+    /// @param _id The token type being transferred.
+    /// @param _value The amount of tokens transferred.
+    event TransferSingle(
+        address indexed _operator, address indexed _from, address indexed _to, uint256 _id, uint256 _value
+    );
+
+    /// @notice Emitted when multiple token types are transferred.
+    /// @param _operator The address which initiated the batch transfer.
+    /// @param _from The address which previously owned the tokens.
+    /// @param _to The address which now owns the tokens.
+    /// @param _ids The token types being transferred.
+    /// @param _values The amounts of tokens transferred.
+    event TransferBatch(
+        address indexed _operator, address indexed _from, address indexed _to, uint256[] _ids, uint256[] _values
+    );
+
+    /// @dev Storage position determined by the keccak256 hash of the diamond storage identifier.
+    bytes32 constant STORAGE_POSITION = keccak256("compose.erc1155");
+
+    /**
+     * @dev ERC-8042 compliant storage struct for ERC-1155 token data.
+     * @custom:storage-location erc8042:compose.erc1155
+     */
+    struct ERC1155Storage {
+        string uri;
+        mapping(uint256 id => mapping(address account => uint256 balance)) balanceOf;
+        mapping(address account => mapping(address operator => bool)) isApprovedForAll;
+    }
+
+    /**
+     * @notice Returns the ERC-1155 storage struct from the predefined diamond storage slot.
+     * @dev Uses inline assembly to set the storage slot reference.
+     * @return s The ERC-1155 storage struct reference.
+     */
+    function getStorage() internal pure returns (ERC1155Storage storage s) {
+        bytes32 position = STORAGE_POSITION;
+        assembly {
+            s.slot := position
+        }
+    }
+
+    /**
+     * @notice Mints a single token type to an address.
+     * @dev Increases the balance and emits a TransferSingle event.
+     *      Does NOT perform receiver validation - use with caution.
+     * @param _to The address that will receive the tokens.
+     * @param _id The token type to mint.
+     * @param _value The amount of tokens to mint.
+     */
+    function mint(address _to, uint256 _id, uint256 _value) internal {
+        if (_to == address(0)) {
+            revert ERC1155InvalidReceiver(address(0));
+        }
+
+        ERC1155Storage storage s = getStorage();
+        s.balanceOf[_id][_to] += _value;
+
+        emit TransferSingle(msg.sender, address(0), _to, _id, _value);
+    }
+
+    /**
+     * @notice Mints multiple token types to an address in a single transaction.
+     * @dev Increases balances for each token type and emits a TransferBatch event.
+     *      Does NOT perform receiver validation - use with caution.
+     * @param _to The address that will receive the tokens.
+     * @param _ids The token types to mint.
+     * @param _values The amounts of tokens to mint for each type.
+     */
+    function mintBatch(address _to, uint256[] memory _ids, uint256[] memory _values) internal {
+        if (_to == address(0)) {
+            revert ERC1155InvalidReceiver(address(0));
+        }
+        if (_ids.length != _values.length) {
+            revert ERC1155InvalidArrayLength(_ids.length, _values.length);
+        }
+
+        ERC1155Storage storage s = getStorage();
+
+        for (uint256 i = 0; i < _ids.length; i++) {
+            s.balanceOf[_ids[i]][_to] += _values[i];
+        }
+
+        emit TransferBatch(msg.sender, address(0), _to, _ids, _values);
+    }
+
+    /**
+     * @notice Burns a single token type from an address.
+     * @dev Decreases the balance and emits a TransferSingle event.
+     *      Reverts if the account has insufficient balance.
+     * @param _from The address whose tokens will be burned.
+     * @param _id The token type to burn.
+     * @param _value The amount of tokens to burn.
+     */
+    function burn(address _from, uint256 _id, uint256 _value) internal {
+        if (_from == address(0)) {
+            revert ERC1155InvalidSender(address(0));
+        }
+
+        ERC1155Storage storage s = getStorage();
+        uint256 fromBalance = s.balanceOf[_id][_from];
+
+        if (fromBalance < _value) {
+            revert ERC1155InsufficientBalance(_from, fromBalance, _value, _id);
+        }
+
+        unchecked {
+            s.balanceOf[_id][_from] = fromBalance - _value;
+        }
+
+        emit TransferSingle(msg.sender, _from, address(0), _id, _value);
+    }
+
+    /**
+     * @notice Burns multiple token types from an address in a single transaction.
+     * @dev Decreases balances for each token type and emits a TransferBatch event.
+     *      Reverts if the account has insufficient balance for any token type.
+     * @param _from The address whose tokens will be burned.
+     * @param _ids The token types to burn.
+     * @param _values The amounts of tokens to burn for each type.
+     */
+    function burnBatch(address _from, uint256[] memory _ids, uint256[] memory _values) internal {
+        if (_from == address(0)) {
+            revert ERC1155InvalidSender(address(0));
+        }
+        if (_ids.length != _values.length) {
+            revert ERC1155InvalidArrayLength(_ids.length, _values.length);
+        }
+
+        ERC1155Storage storage s = getStorage();
+
+        for (uint256 i = 0; i < _ids.length; i++) {
+            uint256 id = _ids[i];
+            uint256 value = _values[i];
+            uint256 fromBalance = s.balanceOf[id][_from];
+
+            if (fromBalance < value) {
+                revert ERC1155InsufficientBalance(_from, fromBalance, value, id);
+            }
+
+            unchecked {
+                s.balanceOf[id][_from] = fromBalance - value;
+            }
+        }
+
+        emit TransferBatch(msg.sender, _from, address(0), _ids, _values);
+    }
+}
