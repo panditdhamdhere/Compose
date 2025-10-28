@@ -2,6 +2,32 @@
 
 This style guide documents the coding conventions required for all Compose code. All contributors must follow these rules to ensure consistency and readability.
 
+
+## 1. No Imports in Facets
+Facets in Compose are self-contained, stand-alone smart contracts. Keep the code in the facet and make it as readable as possible, 
+
+Importing other files into Compose facets is not allowed.
+- Example:
+  ```solidity
+  // This is not allowed in Compose' facets or libraries
+  import {LibOwner} from "../../../src/access/Owner/LibOwner.sol";
+  ```
+
+## 1. Facets Are Read From The Top Down
+Put your code in the facet in a way that it can be read from the top of the file and down to the bottom of the file, without having to jump to any other place in the file.
+
+This means that anything must be defined first before it used in a facet. This makes it easier to read a facet because the reader doesn't have to jump around the file to see what things are. In addition, it makes the code base consistent in how it is written and read.
+
+## 2. No Inheritance
+
+Facets may not inherit other contracts or interfaces.
+
+- Example:
+  ```solidity
+  // This is not allowed in Compose' facets or libraries
+  contract ERC721Facet is IERCFacet {
+  ```
+
 ## 1. Naming Conventions
 - **Parameter Names:** All parameters for events, errors, and functions must be preceded with an underscore (`_`).
   - Example:
@@ -26,7 +52,7 @@ This style guide documents the coding conventions required for all Compose code.
     ```
 
 ## 3. Internal Functions
-- **Facets:** Internal function names in facets should be prefixed with `internal` if they otherwise have the same name as an external function in the same facet. Usually should be few or no internal functions in facets; repeat code if it improves readability.
+- **Facets:** Internal function names in facets should be prefixed with `internal` if they otherwise have the same name as an external function in the same facet. Usually, there should be few or no internal functions in facets; repeat code if it improves readability.
 - **Libraries:** All functions in libraries use the `internal` visibility specifier. 
 
 ## 4. Value Resetting
