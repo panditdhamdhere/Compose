@@ -63,8 +63,8 @@ Facets may not inherit other contracts or interfaces.
     ```
 
 ## 8. Avoid Assembly
- - Avoid using assembly if you can. If you can't and you access memory, do it safely, and use `assembly ("memory-safe")`.
-   `"memory safe"` tells the Solidity compiler not to skip optimizations because memory is being safely used.
+ - Avoid using assembly if you can. If you can't and you access memory, do it [safely](https://docs.soliditylang.org/en/latest/assembly.html#memory-safety), and use `assembly ("memory-safe")`.
+   `"memory safe"` tells the Solidity compiler that memory is being used safely so it should not disable optimizations.
    - Example:
      ```solidity
      assembly ("memory-safe") {
