@@ -20,10 +20,10 @@ library LibNonReentrancy {
     /// @dev This unlocks the entry into a function
     function enter() internal {
         bytes32 position = NON_REENTRANT_SLOT;
-        assembly {
+        assembly ("memory-safe") {
             if tload(position) {
                 mstore(0x00, 0x43a0d067)
-                return(0x00, 0x04)
+                revert(0x00, 0x04)
             }
             tstore(position, 1)
         }
