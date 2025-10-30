@@ -1,6 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
+/// @title ERC-1155 Token Receiver Interface
+/// @notice Interface for contracts that want to handle safe transfers of ERC-1155 tokens.
+interface IERC1155Receiver {
+    function onERC1155Received(address _operator, address _from, uint256 _id, uint256 _value, bytes calldata _data)
+        external
+        returns (bytes4);
+
+    function onERC1155BatchReceived(
+        address _operator,
+        address _from,
+        uint256[] calldata _ids,
+        uint256[] calldata _values,
+        bytes calldata _data
+    ) external returns (bytes4);
+}
+
 /// @title LibERC1155 — ERC-1155 Library
 /// @notice Provides internal functions and storage layout for ERC-1155 multi-token logic.
 /// @dev Uses ERC-8042 for storage location standardization and ERC-6093 for error conventions.
@@ -25,6 +41,11 @@ library LibERC1155 {
     /// @param _idsLength Length of the ids array.
     /// @param _valuesLength Length of the values array.
     error ERC1155InvalidArrayLength(uint256 _idsLength, uint256 _valuesLength);
+
+    /// @notice Thrown when missing approval for an operator.
+    /// @param _operator Address attempting the operation.
+    /// @param _owner The token owner.
+    error ERC1155MissingApprovalForAll(address _operator, address _owner);
 
     /// @notice Emitted when a single token type is transferred.
     /// @param _operator The address which initiated the transfer.
@@ -74,7 +95,7 @@ library LibERC1155 {
     /**
      * @notice Mints a single token type to an address.
      * @dev Increases the balance and emits a TransferSingle event.
-     *      Does NOT perform receiver validation - use with caution.
+     *      Performs receiver validation if recipient is a contract.
      * @param _to The address that will receive the tokens.
      * @param _id The token type to mint.
      * @param _value The amount of tokens to mint.
@@ -88,12 +109,30 @@ library LibERC1155 {
         s.balanceOf[_id][_to] += _value;
 
         emit TransferSingle(msg.sender, address(0), _to, _id, _value);
+
+        if (_to.code.length > 0) {
+            try IERC1155Receiver(_to).onERC1155Received(msg.sender, address(0), _id, _value, "") returns (
+                bytes4 response
+            ) {
+                if (response != IERC1155Receiver.onERC1155Received.selector) {
+                    revert ERC1155InvalidReceiver(_to);
+                }
+            } catch (bytes memory reason) {
+                if (reason.length == 0) {
+                    revert ERC1155InvalidReceiver(_to);
+                } else {
+                    assembly ("memory-safe") {
+                        revert(add(reason, 0x20), mload(reason))
+                    }
+                }
+            }
+        }
     }
 
     /**
      * @notice Mints multiple token types to an address in a single transaction.
      * @dev Increases balances for each token type and emits a TransferBatch event.
-     *      Does NOT perform receiver validation - use with caution.
+     *      Performs receiver validation if recipient is a contract.
      * @param _to The address that will receive the tokens.
      * @param _ids The token types to mint.
      * @param _values The amounts of tokens to mint for each type.
@@ -113,6 +152,24 @@ library LibERC1155 {
         }
 
         emit TransferBatch(msg.sender, address(0), _to, _ids, _values);
+
+        if (_to.code.length > 0) {
+            try IERC1155Receiver(_to).onERC1155BatchReceived(msg.sender, address(0), _ids, _values, "") returns (
+                bytes4 response
+            ) {
+                if (response != IERC1155Receiver.onERC1155BatchReceived.selector) {
+                    revert ERC1155InvalidReceiver(_to);
+                }
+            } catch (bytes memory reason) {
+                if (reason.length == 0) {
+                    revert ERC1155InvalidReceiver(_to);
+                } else {
+                    assembly ("memory-safe") {
+                        revert(add(reason, 0x20), mload(reason))
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -175,5 +232,98 @@ library LibERC1155 {
         }
 
         emit TransferBatch(msg.sender, _from, address(0), _ids, _values);
+    }
+
+    /**
+     * @notice Transfers a single token type from one address to another.
+     * @dev Validates ownership, approval, and receiver address before updating balances.
+     *      Does NOT perform ERC1155Receiver validation - use with caution.
+     *      Intended for custom facets that need transfer logic with authorization.
+     * @param _from The address to transfer from.
+     * @param _to The address to transfer to.
+     * @param _id The token type to transfer.
+     * @param _value The amount of tokens to transfer.
+     * @param _operator The address initiating the transfer (may be owner or approved operator).
+     */
+    function transferFrom(address _from, address _to, uint256 _id, uint256 _value, address _operator) internal {
+        if (_from == address(0)) {
+            revert ERC1155InvalidSender(address(0));
+        }
+        if (_to == address(0)) {
+            revert ERC1155InvalidReceiver(address(0));
+        }
+
+        ERC1155Storage storage s = getStorage();
+
+        // Check authorization
+        if (_from != _operator && !s.isApprovedForAll[_from][_operator]) {
+            revert ERC1155MissingApprovalForAll(_operator, _from);
+        }
+
+        uint256 fromBalance = s.balanceOf[_id][_from];
+
+        if (fromBalance < _value) {
+            revert ERC1155InsufficientBalance(_from, fromBalance, _value, _id);
+        }
+
+        unchecked {
+            s.balanceOf[_id][_from] = fromBalance - _value;
+        }
+        s.balanceOf[_id][_to] += _value;
+
+        emit TransferSingle(_operator, _from, _to, _id, _value);
+    }
+
+    /**
+     * @notice Transfers multiple token types from one address to another in a single transaction.
+     * @dev Validates ownership, approval, and receiver address before updating balances for each token type.
+     *      Does NOT perform ERC1155Receiver validation - use with caution.
+     *      Intended for custom facets that need batch transfer logic with authorization.
+     * @param _from The address to transfer from.
+     * @param _to The address to transfer to.
+     * @param _ids The token types to transfer.
+     * @param _values The amounts of tokens to transfer for each type.
+     * @param _operator The address initiating the transfer (may be owner or approved operator).
+     */
+    function transferBatchFrom(
+        address _from,
+        address _to,
+        uint256[] memory _ids,
+        uint256[] memory _values,
+        address _operator
+    ) internal {
+        if (_from == address(0)) {
+            revert ERC1155InvalidSender(address(0));
+        }
+        if (_to == address(0)) {
+            revert ERC1155InvalidReceiver(address(0));
+        }
+        if (_ids.length != _values.length) {
+            revert ERC1155InvalidArrayLength(_ids.length, _values.length);
+        }
+
+        ERC1155Storage storage s = getStorage();
+
+        // Check authorization
+        if (_from != _operator && !s.isApprovedForAll[_from][_operator]) {
+            revert ERC1155MissingApprovalForAll(_operator, _from);
+        }
+
+        for (uint256 i = 0; i < _ids.length; i++) {
+            uint256 id = _ids[i];
+            uint256 value = _values[i];
+            uint256 fromBalance = s.balanceOf[id][_from];
+
+            if (fromBalance < value) {
+                revert ERC1155InsufficientBalance(_from, fromBalance, value, id);
+            }
+
+            unchecked {
+                s.balanceOf[id][_from] = fromBalance - value;
+            }
+            s.balanceOf[id][_to] += value;
+        }
+
+        emit TransferBatch(_operator, _from, _to, _ids, _values);
     }
 }
