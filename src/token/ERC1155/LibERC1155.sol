@@ -242,10 +242,10 @@ library LibERC1155 {
     }
 
     /**
-     * @notice Transfers a single token type from one address to another.
+     * @notice Safely transfers a single token type from one address to another.
      * @dev Validates ownership, approval, and receiver address before updating balances.
-     *      Does NOT perform ERC1155Receiver validation - use with caution.
-     *      Intended for custom facets that need transfer logic with authorization.
+     *      Performs ERC1155Receiver validation if recipient is a contract (safe transfer).
+     *      Complies with EIP-1155 safe transfer requirements.
      * @param _from The address to transfer from.
      * @param _to The address to transfer to.
      * @param _id The token type to transfer.
@@ -279,13 +279,29 @@ library LibERC1155 {
         s.balanceOf[_id][_to] += _value;
 
         emit TransferSingle(_operator, _from, _to, _id, _value);
+
+        if (_to.code.length > 0) {
+            try IERC1155Receiver(_to).onERC1155Received(_operator, _from, _id, _value, "") returns (bytes4 response) {
+                if (response != IERC1155Receiver.onERC1155Received.selector) {
+                    revert ERC1155InvalidReceiver(_to);
+                }
+            } catch (bytes memory reason) {
+                if (reason.length == 0) {
+                    revert ERC1155InvalidReceiver(_to);
+                } else {
+                    assembly ("memory-safe") {
+                        revert(add(reason, 0x20), mload(reason))
+                    }
+                }
+            }
+        }
     }
 
     /**
-     * @notice Transfers multiple token types from one address to another in a single transaction.
+     * @notice Safely transfers multiple token types from one address to another in a single transaction.
      * @dev Validates ownership, approval, and receiver address before updating balances for each token type.
-     *      Does NOT perform ERC1155Receiver validation - use with caution.
-     *      Intended for custom facets that need batch transfer logic with authorization.
+     *      Performs ERC1155Receiver validation if recipient is a contract (safe transfer).
+     *      Complies with EIP-1155 safe transfer requirements.
      * @param _from The address to transfer from.
      * @param _to The address to transfer to.
      * @param _ids The token types to transfer.
@@ -332,6 +348,24 @@ library LibERC1155 {
         }
 
         emit TransferBatch(_operator, _from, _to, _ids, _values);
+
+        if (_to.code.length > 0) {
+            try IERC1155Receiver(_to).onERC1155BatchReceived(_operator, _from, _ids, _values, "") returns (
+                bytes4 response
+            ) {
+                if (response != IERC1155Receiver.onERC1155BatchReceived.selector) {
+                    revert ERC1155InvalidReceiver(_to);
+                }
+            } catch (bytes memory reason) {
+                if (reason.length == 0) {
+                    revert ERC1155InvalidReceiver(_to);
+                } else {
+                    assembly ("memory-safe") {
+                        revert(add(reason, 0x20), mload(reason))
+                    }
+                }
+            }
+        }
     }
 
     /**
