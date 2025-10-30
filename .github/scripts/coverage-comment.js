@@ -117,9 +117,6 @@ function generateCoverageReport(metrics, commitInfo = {}) {
     `*Last updated: ${timestamp}*${commitLink}\n`;
 }
 
-// Note: postCoverageComment function was removed as it was dead code.
-// The actual comment posting is handled by post-coverage-comment.js
-
 /**
  * Generate coverage report and save to file (for workflow artifacts)
  */
