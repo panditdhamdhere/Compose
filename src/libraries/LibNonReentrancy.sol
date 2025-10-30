@@ -9,7 +9,7 @@ library LibNonReentrancy {
     // Function selector - 0x43a0d067
     error Reentrancy();
 
-     /// @dev How to use as a library in user facets
+    /// @dev How to use as a library in user facets
     /*
     function someFunction() external {
         LibNonReentrancy.enter();
