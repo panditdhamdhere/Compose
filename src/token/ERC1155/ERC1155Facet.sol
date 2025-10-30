@@ -128,8 +128,10 @@ contract ERC1155Facet {
      */
     struct ERC1155Storage {
         string uri;
+        string baseURI;
         mapping(uint256 id => mapping(address account => uint256 balance)) balanceOf;
         mapping(address account => mapping(address operator => bool)) isApprovedForAll;
+        mapping(uint256 tokenId => string) tokenURIs;
     }
 
     /**
@@ -145,21 +147,19 @@ contract ERC1155Facet {
     }
 
     /**
-     * @notice Returns the URI for token type `id`.
-     * @dev This implementation returns the same URI for all token types. It relies
-     *      on the token type ID substitution mechanism defined in the ERC-1155 standard.
-     *      Clients calling this function must replace the `{id}` substring with the
-     *      actual token type ID in hexadecimal form.
+     * @notice Returns the URI for token type `_id`.
+     * @dev If a token-specific URI is set in tokenURIs[_id], returns the concatenation of baseURI and tokenURIs[_id].
+     *      Note that baseURI is empty by default and must be set explicitly if concatenation is desired.
+     *      If no token-specific URI is set, returns the default URI which applies to all token types.
+     *      The default URI may contain the substring `{id}` which clients should replace with the actual token ID.
+     * @param _id The token ID to query.
      * @return The URI for the token type.
      */
-    function uri(
-        uint256 /* _id */
-    )
-        external
-        view
-        returns (string memory)
-    {
-        return getStorage().uri;
+    function uri(uint256 _id) external view returns (string memory) {
+        ERC1155Storage storage s = getStorage();
+        string memory tokenURI = s.tokenURIs[_id];
+
+        return bytes(tokenURI).length > 0 ? string.concat(s.baseURI, tokenURI) : s.uri;
     }
 
     /**

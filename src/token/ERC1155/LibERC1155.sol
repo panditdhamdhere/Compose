@@ -67,6 +67,11 @@ library LibERC1155 {
         address indexed _operator, address indexed _from, address indexed _to, uint256[] _ids, uint256[] _values
     );
 
+    /// @notice Emitted when the URI for token type `_id` changes to `_value`.
+    /// @param _value The new URI for the token type.
+    /// @param _id The token type whose URI changed.
+    event URI(string _value, uint256 indexed _id);
+
     /// @dev Storage position determined by the keccak256 hash of the diamond storage identifier.
     bytes32 constant STORAGE_POSITION = keccak256("compose.erc1155");
 
@@ -78,6 +83,8 @@ library LibERC1155 {
         string uri;
         mapping(uint256 id => mapping(address account => uint256 balance)) balanceOf;
         mapping(address account => mapping(address operator => bool)) isApprovedForAll;
+        string baseURI;
+        mapping(uint256 tokenId => string) tokenURIs;
     }
 
     /**
@@ -325,5 +332,31 @@ library LibERC1155 {
         }
 
         emit TransferBatch(_operator, _from, _to, _ids, _values);
+    }
+
+    /**
+     * @notice Sets the token-specific URI for a given token ID.
+     * @dev Sets tokenURIs[_tokenId] to the provided string and emits a URI event with the full computed URI.
+     *      The emitted URI is the concatenation of baseURI and the token-specific URI.
+     * @param _tokenId The token ID to set the URI for.
+     * @param _tokenURI The token-specific URI string to be concatenated with baseURI.
+     */
+    function setTokenURI(uint256 _tokenId, string memory _tokenURI) internal {
+        ERC1155Storage storage s = getStorage();
+        s.tokenURIs[_tokenId] = _tokenURI;
+
+        string memory fullURI = bytes(_tokenURI).length > 0 ? string.concat(s.baseURI, _tokenURI) : s.uri;
+        emit URI(fullURI, _tokenId);
+    }
+
+    /**
+     * @notice Sets the base URI prefix for token-specific URIs.
+     * @dev The base URI is concatenated with token-specific URIs set via setTokenURI.
+     *      Does not affect the default URI used when no token-specific URI is set.
+     * @param _baseURI The base URI string to prepend to token-specific URIs.
+     */
+    function setBaseURI(string memory _baseURI) internal {
+        ERC1155Storage storage s = getStorage();
+        s.baseURI = _baseURI;
     }
 }
