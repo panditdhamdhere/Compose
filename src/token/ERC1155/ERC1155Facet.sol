@@ -152,7 +152,13 @@ contract ERC1155Facet {
      *      actual token type ID in hexadecimal form.
      * @return The URI for the token type.
      */
-    function uri(uint256 /* _id */ ) external view returns (string memory) {
+    function uri(
+        uint256 /* _id */
+    )
+        external
+        view
+        returns (string memory)
+    {
         return getStorage().uri;
     }
 
@@ -251,8 +257,9 @@ contract ERC1155Facet {
         emit TransferSingle(msg.sender, _from, _to, _id, _value);
 
         if (_to.code.length > 0) {
-            try IERC1155Receiver(_to).onERC1155Received(msg.sender, _from, _id, _value, _data) returns (bytes4 response)
-            {
+            try IERC1155Receiver(_to).onERC1155Received(msg.sender, _from, _id, _value, _data) returns (
+                bytes4 response
+            ) {
                 if (response != IERC1155Receiver.onERC1155Received.selector) {
                     revert ERC1155InvalidReceiver(_to);
                 }
