@@ -76,8 +76,8 @@ interface IERC1155 {
     function balanceOf(address _account, uint256 _id) external view returns (uint256);
 
     /// @notice Batched version of {balanceOf}.
-    /// @param _accounts The addresses to query the balances of.
-    /// @param _ids The token types to query.
+    /// @param _accounts The addresses to query the balances of (order and length must match _ids array).
+    /// @param _ids The token types to query (order and length must match _accounts array).
     /// @return The balances of the token types.
     function balanceOfBatch(address[] calldata _accounts, uint256[] calldata _ids)
         external
@@ -106,8 +106,8 @@ interface IERC1155 {
     /// @notice Batched version of {safeTransferFrom}.
     /// @param _from The address to transfer from.
     /// @param _to The address to transfer to.
-    /// @param _ids The token types to transfer.
-    /// @param _values The amounts to transfer.
+    /// @param _ids The token types to transfer (order and length must match _values array).
+    /// @param _values The amounts to transfer (order and length must match _ids array).
     /// @param _data Additional data with no specified format.
     function safeBatchTransferFrom(
         address _from,
@@ -121,35 +121,4 @@ interface IERC1155 {
     /// @param _id The token type to query.
     /// @return The URI for the token type.
     function uri(uint256 _id) external view returns (string memory);
-}
-
-/// @title ERC-1155 Token Receiver Interface
-/// @notice Interface for contracts that want to support safe transfers from ERC-1155 token contracts.
-/// @dev Contracts implementing this must return the correct selector to confirm token receipt.
-interface IERC1155Receiver {
-    /// @notice Handles the receipt of a single ERC-1155 token type.
-    /// @param _operator The address which initiated the transfer.
-    /// @param _from The address which previously owned the token.
-    /// @param _id The token type being transferred.
-    /// @param _value The amount of tokens being transferred.
-    /// @param _data Additional data with no specified format.
-    /// @return The selector to confirm the token transfer.
-    function onERC1155Received(address _operator, address _from, uint256 _id, uint256 _value, bytes calldata _data)
-        external
-        returns (bytes4);
-
-    /// @notice Handles the receipt of multiple ERC-1155 token types.
-    /// @param _operator The address which initiated the batch transfer.
-    /// @param _from The address which previously owned the tokens.
-    /// @param _ids The token types being transferred.
-    /// @param _values The amounts of tokens being transferred.
-    /// @param _data Additional data with no specified format.
-    /// @return The selector to confirm the batch token transfer.
-    function onERC1155BatchReceived(
-        address _operator,
-        address _from,
-        uint256[] calldata _ids,
-        uint256[] calldata _values,
-        bytes calldata _data
-    ) external returns (bytes4);
 }
