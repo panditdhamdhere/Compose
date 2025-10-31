@@ -81,9 +81,9 @@ library LibERC1155 {
      */
     struct ERC1155Storage {
         string uri;
+        string baseURI;
         mapping(uint256 id => mapping(address account => uint256 balance)) balanceOf;
         mapping(address account => mapping(address operator => bool)) isApprovedForAll;
-        string baseURI;
         mapping(uint256 tokenId => string) tokenURIs;
     }
 
@@ -252,7 +252,7 @@ library LibERC1155 {
      * @param _value The amount of tokens to transfer.
      * @param _operator The address initiating the transfer (may be owner or approved operator).
      */
-    function transferFrom(address _from, address _to, uint256 _id, uint256 _value, address _operator) internal {
+    function safeTransferFrom(address _from, address _to, uint256 _id, uint256 _value, address _operator) internal {
         if (_from == address(0)) {
             revert ERC1155InvalidSender(address(0));
         }
@@ -308,7 +308,7 @@ library LibERC1155 {
      * @param _values The amounts of tokens to transfer for each type.
      * @param _operator The address initiating the transfer (may be owner or approved operator).
      */
-    function transferBatchFrom(
+    function safeBatchTransferFrom(
         address _from,
         address _to,
         uint256[] memory _ids,
